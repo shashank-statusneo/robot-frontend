@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect, MutableRefObject } from 'react'
 import {
     Typography,
     Button,
@@ -8,10 +8,18 @@ import {
     FormControlLabel,
     TextField,
     FormControl,
+    Link,
 } from '@mui/material'
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined'
+import downloadableTemplates from './Templates.'
 
 const OptimizerContainer = () => {
+
+    type ButtonProps = {
+        handleClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+    };
+
+
     const [leadTimeEnabled, setLeadTimeEnabled] = useState(true)
     const [volumneDiscountEnabled, setVolumeDiscountEnabled] = useState(true)
     const [serviceLevel, setServiceLevel] = useState('fillRate')
@@ -65,7 +73,9 @@ const OptimizerContainer = () => {
     }
 
     // General function to export Form Upload Btn
-    const FormUploadButton = (params: { id: string ; disabled: boolean | undefined }) => {
+    // 
+    // const FormUploadButton = (params: { id: string ; disabled: boolean | undefined; handleClick: ButtonProps} ) => {
+    const FormUploadButton = ( params: { id: string ; disabled: boolean | undefined}, {handleClick}: ButtonProps) => {      
         return (
             <Button
                 variant="outlined"
@@ -73,7 +83,7 @@ const OptimizerContainer = () => {
                 size="small"
                 startIcon={<AddBoxOutlinedIcon />}
                 id={params.id}
-                // onClick={params.onClick}
+                // onClick={params.handleClick}
                 disabled={params.disabled}
             >
                 Upload File
@@ -83,17 +93,21 @@ const OptimizerContainer = () => {
     }
 
     // General function to export Form template download Btn
-    const FormDownloadTemplateButton = (params: { id: string | undefined }) => {
+    const FormDownloadTemplateButton = (params: { id: string | undefined; filePath: string; fileName: string }) => {
         return (
-            <Button
-                variant="outlined"
-                color="secondary"
-                size="small"
-                id={params.id}
-                // onClick={params.onClick}
-            >
-                Download Template
-            </Button>
+         
+                <Button
+                    variant="outlined"
+                    color="secondary"
+                    size="small"    
+                    id={params.id}
+                    href={params.filePath}
+                    // download={params.fileName}
+                    target="_blank" 
+                    // rel="noopener noreferrer"
+                >
+                    Download Template
+                </Button>
         )
     }
 
@@ -160,11 +174,12 @@ const OptimizerContainer = () => {
         )
     }
 
-    // // Weekly Forcast btn handlers
-    // const handleWeeklyForcastUploadBtn = (event:  React.ChangeEvent<HTMLInputElement>) => {
-    //     console.log(event)
-    // }
-    // const handleWeeklyForcastDownloadBtn = (event:  React.ChangeEvent<HTMLInputElement>) => {
+    
+
+    // const handleWeeklyForcastDownloadBtn = (event:  React.MouseEvent<HTMLAnchorElement, MouseEvent> | React.MouseEvent<HTMLSpanElement, MouseEvent>, fileName: string, filePath: string  ) => {
+    //     event.preventDefault()
+    //     console.log(fileName)
+    //     console.log(filePath)
     //     console.log(event)
     // }
 
@@ -172,27 +187,53 @@ const OptimizerContainer = () => {
     // const handleVendorCostTimeUploadBtn = (event:  React.ChangeEvent<HTMLInputElement>) => {
     //     console.log(event)
     // }
-    // const handleVendorCostTimeDownloadBtn = (event:  React.ChangeEvent<HTMLInputElement>) => {
-    //     console.log(event)
-    // }
+    const handleVendorCostTimeDownloadBtn = (event:  React.MouseEvent<HTMLButtonElement>) => {
+        console.log(event)
+    }
 
     // // Purchase order btn handlers
     // const handlePurchaseOrderUploadBtn = (event:  React.ChangeEvent<HTMLInputElement>) => {
     //     console.log(event)
     // }
-    // const handlePurchaseOrderDownloadBtn = (event:  React.ChangeEvent<HTMLInputElement>) => {
-    //     console.log(event)
-    // }
+    const handlePurchaseOrderDownloadBtn = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+
+        console.log(event)
+
+    }
 
     // // Volume Discount btn handlers
     // const handleVolumeDiscountUploadBtn = (event:  React.ChangeEvent<HTMLInputElement>) => {
     //     console.log(event)
     // }
-    // const handleVolumeDiscountDownloadBtn = (event:  React.ChangeEvent<HTMLInputElement>) => {
-    //     console.log(event)
-    // }
+
+    const handleVolumeDiscountDownloadBtn = (event:  React.MouseEvent<HTMLButtonElement>) => {
+        console.log(event)
+    }
+   
 
     const WeeklyForcastContainer = () => {
+
+        const weeklyForcastFile = useRef() as MutableRefObject<HTMLInputElement>;
+        const [uploadFile, setUploadFile] = useState<File>()
+        const [fileName, setFileName] = useState<string>('Test-file.csv')
+        const [fileNameVisible, setFileNamefileNameVisible] = useState<boolean>(false)
+
+        const handleUploadClick  = () => {
+            weeklyForcastFile.current.click()
+        }
+
+        const handleFileChange = (event:  React.ChangeEvent<HTMLInputElement>) => {
+            const fileObj = event.target.files && event.target.files[0];
+            if (!fileObj) {
+            return;
+            }
+
+            console.log(fileObj)
+            setUploadFile(fileObj)
+            setFileName(fileObj.name)
+            setFileNamefileNameVisible(true)
+        }
+
         return (
             <Grid
                 container
@@ -203,17 +244,29 @@ const OptimizerContainer = () => {
                 <Grid item xs={6}>
                     <FormLabel label="Upload weekly demand forecast" />
                 </Grid>
-                <Grid item xs={2}>
-                    <FormUploadButton
+                <Grid spacing={1} justifyContent='center' container direction='row' item xs={2} bgcolor='red'>
+                    <Grid item>
+                    <Button
+                        variant="outlined"
+                        color="secondary"
+                        size="small"
+                        startIcon={<AddBoxOutlinedIcon />}
                         id="weekly-forcast-uploader"
-                        disabled={false}
-                        // onClick={handleWeeklyForcastUploadBtn}
-                    />
+                        onClick={handleUploadClick}
+                    >
+                        Upload File
+                        <input hidden ref={weeklyForcastFile} accept=".csv" type="file" onChange={handleFileChange}></input>
+                    </Button>
+                    </Grid>
+                    <Grid item>
+                    <Typography>{fileName}</Typography>
+                    </Grid>
                 </Grid>
                 <Grid item xs={2}>
                     <FormDownloadTemplateButton
                         id="weekly-forcast-template-downloader"
-                        // onClick={handleWeeklyForcastDownloadBtn}
+                        filePath={downloadableTemplates.DemandForcast}
+                        fileName="Demand Forecast.csv"
                     />
                 </Grid>
             </Grid>
@@ -231,17 +284,18 @@ const OptimizerContainer = () => {
                 <Grid item xs={6}>
                     <FormLabel label="Upload vendor, costs & lead time details" />
                 </Grid>
-                <Grid item xs={2}>
+                {/* <Grid item xs={2}>
                     <FormUploadButton
                         id="vendor-cost-time-uploader"
                         disabled={false}
-                        // onClick={handleVendorCostTimeUploadBtn}
+                        onClick={handleVendorCostTimeUploadBtn}
                     />
-                </Grid>
+                </Grid> */}
                 <Grid item xs={2}>
                     <FormDownloadTemplateButton
                         id="vendor-cost-time-template-downloader"
-                        // onClick={handleVendorCostTimeDownloadBtn}
+                        filePath={downloadableTemplates.VendorData}
+                        fileName="Vendor Data.csv"
                     />
                 </Grid>
             </Grid>
@@ -299,17 +353,18 @@ const OptimizerContainer = () => {
                     justifyContent="center"
                     direction="row"
                 >
-                    <Grid item xs={6}>
+                    {/* <Grid item xs={6}>
                         <FormUploadButton
                             id="purchase-order-data-uploader"
                             // onClick={handlePurchaseOrderUploadBtn}
                             disabled={leadTimeEnabled ? false : true}
                         />
-                    </Grid>
+                    </Grid> */}
                     <Grid item xs={6}>
                         <FormDownloadTemplateButton
                             id="purchase-order-data-template-downloader"
-                            // onClick={handlePurchaseOrderDownloadBtn}
+                            filePath={downloadableTemplates.PurchaseOrder}
+                            fileName="Purchase Order Data.csv"
                         />
                     </Grid>
                 </Grid>
@@ -361,17 +416,18 @@ const OptimizerContainer = () => {
                     justifyContent="center"
                     direction="row"
                 >
-                    <Grid item xs={6}>
+                    {/* <Grid item xs={6}>
                         <FormUploadButton
                             id="volume-discount-data-uploader"
                             // onClick={handleVolumeDiscountUploadBtn}
                             disabled={volumneDiscountEnabled ? false : true}
                         />
-                    </Grid>
+                    </Grid> */}
                     <Grid item xs={6}>
                         <FormDownloadTemplateButton
                             id="volume-discount-template-downloader"
-                            // onCick={handleVolumeDiscountDownloadBtn}
+                            filePath={downloadableTemplates.VolumeDiscount}
+                            fileName="Volume Discount Data.csv"
                         />
                     </Grid>
                 </Grid>
@@ -391,7 +447,7 @@ const OptimizerContainer = () => {
                     <FormLabel label="Specify annual holding cost per unit" />
                 </Grid>
                 <Grid item xs={4}>
-                    <Grid item xs={6} direction="column">
+                    <Grid item xs={6}>
                         <FormTextField disabled={false} />
                     </Grid>
                 </Grid>
