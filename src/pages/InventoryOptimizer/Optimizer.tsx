@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect, MutableRefObject } from 'react'
+import React, { useState, useRef, MutableRefObject } from 'react'
 import {
+    Container,
     Typography,
     Button,
     Grid,
@@ -12,6 +13,7 @@ import {
 } from '@mui/material'
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined'
 import downloadableTemplates from './Templates.'
+import { uploadDemandForecastData } from './api'
 
 const OptimizerContainer = () => {
 
@@ -23,6 +25,15 @@ const OptimizerContainer = () => {
     const [leadTimeEnabled, setLeadTimeEnabled] = useState(true)
     const [volumneDiscountEnabled, setVolumeDiscountEnabled] = useState(true)
     const [serviceLevel, setServiceLevel] = useState('fillRate')
+
+    const [forcastFile, setForcastFile] = useState<File>();
+    const [forecastFileName, setForecastFileName] = useState<string>('')
+    const [vendorFile, setVendorFile] = useState<File>();
+    const [vendorFileName, setVendorFileName] = useState<string>('')
+    const [orderFile, setOrderFile] = useState<File>();
+    const [orderFileName, setOrderFileName] = useState<string>('')
+    const [volumeDiscountFile, setVolumeDiscountFile] = useState<File>();
+    const [volumeDiscountFileName, setVolumeDiscountFileName] = useState<string>('')
 
     const handleLeadTimeChange = (event:  React.ChangeEvent<HTMLInputElement>) => {
         event.target.value == 'yes'
@@ -114,7 +125,7 @@ const OptimizerContainer = () => {
     // General function to export Form Radio Field
     const FormRadioButton = (params: { id: string ; identifier: boolean ; options: { [x: string]: string }; onChange: ((event: React.ChangeEvent<HTMLInputElement>, value: string) => void) }) => {
         return (
-            <FormControl>
+            <FormControl >
                 <RadioGroup
                     row
                     id={params.id}
@@ -143,7 +154,6 @@ const OptimizerContainer = () => {
         return (
             <Grid
                 container
-                spacing={2}
                 direction="row"
                 justifyContent="center"
                 alignItems="center"
@@ -174,64 +184,37 @@ const OptimizerContainer = () => {
         )
     }
 
-    
-
-    // const handleWeeklyForcastDownloadBtn = (event:  React.MouseEvent<HTMLAnchorElement, MouseEvent> | React.MouseEvent<HTMLSpanElement, MouseEvent>, fileName: string, filePath: string  ) => {
-    //     event.preventDefault()
-    //     console.log(fileName)
-    //     console.log(filePath)
-    //     console.log(event)
-    // }
-
-    // // Vendor Cost and Lead Time btn handlers
-    // const handleVendorCostTimeUploadBtn = (event:  React.ChangeEvent<HTMLInputElement>) => {
-    //     console.log(event)
-    // }
-    const handleVendorCostTimeDownloadBtn = (event:  React.MouseEvent<HTMLButtonElement>) => {
-        console.log(event)
-    }
-
-    // // Purchase order btn handlers
-    // const handlePurchaseOrderUploadBtn = (event:  React.ChangeEvent<HTMLInputElement>) => {
-    //     console.log(event)
-    // }
-    const handlePurchaseOrderDownloadBtn = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-
-        console.log(event)
-
-    }
-
-    // // Volume Discount btn handlers
-    // const handleVolumeDiscountUploadBtn = (event:  React.ChangeEvent<HTMLInputElement>) => {
-    //     console.log(event)
-    // }
-
-    const handleVolumeDiscountDownloadBtn = (event:  React.MouseEvent<HTMLButtonElement>) => {
-        console.log(event)
-    }
-   
-
     const WeeklyForcastContainer = () => {
 
         const weeklyForcastFile = useRef() as MutableRefObject<HTMLInputElement>;
-        const [uploadFile, setUploadFile] = useState<File>()
-        const [fileName, setFileName] = useState<string>('Test-file.csv')
-        const [fileNameVisible, setFileNamefileNameVisible] = useState<boolean>(false)
 
         const handleUploadClick  = () => {
             weeklyForcastFile.current.click()
         }
 
-        const handleFileChange = (event:  React.ChangeEvent<HTMLInputElement>) => {
+        const handleFileChange = async (event:  React.ChangeEvent<HTMLInputElement>) => {
             const fileObj = event.target.files && event.target.files[0];
             if (!fileObj) {
             return;
             }
 
-            console.log(fileObj)
-            setUploadFile(fileObj)
-            setFileName(fileObj.name)
-            setFileNamefileNameVisible(true)
+            else {
+                // call upload api
+
+                const uploadPayload = {
+                    'file': fileObj
+                }
+
+                const uploadResponse = await uploadDemandForecastData('post', uploadPayload);
+
+                console.log(uploadResponse)
+
+                setForcastFile(fileObj)
+                setForecastFileName(fileObj.name)
+            }
+
+
+          
         }
 
         return (
@@ -240,40 +223,60 @@ const OptimizerContainer = () => {
                 direction="row"
                 justifyContent="center"
                 alignItems="center"
+           
             >
-                <Grid item xs={6}>
+                <Grid item lg={6} md={6} sm={12} >
                     <FormLabel label="Upload weekly demand forecast" />
                 </Grid>
-                <Grid spacing={1} justifyContent='center' container direction='row' item xs={2} bgcolor='red'>
-                    <Grid item>
-                    <Button
-                        variant="outlined"
-                        color="secondary"
-                        size="small"
-                        startIcon={<AddBoxOutlinedIcon />}
-                        id="weekly-forcast-uploader"
-                        onClick={handleUploadClick}
-                    >
-                        Upload File
-                        <input hidden ref={weeklyForcastFile} accept=".csv" type="file" onChange={handleFileChange}></input>
-                    </Button>
+                <Grid item container lg={6} md={6} sm={12} direction="column">
+                    <Grid item container direction="row">
+                        <Grid item lg={6} md={6} sm={6}>
+                            <Button
+                                variant="outlined"
+                                color="secondary"
+                                size="small"
+                                startIcon={<AddBoxOutlinedIcon />}
+                                id="weekly-forcast-uploader"
+                                onClick={handleUploadClick}
+                            >
+                                Upload File
+                                <input hidden ref={weeklyForcastFile} accept=".csv" type="file" onChange={handleFileChange}></input>
+                            </Button>
+                        </Grid> 
+                        <Grid item lg={6} md={6} sm={6}>
+                            <FormDownloadTemplateButton
+                                id="weekly-forcast-template-downloader"
+                                filePath={downloadableTemplates.DemandForcast}
+                                fileName="Demand Forecast.csv"
+                            />
+                        </Grid>
                     </Grid>
                     <Grid item>
-                    <Typography>{fileName}</Typography>
+                        <Grid item>
+                            <Typography>{forecastFileName}</Typography>
+                        </Grid>
                     </Grid>
-                </Grid>
-                <Grid item xs={2}>
-                    <FormDownloadTemplateButton
-                        id="weekly-forcast-template-downloader"
-                        filePath={downloadableTemplates.DemandForcast}
-                        fileName="Demand Forecast.csv"
-                    />
                 </Grid>
             </Grid>
         )
     }
 
     const VendorCostTimeContainer = () => {
+
+        const vendorForecastFile = useRef() as MutableRefObject<HTMLInputElement>;
+        const handleUploadClick  = () => {
+            vendorForecastFile.current.click()
+        }
+
+        const handleFileChange = (event:  React.ChangeEvent<HTMLInputElement>) => {
+            const fileObj = event.target.files && event.target.files[0];
+            if (!fileObj) {
+            return;
+            }       
+            setVendorFileName(fileObj.name)
+            setVendorFile(fileObj)
+        }
+
         return (
             <Grid
                 container
@@ -281,23 +284,40 @@ const OptimizerContainer = () => {
                 justifyContent="center"
                 alignItems="center"
             >
-                <Grid item xs={6}>
+                <Grid item lg={6} md={6} sm={12} >
                     <FormLabel label="Upload vendor, costs & lead time details" />
                 </Grid>
-                {/* <Grid item xs={2}>
-                    <FormUploadButton
-                        id="vendor-cost-time-uploader"
-                        disabled={false}
-                        onClick={handleVendorCostTimeUploadBtn}
-                    />
-                </Grid> */}
-                <Grid item xs={2}>
-                    <FormDownloadTemplateButton
-                        id="vendor-cost-time-template-downloader"
-                        filePath={downloadableTemplates.VendorData}
-                        fileName="Vendor Data.csv"
-                    />
+
+                <Grid item container lg={6} md={6} sm={12} direction="column">
+                    <Grid item container direction="row">
+                        <Grid item lg={6} md={6} sm={6}>
+                            <Button
+                                variant="outlined"
+                                color="secondary"
+                                size="small"
+                                startIcon={<AddBoxOutlinedIcon />}
+                                id="vendor-cost-time-uploader"
+                                onClick={handleUploadClick}
+                            >
+                                Upload File
+                                <input hidden ref={vendorForecastFile} accept=".csv" type="file" onChange={handleFileChange}></input>
+                            </Button>
+                        </Grid> 
+                        <Grid item lg={6} md={6} sm={6}>
+                            <FormDownloadTemplateButton
+                                id="vendor-cost-time-template-downloader"
+                                filePath={downloadableTemplates.VendorData}
+                                fileName="Vendor Data.csv"
+                            />
+                        </Grid>
+                    </Grid>
+                    <Grid item>
+                        <Grid item>
+                            <Typography>{vendorFileName}</Typography>
+                        </Grid>
+                    </Grid>
                 </Grid>
+
             </Grid>
         )
     }
@@ -310,18 +330,17 @@ const OptimizerContainer = () => {
                 justifyContent="center"
                 alignItems="center"
             >
-                <Grid item xs={6}>
+                 <Grid item lg={6} md={6} sm={12}>
                     <Grid container direction="column">
-                        <Grid item>
-                            <FormLabel label="Estimate lead time from purchase order data?" />
+                            <Grid item>
+                                <FormLabel label="Estimate lead time from purchase order data?" />
+                            </Grid>
+                            <Grid item>
+                                <FormSubLabel subLabel="(If yes, lead time details in previous file will be overridden)" />
+                            </Grid>
                         </Grid>
-                        <Grid item>
-                            <FormSubLabel subLabel="(If yes, lead time details in previous file will be overridden)" />
-                        </Grid>
-                    </Grid>
                 </Grid>
-
-                <Grid item xs={4}>
+                <Grid item container lg={6} md={6} sm={12} direction="column">
                     <FormRadioButton
                         options={{ yes: 'Yes', no: 'No' }}
                         identifier={leadTimeEnabled}
@@ -334,6 +353,21 @@ const OptimizerContainer = () => {
     }
 
     const PurchaseOrderContainer = () => {
+
+        const purchaseOrderFile = useRef() as MutableRefObject<HTMLInputElement>;
+        const handleUploadClick  = () => {
+            purchaseOrderFile.current.click()
+        }
+
+        const handleFileChange = (event:  React.ChangeEvent<HTMLInputElement>) => {
+            const fileObj = event.target.files && event.target.files[0];
+            if (!fileObj) {
+            return;
+            }
+            setOrderFileName(fileObj.name)
+            setOrderFile(fileObj)
+        }
+
         return (
             <Grid
                 container
@@ -341,38 +375,52 @@ const OptimizerContainer = () => {
                 justifyContent="center"
                 alignItems="center"
             >
-                <Grid item xs={6} container justifyContent="center">
-                    <Grid item xs={6}>
-                        <FormLabel label="Upload purchase order data" />
-                    </Grid>
+                <Grid item lg={6} md={6} sm={12} >
+                    <FormLabel label="Upload purchase order data" />
                 </Grid>
-                <Grid
-                    item
-                    xs={4}
-                    container
-                    justifyContent="center"
-                    direction="row"
-                >
-                    {/* <Grid item xs={6}>
-                        <FormUploadButton
-                            id="purchase-order-data-uploader"
-                            // onClick={handlePurchaseOrderUploadBtn}
-                            disabled={leadTimeEnabled ? false : true}
-                        />
-                    </Grid> */}
-                    <Grid item xs={6}>
-                        <FormDownloadTemplateButton
-                            id="purchase-order-data-template-downloader"
-                            filePath={downloadableTemplates.PurchaseOrder}
-                            fileName="Purchase Order Data.csv"
-                        />
+
+                <Grid item container lg={6} md={6} sm={12} direction="column">
+
+                    <Grid item container direction="row">
+
+                        <Grid item lg={6} md={6} sm={6}>
+                            <Button
+                                variant="outlined"
+                                color="secondary"
+                                size="small"
+                                startIcon={<AddBoxOutlinedIcon />}
+                                id="purchase-order-data-uploader"
+                                onClick={handleUploadClick}
+                                disabled={leadTimeEnabled ? false : true}
+                            >
+                                Upload File
+                                <input hidden ref={purchaseOrderFile} accept=".csv" type="file" onChange={handleFileChange}></input>
+                            </Button>
+                        </Grid> 
+
+                        <Grid item lg={6} md={6} sm={6}>
+                            <FormDownloadTemplateButton
+                                id="purchase-order-data-template-downloader"
+                                filePath={downloadableTemplates.PurchaseOrder}
+                                fileName="Purchase Order Data.csv"
+                            />
+                        </Grid>
+
                     </Grid>
+
+                    <Grid item>
+                        <Grid item>
+                            <Typography>{orderFileName}</Typography>
+                        </Grid>
+                    </Grid>
+
                 </Grid>
             </Grid>
         )
     }
 
     const VolumeDiscountContainer = () => {
+
         return (
             <Grid
                 container
@@ -380,11 +428,11 @@ const OptimizerContainer = () => {
                 justifyContent="center"
                 alignItems="center"
             >
-                <Grid item xs={6}>
+                <Grid item lg={6} md={6} sm={12}>
                     <FormLabel label="Use volume discount?" />
                 </Grid>
 
-                <Grid item xs={4}>
+                <Grid item container lg={6} md={6} sm={12} direction="column">
                     <FormRadioButton
                         options={{ yes: 'Yes', no: 'No' }}
                         identifier={volumneDiscountEnabled}
@@ -397,6 +445,21 @@ const OptimizerContainer = () => {
     }
 
     const VolumeDiscountDetailsContainer = () => {
+
+        const volumeDiscountFile = useRef() as MutableRefObject<HTMLInputElement>;
+        const handleUploadClick  = () => {
+            volumeDiscountFile.current.click()
+        }
+
+        const handleFileChange = (event:  React.ChangeEvent<HTMLInputElement>) => {
+            const fileObj = event.target.files && event.target.files[0];
+            if (!fileObj) {
+            return;
+            }
+            setVolumeDiscountFileName(fileObj.name)
+            setVolumeDiscountFile(fileObj)
+        }
+
         return (
             <Grid
                 container
@@ -404,32 +467,45 @@ const OptimizerContainer = () => {
                 justifyContent="center"
                 alignItems="center"
             >
-                <Grid item xs={6} container justifyContent="center">
-                    <Grid item xs={6}>
-                        <FormLabel label="Upload volume discount details" />
-                    </Grid>
+                <Grid item lg={6} md={6} sm={12} >
+                    <FormLabel label="Upload volume discount details" />
                 </Grid>
-                <Grid
-                    item
-                    xs={4}
-                    container
-                    justifyContent="center"
-                    direction="row"
-                >
-                    {/* <Grid item xs={6}>
-                        <FormUploadButton
-                            id="volume-discount-data-uploader"
-                            // onClick={handleVolumeDiscountUploadBtn}
-                            disabled={volumneDiscountEnabled ? false : true}
-                        />
-                    </Grid> */}
-                    <Grid item xs={6}>
-                        <FormDownloadTemplateButton
-                            id="volume-discount-template-downloader"
-                            filePath={downloadableTemplates.VolumeDiscount}
-                            fileName="Volume Discount Data.csv"
-                        />
+
+                <Grid item container lg={6} md={6} sm={12} direction="column">
+
+                    <Grid item container direction="row">
+
+                        <Grid item lg={6} md={6} sm={6}>
+                            <Button
+                                variant="outlined"
+                                color="secondary"
+                                size="small"
+                                startIcon={<AddBoxOutlinedIcon />}
+                                onClick={handleUploadClick}
+                                id="volume-discount-data-uploader"
+                                disabled={volumneDiscountEnabled ? false : true}
+                            >
+                                Upload File
+                                <input hidden ref={volumeDiscountFile} accept=".csv" type="file" onChange={handleFileChange}></input>
+                            </Button>
+                        </Grid> 
+
+                        <Grid item lg={6} md={6} sm={6}>
+                            <FormDownloadTemplateButton
+                                id="volume-discount-template-downloader"
+                                filePath={downloadableTemplates.VolumeDiscount}
+                                fileName="Volume Discount Data.csv"
+                            />
+                        </Grid>
+
                     </Grid>
+
+                    <Grid item>
+                        <Grid item>
+                            <Typography>{volumeDiscountFileName}</Typography>
+                        </Grid>
+                    </Grid>
+
                 </Grid>
             </Grid>
         )
@@ -443,11 +519,12 @@ const OptimizerContainer = () => {
                 justifyContent="center"
                 alignItems="center"
             >
-                <Grid item xs={6}>
+                <Grid item lg={6} md={6} sm={12} >
                     <FormLabel label="Specify annual holding cost per unit" />
                 </Grid>
-                <Grid item xs={4}>
-                    <Grid item xs={6}>
+            
+                <Grid item container lg={6} md={6} sm={12} direction="column">
+                    <Grid item lg={6} md={6} sm={12}>
                         <FormTextField disabled={false} />
                     </Grid>
                 </Grid>
@@ -462,16 +539,14 @@ const OptimizerContainer = () => {
                 direction="row"
                 justifyContent="center"
                 alignItems="center"
+           
             >
-                <Grid item xs={6}>
-                    <Grid container direction="column">
-                        <Grid item>
-                            <FormLabel label="Specify service level %" />
-                        </Grid>
-                    </Grid>
-                </Grid>
 
-                <Grid item xs={4}>
+                <Grid item lg={6} md={6} sm={12}>
+                    <FormLabel label="Specify service level %" />
+                </Grid>
+               
+                <Grid item container lg={6} md={6} sm={12} direction="column">
                     <CustomFormRadioButton
                         options={{
                             fillRate: 'Fill Rate',
@@ -496,7 +571,7 @@ const OptimizerContainer = () => {
             >
                 <Grid item>
                     <Button variant="contained" color="secondary">
-                        GENERATE ORDER POLICy
+                        GENERATE ORDER POLICY
                     </Button>
                 </Grid>
             </Grid>
@@ -504,44 +579,57 @@ const OptimizerContainer = () => {
     }
 
     return (
-        <Grid container direction="column" justifyContent="center" spacing={2}>
-            <Grid item>
-                <WeeklyForcastContainer />
-            </Grid>
-            <Grid item>
-                <VendorCostTimeContainer />
-            </Grid>
-            <Grid item>
-                <Grid container direction="column">
-                    <Grid container item>
-                        <EstimateLeadTimeContainer />
-                    </Grid>
-                    <Grid container item>
-                        <PurchaseOrderContainer />
-                    </Grid>
+        <Container sx={{ flexGrow: 1 }} fixed >
+            <Grid container direction="column" spacing={1}>
+
+                {/* Upload forecast */}
+                <Grid item>
+                    <WeeklyForcastContainer />
                 </Grid>
-            </Grid>
-            <Grid item>
-                <Grid container direction="column">
-                    <Grid container item>
-                        <VolumeDiscountContainer />
-                    </Grid>
-                    <Grid container item>
-                        <VolumeDiscountDetailsContainer />
-                    </Grid>
+
+                {/* Vendor Cost and Lead Time */}
+                <Grid item>
+                    <VendorCostTimeContainer />
                 </Grid>
+
+                {/* Estimated Lead Time */}
+                <Grid item>
+                    <EstimateLeadTimeContainer />
+                </Grid>
+
+                {/* Purchase Order */}
+                <Grid item>
+                    <PurchaseOrderContainer />
+                </Grid>
+
+                {/* Apply volume discount */}
+                <Grid item>
+                    <VolumeDiscountContainer />
+                </Grid>
+
+                {/* Volume Discount */}
+                <Grid item>
+                    <VolumeDiscountDetailsContainer />
+                </Grid>
+                
+                {/* Annual holding cost per unit */}
+                <Grid item>
+                    <AnnualHoldingCostContainer />
+                </Grid>
+
+                {/* Service Level */}
+                <Grid item>
+                    <ServiceLevelContainer />
+                </Grid>
+
+                {/* Generate Order Policy */}
+                <Grid item>
+                    <SubmitFormButton />
+                </Grid>
+
             </Grid>
-            <Grid item>
-                <AnnualHoldingCostContainer />
-            </Grid>
-            <Grid item>
-                <ServiceLevelContainer />
-            </Grid>
-            <Grid item>
-                <SubmitFormButton />
-            </Grid>
-        </Grid>
+        </Container>
     )
 }
 
-export default OptimizerContainer
+export default OptimizerContainer;

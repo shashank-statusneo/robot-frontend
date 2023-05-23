@@ -7,8 +7,17 @@ import {
     FormControl,
     Typography,
     Paper,
-    SelectChangeEvent
-} from '@mui/material'
+    SelectChangeEvent,
+    Table, TableBody,TableCell, TableContainer, TableHead, TableRow, Button, Container
+} from '@mui/material';
+
+import {
+    AnimatedAxis,
+    AnimatedGrid,
+    AnimatedLineSeries,
+    XYChart,
+  } from '@visx/xychart';
+
 import dayjs, {Dayjs} from 'dayjs'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers'
@@ -19,8 +28,48 @@ const OptimizerResultContainer = () => {
     const [fromDate, setFromDate] = React.useState<Dayjs | null>(dayjs())
     const [toDate, setToDate] = React.useState<Dayjs | null>(dayjs())
 
+    const [totalPurchaseValue, setTotalPurchaseValue] = useState('Rs. 1,50,000')
+    const [totalPurchaseQuantity, setTotalPurchaseQuantity] = useState('7265')
+    const [reorderPoint, setReorderPoint] = useState('565')
+    const [reorderQuantity, setReorderQuantity] = useState('150')
+
+    interface graphDataInterface {
+        inventoryLevel: number;
+        time: number; 
+    }
+
+    const graphData: graphDataInterface[] = [
+        { inventoryLevel: 10, time: 1},
+        { inventoryLevel: 20, time: 2},
+        { inventoryLevel: 30, time: 3 },
+        { inventoryLevel: 40, time: 4},
+        { inventoryLevel: 35, time:5 },
+        { inventoryLevel: 30, time: 6 },
+        { inventoryLevel: 5, time: 7 },
+    ];
+
+    const graphAccessors = {
+        xAccessor: (d: graphDataInterface) => d.time,
+        yAccessor: (d: graphDataInterface) => d.inventoryLevel,
+    };
+
+    const createTableData = (
+        vendor: string, 
+        reorderLevel: number,
+        orderQty: number,
+        cost: number
+    ) => {
+        return { vendor, reorderLevel, orderQty, cost };
+    }
+
+    const TableData = [
+        createTableData('Samsung', 123, 20, 2000 ),
+        createTableData('Apple', 456, 30, 3000 ),
+        createTableData('Nokia', 789, 40, 4000 ),
+    ] 
+
+    
     const handleVendorChange = (event:  SelectChangeEvent) => {
-        console.log(event.target.value)
         setVendor(event.target.value)
     }
 
@@ -48,14 +97,18 @@ const OptimizerResultContainer = () => {
 
     const FormDataSelector = () => {
         return (
-            <Grid container direction="row">
-                <Grid item xs={4}>
-                    <Grid container direction="column" spacing={2}>
+            <Grid  
+                container
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+            >
+                <Grid container item lg={4} md={4} sm={12}  direction="column" spacing={1}>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <Grid item>
+                            <Grid item lg={4} md={4} sm={12} >
                                 <Typography>Select From Date</Typography>
                             </Grid>
-                            <Grid item>
+                            <Grid item lg={4} md={4} sm={12}>
                                 <DatePicker
                                     label="From Date"
                                     value={fromDate}
@@ -63,48 +116,40 @@ const OptimizerResultContainer = () => {
                                 />
                             </Grid>
                         </LocalizationProvider>
-                    </Grid>
                 </Grid>
-                <Grid item xs={4}>
-                    <Grid container direction="column" spacing={2}>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <Grid item>
-                                <Typography>Select To Date</Typography>
-                            </Grid>
-                            <Grid item>
-                                <DatePicker
-                                    label="To Date"
-                                    value={toDate}
-                                    onChange={(updatedToDate) =>setToDate(updatedToDate)}
-                                />
-                            </Grid>
-                        </LocalizationProvider>
-                    </Grid>
+                <Grid container item lg={4} md={4} sm={12}  direction="column" spacing={1}>
+                    
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <Grid item lg={4} md={4} sm={12}>
+                            <Typography>Select To Date</Typography>
+                        </Grid>
+                        <Grid item lg={4} md={4} sm={12}>
+                            <DatePicker
+                                label="To Date"
+                                value={toDate}
+                                onChange={(updatedToDate) =>setToDate(updatedToDate)}
+                            />
+                        </Grid>
+                    </LocalizationProvider>
                 </Grid>
 
-                <Grid item xs={4}>
-                    <Grid container direction="column" spacing={2}>
+                <Grid container item lg={4} md={4} sm={12}  direction="column" spacing={1}>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <Grid item>
+                            <Grid item lg={4} md={4} sm={12}>
                                 <Typography>Select Vendor</Typography>
                             </Grid>
-                            <Grid item>
+                            <Grid item lg={4} md={4} sm={12}>
                                 <FormDropDown
                                     label="Vendor"
                                     data={['Apple', 'Samsung']}
                                 />
                             </Grid>
                         </LocalizationProvider>
-                    </Grid>
                 </Grid>
             </Grid>
         )
     }
     
-    const [totalPurchaseValue, setTotalPurchaseValue] = useState('Rs. 1,50,000')
-    const [totalPurchaseQuantity, setTotalPurchaseQuantity] = useState('7265')
-    const [reorderPoint, setReorderPoint] = useState('565')
-    const [reorderQuantity, setReorderQuantity] = useState('150')
 
     const FormCard = (params: { value: string | number; label: string}) => {
         return (
@@ -130,23 +175,30 @@ const OptimizerResultContainer = () => {
 
     const CardContainer = () => {
         return (
-            <Grid container direction="row" spacing={2}>
-                <Grid item xs={3}>
+            <Grid 
+                container 
+                direction="row"  
+                justifyContent="center"
+                alignItems="center"
+                spacing={1}
+              
+            >
+                <Grid item lg={3} md={3} sm={6}>
                     <FormCard
                         value={totalPurchaseValue}
                         label="Total Purchase Value"
                     />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item lg={3} md={3} sm={6}>
                     <FormCard
                         value={totalPurchaseQuantity}
                         label="Total Purchase Qty"
                     />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item lg={3} md={3} sm={6}>
                     <FormCard value={reorderPoint} label="Reorder Point" />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item lg={3} md={3} sm={6}>
                     <FormCard value={reorderQuantity} label="Reorder Qty" />
                 </Grid>
             </Grid>
@@ -158,8 +210,9 @@ const OptimizerResultContainer = () => {
             <Grid
                 container
                 direction="column"
-                spacing={2}
                 justifyContent="center"
+                alignItems="center"
+           
             >
                 <Grid item>
                     <Typography variant="h6">
@@ -171,30 +224,101 @@ const OptimizerResultContainer = () => {
                         sx={{
                             width: 450,
                             height: 400,
-                            backgroundColor: 'grey',
                         }}
-                    ></Paper>
+                    >
+                        <XYChart  xScale={{ type: 'band' }} yScale={{ type: 'linear' }}>
+                            <AnimatedAxis orientation="bottom" label='Time' />
+                            <AnimatedAxis orientation="left" label='Invetory Level' />
+                            <AnimatedGrid columns={false} numTicks={4} />
+                            <AnimatedLineSeries dataKey="Projection Graph" data={graphData} {...graphAccessors} />
+                        </XYChart>
+                       
+                    </Paper>
                 </Grid>
             </Grid>
         )
     }
 
     const PolicyContainer = () => {
-        return <></>
+        return (
+            <Grid
+                container
+                direction="column"
+                spacing={1}
+                justifyContent="center"
+                alignItems="center"
+            >
+                <Grid item>
+                    <Typography variant="h6">
+                        POLICY DETAILS TABLE
+                    </Typography>
+                </Grid>
+                <Grid item>
+                    <TableContainer component={Paper}>
+                        <Table aria-label="policy-details-table">
+                            <TableHead>
+                                <TableRow>
+                                <TableCell>Vendor</TableCell>
+                                <TableCell>Reorder Level</TableCell>
+                                <TableCell>Order Qty</TableCell>
+                                <TableCell>Cost</TableCell>
+                            
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {TableData.map((row) => (
+                                <TableRow
+                                    key={row.vendor}
+                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                >
+                                    <TableCell>{row.vendor}</TableCell>
+                                    <TableCell>{row.reorderLevel}</TableCell>
+                                    <TableCell>{row.orderQty}</TableCell>
+                                    <TableCell>{row.cost}</TableCell>
+                                </TableRow>
+                                ))}
+                                <TableRow>
+                                    {/* <TableCell rowSpan={4} /> */}
+                                    <TableCell colSpan={2} align='center'>Total</TableCell>
+                                    <TableCell>90</TableCell>
+                                    <TableCell>9000</TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                            
+                </Grid>
+                <Grid item>
+                    <Button variant="contained" color="secondary">
+                            DOWNLOAD TABLE AS EXCEL FILE 
+                    </Button>
+                </Grid>
+            </Grid>
+
+
+           
+        )
     }
 
     return (
-        <Grid container direction="column" justifyContent="center" spacing={10}>
-            <Grid item>
-                <FormDataSelector />
+        <Container sx={{ flexGrow: 1 }} fixed >
+            <Grid container direction="column" spacing={6}>
+                <Grid item >
+                    <FormDataSelector />
+                </Grid>
+                <Grid item >
+                    <CardContainer />
+                </Grid>
+                <Grid container item direction="row" >
+                <Grid item lg={6} md={6} sm={12}>
+                        <ProjectionContainer/>
+                    </Grid>
+                    <Grid item lg={6} md={6} sm={12}>
+                        <PolicyContainer/>
+                    </Grid>
+                </Grid>
             </Grid>
-            <Grid item>
-                <CardContainer />
-            </Grid>
-            <Grid item>
-                <ProjectionContainer />
-            </Grid>
-        </Grid>
+        </Container>
     )
 }
 
