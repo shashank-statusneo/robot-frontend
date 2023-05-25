@@ -10,10 +10,12 @@ import {
     TextField,
     FormControl,
     Link,
+    Backdrop, 
+    CircularProgress, Snackbar, Alert
 } from '@mui/material'
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined'
 import downloadableTemplates from './Templates.'
-import { uploadDemandForecastData } from './api'
+import { uploadInventoryApi } from './api'
 
 const OptimizerContainer = () => {
 
@@ -21,6 +23,8 @@ const OptimizerContainer = () => {
         handleClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
     };
 
+    const [snackbarState, setSnackbarState] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
 
     const [leadTimeEnabled, setLeadTimeEnabled] = useState(true)
     const [volumneDiscountEnabled, setVolumeDiscountEnabled] = useState(true)
@@ -34,6 +38,13 @@ const OptimizerContainer = () => {
     const [orderFileName, setOrderFileName] = useState<string>('')
     const [volumeDiscountFile, setVolumeDiscountFile] = useState<File>();
     const [volumeDiscountFileName, setVolumeDiscountFileName] = useState<string>('')
+
+    const [loader, setLoader] = React.useState(false);
+
+    const delay = (ms: number | undefined) => new Promise(
+        resolve => setTimeout(resolve, ms)
+    );
+
 
     const handleLeadTimeChange = (event:  React.ChangeEvent<HTMLInputElement>) => {
         event.target.value == 'yes'
@@ -188,33 +199,33 @@ const OptimizerContainer = () => {
 
         const weeklyForcastFile = useRef() as MutableRefObject<HTMLInputElement>;
 
-        const handleUploadClick  = () => {
-            weeklyForcastFile.current.click()
-        }
-
+    
         const handleFileChange = async (event:  React.ChangeEvent<HTMLInputElement>) => {
+
+            try {
+
             const fileObj = event.target.files && event.target.files[0];
-            if (!fileObj) {
-            return;
-            }
-
-            else {
-                // call upload api
-
-                const uploadPayload = {
-                    'file': fileObj
+            if (fileObj) {
+                setLoader(true);
+                await delay(1000);
+                const uploadResponse = await uploadInventoryApi('demand_forecast', fileObj);
+                if (uploadResponse.data && uploadResponse.status === 201){
+                    setLoader(false);
+                    setForcastFile(fileObj)
+                    setForecastFileName(fileObj.name)
                 }
-
-                const uploadResponse = await uploadDemandForecastData('post', uploadPayload);
-
-                console.log(uploadResponse)
-
-                setForcastFile(fileObj)
-                setForecastFileName(fileObj.name)
-            }
-
-
-          
+                else {
+                    setLoader(false);
+                    setSnackbarState(true);
+                    setSnackbarMessage('Upload Failed')
+                }
+            }   
+        }
+            catch(error){
+                setLoader(false);
+                setSnackbarState(true);
+                setSnackbarMessage('Upload Failed')
+            } 
         }
 
         return (
@@ -237,11 +248,17 @@ const OptimizerContainer = () => {
                                 size="small"
                                 startIcon={<AddBoxOutlinedIcon />}
                                 id="weekly-forcast-uploader"
-                                onClick={handleUploadClick}
+                                onClick={() => !loader && weeklyForcastFile.current.click()}
                             >
                                 Upload File
                                 <input hidden ref={weeklyForcastFile} accept=".csv" type="file" onChange={handleFileChange}></input>
                             </Button>
+                            <Backdrop
+                                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                                open={loader}
+                            >
+                                <CircularProgress color="inherit" />
+                            </Backdrop>
                         </Grid> 
                         <Grid item lg={6} md={6} sm={6}>
                             <FormDownloadTemplateButton
@@ -268,13 +285,32 @@ const OptimizerContainer = () => {
             vendorForecastFile.current.click()
         }
 
-        const handleFileChange = (event:  React.ChangeEvent<HTMLInputElement>) => {
+        const handleFileChange = async (event:  React.ChangeEvent<HTMLInputElement>) => {
+
+            try {
+
             const fileObj = event.target.files && event.target.files[0];
-            if (!fileObj) {
-            return;
-            }       
-            setVendorFileName(fileObj.name)
-            setVendorFile(fileObj)
+            if (fileObj) {
+                setLoader(true);
+                await delay(1000);
+                const uploadResponse = await uploadInventoryApi('vendor', fileObj);
+                if (uploadResponse.data && uploadResponse.status === 201){
+                    setLoader(false);
+                    setVendorFile(fileObj)
+                    setVendorFileName(fileObj.name)
+                }
+                else {
+                    setLoader(false);
+                    setSnackbarState(true);
+                    setSnackbarMessage('Upload Failed')
+                }
+            }   
+        }
+            catch(error){
+                setLoader(false);
+                setSnackbarState(true);
+                setSnackbarMessage('Upload Failed')
+            } 
         }
 
         return (
@@ -297,11 +333,17 @@ const OptimizerContainer = () => {
                                 size="small"
                                 startIcon={<AddBoxOutlinedIcon />}
                                 id="vendor-cost-time-uploader"
-                                onClick={handleUploadClick}
+                                onClick={() => !loader && vendorForecastFile.current.click()}
                             >
                                 Upload File
                                 <input hidden ref={vendorForecastFile} accept=".csv" type="file" onChange={handleFileChange}></input>
                             </Button>
+                            <Backdrop
+                                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                                open={loader}
+                            >
+                                <CircularProgress color="inherit" />
+                            </Backdrop>
                         </Grid> 
                         <Grid item lg={6} md={6} sm={6}>
                             <FormDownloadTemplateButton
@@ -562,6 +604,15 @@ const OptimizerContainer = () => {
     }
 
     const SubmitFormButton = () => {
+
+        const [open, setOpen] = React.useState(false);
+        const handleClose = () => {
+          setOpen(false);
+        };
+        const handleOpen = () => {
+          setOpen(true);
+        };
+
         return (
             <Grid
                 container
@@ -570,9 +621,16 @@ const OptimizerContainer = () => {
                 alignItems="center"
             >
                 <Grid item>
-                    <Button variant="contained" color="secondary">
+                    <Button variant="contained" color="secondary" onClick={handleOpen}>
                         GENERATE ORDER POLICY
                     </Button>
+                    <Backdrop
+                        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                        open={open}
+                        onClick={handleClose}
+                    >
+                        <CircularProgress color="inherit" />
+                    </Backdrop>
                 </Grid>
             </Grid>
         )
@@ -580,6 +638,17 @@ const OptimizerContainer = () => {
 
     return (
         <Container sx={{ flexGrow: 1 }} fixed >
+
+            <Snackbar
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                open={snackbarState}
+                autoHideDuration={2000}
+                onClose={() => setSnackbarState(false)}
+            >
+                <Alert severity="error">{snackbarMessage}</Alert>
+            </Snackbar>
+
+
             <Grid container direction="column" spacing={1}>
 
                 {/* Upload forecast */}

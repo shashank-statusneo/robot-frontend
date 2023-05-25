@@ -1,20 +1,21 @@
 import { axiosPostWrapper } from '../../utils/helpers';
 
+
 const url = 'http://127.0.0.1:5000'
 
 const apiEndPoints = {
-    uploadDemandForecast: '/demand_forecast',
-    uploadVendorData: '/vendor',
+    uploadInventory: '/inventory/upload',
+
 }
 
 const fileRequestHeader = {
-    'Content-Type': 'multipart/form-data'
-  }
+    'Content-Type': 'multipart/form-data'  
+}
 
-export const uploadDemandForecastData = async (requestType: string, data: any) => {
+export const uploadInventoryApi = async (fileType: string, file: any) => {
     return await axiosPostWrapper(
-        `${url}/${apiEndPoints.uploadDemandForecast}`,
-        data, fileRequestHeader, 
+        `${url}/${apiEndPoints.uploadInventory}`,
+        {'file_type': fileType, 'file': file}, fileRequestHeader, 
     );
 }
 
