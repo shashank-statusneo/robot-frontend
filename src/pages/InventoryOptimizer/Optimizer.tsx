@@ -1,4 +1,4 @@
-import React, { useState, useRef, MutableRefObject } from 'react'
+import React, { useState, useRef, MutableRefObject, useEffect } from 'react'
 import {
     Container,
     Typography,
@@ -11,7 +11,7 @@ import {
     FormControl,
     Link,
     Backdrop, 
-    CircularProgress, Snackbar, Alert
+    CircularProgress, Snackbar, Alert, Input
 } from '@mui/material'
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined'
 import downloadableTemplates from './Templates.'
@@ -23,6 +23,20 @@ const OptimizerContainer = () => {
         handleClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
     };
 
+    interface FormPayload {
+        demandId: undefined | number;
+        vendorId: undefined  | number;
+        purchaseId:  undefined | number;
+        volumnId:  undefined  | number;
+        annualHoldingCost:  undefined  | number;
+        fillRate:  undefined | number;
+        cycleServiceLevel: undefined | number;
+
+    }
+
+    const [annualHoldingCost, setAnnualHoldingCost] = useState('');
+    const [formPayload, setFormPayload] = useState<FormPayload>({demandId: undefined, vendorId: undefined, purchaseId: undefined, volumnId: undefined, annualHoldingCost: undefined, fillRate: undefined, cycleServiceLevel: undefined});
+
     const [snackbarState, setSnackbarState] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
 
@@ -32,10 +46,13 @@ const OptimizerContainer = () => {
 
     const [forcastFile, setForcastFile] = useState<File>();
     const [forecastFileName, setForecastFileName] = useState<string>('')
+
     const [vendorFile, setVendorFile] = useState<File>();
     const [vendorFileName, setVendorFileName] = useState<string>('')
+
     const [orderFile, setOrderFile] = useState<File>();
     const [orderFileName, setOrderFileName] = useState<string>('')
+
     const [volumeDiscountFile, setVolumeDiscountFile] = useState<File>();
     const [volumeDiscountFileName, setVolumeDiscountFileName] = useState<string>('')
 
@@ -59,7 +76,7 @@ const OptimizerContainer = () => {
     }
 
     const handleServiceLevelChange = (event:  React.ChangeEvent<HTMLInputElement>) => {
-        console.log(event.target.value)
+        // console.log(event.target.value)
         event.target.value == 'fillRate'
             ? setServiceLevel('fillRate')
             : setServiceLevel('cycleServiceLevel')
@@ -91,6 +108,7 @@ const OptimizerContainer = () => {
                 variant="outlined"
                 disabled={params?.disabled}
             ></TextField>
+            
         )
     }
 
@@ -162,6 +180,7 @@ const OptimizerContainer = () => {
 
     // General Custom function to export Form Radio Field
     const CustomFormRadioButton = (params: { id: string ; identifier: string; onChange: ((event: React.ChangeEvent<HTMLInputElement>, value: string) => void) ; options: { [x: string]: string } }) => {
+            
         return (
             <Grid
                 container
@@ -184,9 +203,20 @@ const OptimizerContainer = () => {
                                     control={<Radio />}
                                     label={params.options[value]}
                                 />
-                                <FormTextField
+                                <TextField
+                                    id="service-level-percentage"
+                                    size="small"
+                                    variant="outlined"
                                     disabled={serviceLevel !== value}
-                                />
+                                    // TODO:
+                                    value={ serviceLevel === 'fillRate' ? formPayload.fillRate : formPayload.cycleServiceLevel }
+                                    onChange={(e) => {
+                                        serviceLevel === 'fillRate'
+                                        ? setFormPayload({...formPayload, fillRate: parseInt(e.target.value)})
+                                        : setFormPayload({...formPayload, cycleServiceLevel: parseInt(e.target.value)})
+                                    }
+                                    }
+                                ></TextField>
                             </>
                         </Grid>
                     ))}
@@ -213,6 +243,7 @@ const OptimizerContainer = () => {
                     setLoader(false);
                     setForcastFile(fileObj)
                     setForecastFileName(fileObj.name)
+                    setFormPayload({...formPayload, demandId: uploadResponse.data.master_id})
                 }
                 else {
                     setLoader(false);
@@ -298,6 +329,8 @@ const OptimizerContainer = () => {
                     setLoader(false);
                     setVendorFile(fileObj)
                     setVendorFileName(fileObj.name)
+                    setFormPayload({...formPayload, vendorId: uploadResponse.data.master_id})
+
                 }
                 else {
                     setLoader(false);
@@ -554,6 +587,7 @@ const OptimizerContainer = () => {
     }
 
     const AnnualHoldingCostContainer = () => {
+
         return (
             <Grid
                 container
@@ -567,7 +601,16 @@ const OptimizerContainer = () => {
             
                 <Grid item container lg={6} md={6} sm={12} direction="column">
                     <Grid item lg={6} md={6} sm={12}>
-                        <FormTextField disabled={false} />
+                        <TextField
+                            id="annual-holding-cost"
+                            size="small"
+                            variant="outlined"
+                            value={formPayload.annualHoldingCost}
+                            onChange={(e) => {
+                                setFormPayload({...formPayload, annualHoldingCost: parseInt(e.target.value)})
+                            }
+                            }
+                        ></TextField>
                     </Grid>
                 </Grid>
             </Grid>
@@ -583,21 +626,64 @@ const OptimizerContainer = () => {
                 alignItems="center"
            
             >
-
                 <Grid item lg={6} md={6} sm={12}>
                     <FormLabel label="Specify service level %" />
                 </Grid>
                
                 <Grid item container lg={6} md={6} sm={12} direction="column">
-                    <CustomFormRadioButton
-                        options={{
-                            fillRate: 'Fill Rate',
-                            cycleServiceLevel: 'Cycle Service Level',
-                        }}
-                        identifier={serviceLevel}
+
+                <Grid
+                    container
+                    direction="row"
+                    justifyContent="center"
+                    alignItems="center"
+                >   
+                    <Grid container direction="row" item>
+                    <RadioGroup
+                        row
                         id="service-level-selector"
+                        value={serviceLevel}
                         onChange={handleServiceLevelChange}
-                    />
+                    >
+                        <Grid item lg={6} md={6} sm={12}>
+                            <FormControlLabel
+                                key={0}
+                                value='fillRate'
+                                control={<Radio />}
+                                label='Fill Rate'
+                            />
+                            <TextField
+                                id="fill-rate"
+                                size="small"
+                                variant="outlined"
+                                disabled={serviceLevel !== 'fillRate'}
+                                value={formPayload.fillRate}
+                                onChange={(e) => 
+                                    {setFormPayload({...formPayload, fillRate: parseInt(e.target.value)})}
+                                }
+                            ></TextField>
+                        </Grid>
+                        <Grid item lg={6} md={6} sm={12}>
+                            <FormControlLabel
+                                key={0}
+                                value='cycleServiceLevel'
+                                control={<Radio />}
+                                label='Cycle Service Level'
+                            />
+                            <TextField
+                                id="cycle-service-level"
+                                size="small"
+                                variant="outlined"
+                                disabled={serviceLevel !== 'cycleServiceLevel'}
+                                value={formPayload.cycleServiceLevel}
+                                onChange={(e) => 
+                                    {setFormPayload({...formPayload, cycleServiceLevel: parseInt(e.target.value)})}
+                                }
+                            ></TextField>
+                            </Grid>
+                    </RadioGroup>
+                    </Grid>
+                </Grid>
                 </Grid>
             </Grid>
         )
@@ -613,6 +699,10 @@ const OptimizerContainer = () => {
           setOpen(true);
         };
 
+        const handleSubmit = () => {
+            console.log(formPayload);
+        }
+
         return (
             <Grid
                 container
@@ -621,7 +711,7 @@ const OptimizerContainer = () => {
                 alignItems="center"
             >
                 <Grid item>
-                    <Button variant="contained" color="secondary" onClick={handleOpen}>
+                    <Button variant="contained" color="secondary" onClick={handleSubmit}>
                         GENERATE ORDER POLICY
                     </Button>
                     <Backdrop

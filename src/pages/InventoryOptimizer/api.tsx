@@ -1,4 +1,6 @@
 import { axiosPostWrapper } from '../../utils/helpers';
+// import apiClient from '../../services/apiClient';
+// import { UPLOAD_INVENTORY } from '../../services/routes';
 
 
 const url = 'http://127.0.0.1:5000'

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Typography, Tabs, Tab, Container } from '@mui/material';
 import { TabContext } from '@mui/lab';
-import OptimizerContainer from './Optimizer';
+import OptimizerContainer from './OptimizerNew';
 import OptimizerResultContainer from './OptimizerResult';
 
 const InventoryOptimizer = () => {

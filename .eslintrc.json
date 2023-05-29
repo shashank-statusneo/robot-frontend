@@ -27,8 +27,9 @@
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/jsx-no-target-blank": "off",
         "@typescript-eslint/no-explicit-any": "off",
+        // "@typescript-eslint/camelcase": ["warn"],
         "react/react-in-jsx-scope": "off",
-        "camelcase": "error",
+        "camelcase": "warn",
         "spaced-comment": "warn",
         "quotes": ["error", "single"],
         "no-duplicate-imports": "error"
