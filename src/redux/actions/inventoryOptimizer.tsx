@@ -1,7 +1,16 @@
 import { UPLOAD_INVENTORY_API } from '../../services/routes'
 import {apiClientForForm} from '../../services/apiClient'
-import { postInventory, postDemandInventorySuccess,postVendorInventorySuccess,postPurchaseOrderInventorySuccess, postVolumeDiscountInventorySuccess, postInventoryFailed, updateAnnualHoldingCost } from '../reducer/inventoryOptimizer'
-import { useAppSelector } from '../../hooks/redux-hooks';
+import { 
+    postInventory, 
+    postDemandInventorySuccess,
+    postVendorInventorySuccess,
+    postPurchaseOrderInventorySuccess, 
+    postVolumeDiscountInventorySuccess, 
+    postInventoryFailed, 
+    updateAnnualHoldingCostValue, 
+    updateFillRateValue,
+    updateCycleServiceLevelValue,
+} from '../reducer/inventoryOptimizer'
 
 // @ts-ignore
 export const uploadInventory = (payload, fileType, fileName) => async dispatch => {
@@ -29,6 +38,14 @@ export const uploadInventory = (payload, fileType, fileName) => async dispatch =
 }
 
 // @ts-ignore
-export const updateHoldingCost = (payload) => async dispatch => {
-    await dispatch(updateAnnualHoldingCost(payload))
+export const updateAnnualHoldingCost = (payload) => async dispatch => {
+    await dispatch(updateAnnualHoldingCostValue(payload))
+}
+// @ts-ignore
+export const updateFillRate = (payload) => async dispatch => {
+    await dispatch(updateFillRateValue(payload))
+}
+// @ts-ignore
+export const updateCycleServiceLevel = (payload) => async dispatch => {
+    await dispatch(updateCycleServiceLevelValue(payload))
 }

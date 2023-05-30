@@ -13,8 +13,8 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      {/* <App /> */}
-      <InventoryOptimizer/>
+      <App />
+      {/* <InventoryOptimizer/> */}
     </Provider>
   </React.StrictMode>
 

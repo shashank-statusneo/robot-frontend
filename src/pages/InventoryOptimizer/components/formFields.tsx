@@ -117,14 +117,14 @@ export const FormRadioButton = (props:{
 
 export const FormTextField = (props: {
     id: string,
-    // label: string,
+    value: any,
+    onChange: any
 }) => {
     return (
         <TextField
             id={props.id}
-            // label={props.label}
-            // value={}
-            name={props.id}
+            value={props.value}
+            onChange={props.onChange}
             size="small"
             variant="outlined"
         />
@@ -206,6 +206,8 @@ export const FormRadioElement = (props: {
 export const FormTextElement = (props: {
     id: string,
     label: string,
+    value: any,
+    onChange: any
 }) => {
     return (
         <Grid
@@ -222,6 +224,8 @@ export const FormTextElement = (props: {
                 <Grid item lg={6} md={6} sm={12}>
                     <FormTextField
                         id={props.id}
+                        value={props.value}
+                        onChange={props.onChange}
                     />
                 </Grid>
             </Grid>
@@ -229,4 +233,88 @@ export const FormTextElement = (props: {
         </Grid>
     )
 }
-  
+
+
+export const FormMultiTextElement = (props: {
+    id: string, 
+    label: string
+    value: any,
+    onChange: any
+    options: any
+
+}) => {
+    return (
+        <Grid
+            container
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+        >
+            <Grid item lg={6} md={6} sm={12} >
+                <FormLabel label={props.label} />
+            </Grid>
+
+            <Grid item container lg={6} md={6} sm={12} direction="column">
+
+                <Grid
+                    container
+                    direction="row"
+                    justifyContent="center"
+                    alignItems="center"
+                >   
+                    <Grid container direction="row" item>
+                        <RadioGroup
+                            row
+                            id={props.id}
+                            value={props.value}
+                            onChange={props.onChange}
+                        >
+                            {props.options.map((obj: any, key: any) => (
+                                <FormCustomRadioField 
+                                    key={key}
+                                    index={key}
+                                    value={obj.value}
+                                    label={obj.label}
+                                    id={obj.id}
+                                    disabled={props.value !==obj.value}
+                                    textValue={obj.textValue}
+                                    onChange={obj.onChange}
+                                    />
+                                ))}
+                        </RadioGroup>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Grid>
+    )
+}
+
+
+const FormCustomRadioField = (props: {
+    index: number,
+    value: string, 
+    label: string, 
+    id: string, 
+    disabled: boolean,
+    textValue: string,
+    onChange: any
+}) => {
+    return (
+        <Grid item lg={6} md={6} sm={12}>
+            <FormControlLabel
+                key={props.index}
+                value={props.value}
+                control={<Radio />}
+                label={props.label}
+            />
+            <TextField
+                id={props.id}
+                size="small"
+                variant="outlined"
+                disabled={props.disabled}
+                value={props.textValue}
+                onChange={props.onChange}
+            />
+        </Grid>
+    )
+}

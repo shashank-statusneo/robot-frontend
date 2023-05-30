@@ -12,6 +12,8 @@ const initialState = {
     volume_discount_master_id: null,
     volume_discount_file_name: '',
     annual_holding_cost: '',
+    fill_rate: '',
+    cycle_service_level: ''
 
 }
 
@@ -62,10 +64,24 @@ export const inventoryOptimizerReducer = createSlice({
             }
         },
 
-        updateAnnualHoldingCost(state, action) {
+        updateAnnualHoldingCostValue(state, action) {
             return {
                 ...state, 
-            annual_holding_cost:  action?.payload
+                annual_holding_cost:  action?.payload
+            }
+        },
+
+        updateFillRateValue(state, action) {
+            return {
+                ...state, 
+                fill_rate:  action?.payload
+            }
+        },
+
+        updateCycleServiceLevelValue(state, action) {
+            return {
+                ...state, 
+                cycle_service_level:  action?.payload
             }
         },
 
@@ -86,7 +102,9 @@ export const {
     postVendorInventorySuccess,
     postPurchaseOrderInventorySuccess,
     postVolumeDiscountInventorySuccess,
-    updateAnnualHoldingCost,
+    updateAnnualHoldingCostValue,
+    updateFillRateValue,
+    updateCycleServiceLevelValue,
     postInventoryFailed,
 } = inventoryOptimizerReducer.actions
 
