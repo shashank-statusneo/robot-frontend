@@ -10,7 +10,7 @@ import {
     SelectChangeEvent,
     Table, TableBody,TableCell, TableContainer, TableHead, TableRow, Button, Container
 } from '@mui/material';
-
+import { createTheme, ThemeProvider } from '@mui/material/styles'
 import {
     AnimatedAxis,
     AnimatedGrid,
@@ -22,16 +22,30 @@ import dayjs, {Dayjs} from 'dayjs'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
+
+import { FormCardField, FormTable } from './components/formFields';
+
+
+const theme = createTheme();
 
 const OptimizerResultContainer = () => {
+
+    const dispatch = useAppDispatch()
+
+    // @ts-ignore
+    const algorithmResultState = useAppSelector(state => state.alalgorithmDataReducer)
+
+    const cardLabelMapping: any = {
+        total_purchase_value: 'Total Purchase Value',
+        total_purchase_qty: 'Total Purchase Qty',
+        reorder_point: 'Reorder Point',
+        reorder_qty: 'Reorder Qty',
+    }
+
     const [vendor, setVendor] = useState('')
     const [fromDate, setFromDate] = React.useState<Dayjs | null>(dayjs())
     const [toDate, setToDate] = React.useState<Dayjs | null>(dayjs())
-
-    const [totalPurchaseValue, setTotalPurchaseValue] = useState('Rs. 1,50,000')
-    const [totalPurchaseQuantity, setTotalPurchaseQuantity] = useState('7265')
-    const [reorderPoint, setReorderPoint] = useState('565')
-    const [reorderQuantity, setReorderQuantity] = useState('150')
 
     interface graphDataInterface {
         inventoryLevel: number;
@@ -52,22 +66,6 @@ const OptimizerResultContainer = () => {
         xAccessor: (d: graphDataInterface) => d.time,
         yAccessor: (d: graphDataInterface) => d.inventoryLevel,
     };
-
-    const createTableData = (
-        vendor: string, 
-        reorderLevel: number,
-        orderQty: number,
-        cost: number
-    ) => {
-        return { vendor, reorderLevel, orderQty, cost };
-    }
-
-    const TableData = [
-        createTableData('Samsung', 123, 20, 2000 ),
-        createTableData('Apple', 456, 30, 3000 ),
-        createTableData('Nokia', 789, 40, 4000 ),
-    ] 
-
     
     const handleVendorChange = (event:  SelectChangeEvent) => {
         setVendor(event.target.value)
@@ -151,57 +149,19 @@ const OptimizerResultContainer = () => {
     }
     
 
-    const FormCard = (params: { value: string | number; label: string}) => {
-        return (
-            <Paper elevation={2}>
-                <Grid
-                    container
-                    direction="column"
-                    justifyContent="center"
-                    alignItems="center"
-                >
-                    <Grid item>
-                        <Typography variant="h4" fontWeight="bold">
-                            {params.value}
-                        </Typography>
-                    </Grid>
-                    <Grid item>
-                        <Typography variant="body1">{params.label} </Typography>
-                    </Grid>
-                </Grid>
-            </Paper>
-        )
-    }
-
     const CardContainer = () => {
+
+        const cardsData: any = []
+        const apiResult = algorithmResultState.result
+
+        Object.keys(apiResult).forEach((key, index)=> {
+            cardsData.push({
+                value: apiResult[key],
+                label: cardLabelMapping[key]
+            })
+        }) 
         return (
-            <Grid 
-                container 
-                direction="row"  
-                justifyContent="center"
-                alignItems="center"
-                spacing={1}
-              
-            >
-                <Grid item lg={3} md={3} sm={6}>
-                    <FormCard
-                        value={totalPurchaseValue}
-                        label="Total Purchase Value"
-                    />
-                </Grid>
-                <Grid item lg={3} md={3} sm={6}>
-                    <FormCard
-                        value={totalPurchaseQuantity}
-                        label="Total Purchase Qty"
-                    />
-                </Grid>
-                <Grid item lg={3} md={3} sm={6}>
-                    <FormCard value={reorderPoint} label="Reorder Point" />
-                </Grid>
-                <Grid item lg={3} md={3} sm={6}>
-                    <FormCard value={reorderQuantity} label="Reorder Qty" />
-                </Grid>
-            </Grid>
+            <FormCardField items={cardsData} />
         )
     }
 
@@ -240,85 +200,50 @@ const OptimizerResultContainer = () => {
     }
 
     const PolicyContainer = () => {
+
+        const apiPolicyDetail = algorithmResultState.policy_detail
+
+        let totalOrderQty = 0;
+        let totalCost = 0;
+
+        apiPolicyDetail.map((obj: any, key: any) => {
+            totalOrderQty = totalOrderQty + obj.reorder_qty
+            totalCost = totalCost + obj.cost
+        })
+
         return (
-            <Grid
-                container
-                direction="column"
-                spacing={1}
-                justifyContent="center"
-                alignItems="center"
-            >
-                <Grid item>
-                    <Typography variant="h6">
-                        POLICY DETAILS TABLE
-                    </Typography>
-                </Grid>
-                <Grid item>
-                    <TableContainer component={Paper}>
-                        <Table aria-label="policy-details-table">
-                            <TableHead>
-                                <TableRow>
-                                <TableCell>Vendor</TableCell>
-                                <TableCell>Reorder Level</TableCell>
-                                <TableCell>Order Qty</TableCell>
-                                <TableCell>Cost</TableCell>
-                            
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {TableData.map((row) => (
-                                <TableRow
-                                    key={row.vendor}
-                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                >
-                                    <TableCell>{row.vendor}</TableCell>
-                                    <TableCell>{row.reorderLevel}</TableCell>
-                                    <TableCell>{row.orderQty}</TableCell>
-                                    <TableCell>{row.cost}</TableCell>
-                                </TableRow>
-                                ))}
-                                <TableRow>
-                                    {/* <TableCell rowSpan={4} /> */}
-                                    <TableCell colSpan={2} align='center'>Total</TableCell>
-                                    <TableCell>90</TableCell>
-                                    <TableCell>9000</TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                            
-                </Grid>
-                <Grid item>
-                    <Button variant="contained" color="secondary">
-                            DOWNLOAD TABLE AS EXCEL FILE 
-                    </Button>
-                </Grid>
-            </Grid>
-
-
-           
+            <FormTable 
+                tableName='POLICY DETAILS TABLE'
+                tableHeaders={Object.keys(apiPolicyDetail[0])}
+                tableData={apiPolicyDetail}
+                totalOrderQty={totalOrderQty}
+                totalCost={totalCost}
+            />
         )
     }
 
     return (
-        <Container sx={{ flexGrow: 1 }} fixed >
-            <Grid container direction="column" spacing={6}>
-                <Grid item >
-                    <FormDataSelector />
-                </Grid>
-                <Grid item >
-                    <CardContainer />
-                </Grid>
-                <Grid container item direction="row" >
-                <Grid item lg={6} md={6} sm={12}>
-                        <ProjectionContainer/>
+        <ThemeProvider theme={theme}>
+            <Container component='main' sx={{ flexGrow: 1 }} fixed >
+                <Grid container direction="column" spacing={6}>
+                    <Grid item >
+                        <FormDataSelector />
                     </Grid>
+                    <Grid item >
+                        <CardContainer />
+                    </Grid>
+                    <Grid container item direction="row" >
                     <Grid item lg={6} md={6} sm={12}>
-                        <PolicyContainer/>
+                            <ProjectionContainer/>
+                        </Grid>
+                        <Grid item lg={6} md={6} sm={12}>
+                            <PolicyContainer/>
+                        </Grid>
                     </Grid>
                 </Grid>
-            </Grid>
-        </Container>
+                <Button onClick={() => console.log(algorithmResultState)}>Click me</Button>
+            </Container>
+        </ThemeProvider>
     )
 }
 

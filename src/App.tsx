@@ -6,6 +6,7 @@ import InventoryOptimizer from './pages/InventoryOptimizer';
 import TopBar from './components/TopBar';
 import SignIn from './pages/Home/signIn';
 import SignUp from './pages/Home/signUp';
+import Profile from './pages/Home/profile';
 import UserSession from './services/auth';
 
 const App = () => {
@@ -31,6 +32,7 @@ const App = () => {
                     <Route path="/inventory_optimizer" element={<InventoryOptimizer />}></Route>
                     <Route path="/signin" element={<SignIn />}></Route>
                     <Route path="/signup" element={<SignUp />}></Route>
+                    <Route path="/profile" element={<Profile />}></Route>
                 </Routes>
             {/* </div> */}
         </BrowserRouter>

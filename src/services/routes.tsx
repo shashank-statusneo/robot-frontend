@@ -5,3 +5,5 @@ export const REFREST_TOKEN = '/auth/refresh'
 export const LOGOUT_API = '/auth/logout'
 
 export const UPLOAD_INVENTORY_API = '/inventory/upload'
+
+export const ALGORITHM_API = '/mock/algorithm'

@@ -1,7 +1,22 @@
-
-import {ChangeEventHandler, MutableRefObject} from 'react'
-
-import { Button, FormControl, RadioGroup, FormControlLabel, Radio, Typography, Grid, Backdrop, CircularProgress, TextField } from '@mui/material'
+import { 
+    Button, 
+    FormControl, 
+    RadioGroup, 
+    FormControlLabel, 
+    Radio, 
+    Typography, 
+    Grid, 
+    Backdrop, 
+    CircularProgress, 
+    TextField, 
+    Paper,
+    TableContainer, 
+    Table, 
+    TableRow,
+    TableCell, 
+    TableHead, 
+    TableBody
+} from '@mui/material'
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined'
 
 
@@ -15,7 +30,6 @@ export const FormBackdropElement = (props: {loader: boolean}) =>{
         </Backdrop>
     )
 }
-
 
 // General function to export Form label
 export const FormLabel = (props: {label: string}) => {
@@ -59,7 +73,6 @@ export const FormUploadButton = (props: {
         </Button>
     )
 }
-
 
 // General function to export Form template download Btn
 export const FormDownloadTemplateButton = (props:{
@@ -315,6 +328,122 @@ const FormCustomRadioField = (props: {
                 value={props.textValue}
                 onChange={props.onChange}
             />
+        </Grid>
+    )
+}
+
+
+const FormCard = (params: { value: string | number; label: string}) => {
+    return (
+        <Paper elevation={2}>
+            <Grid
+                container
+                direction="column"
+                justifyContent="center"
+                alignItems="center"
+            >
+                <Grid item>
+                    <Typography variant="h4" fontWeight="bold">
+                        {params.value}
+                    </Typography>
+                </Grid>
+                <Grid item>
+                    <Typography variant="body1">{params.label} </Typography>
+                </Grid>
+            </Grid>
+        </Paper>
+    )
+}
+
+type CardItems = {
+    value: number | string | undefined
+    label: string
+ }[] 
+
+
+
+export const FormCardField = (props: {items: CardItems}) => {
+    return (
+        <Grid 
+            container 
+            direction="row"  
+            justifyContent="center"
+            alignItems="center"
+            spacing={1}
+        >
+            {props.items.map((obj: any, key: any) => (
+                <Grid item lg={3} md={3} sm={6} key={key}>
+                    <FormCard
+                        value={obj.value}
+                        label={obj.label}
+                    />
+            </Grid>
+            ))}
+        </Grid>
+    )
+}
+
+type TableHeaders = string[]
+
+type TableData = {
+    vendor: string | undefined,
+    cost: number | undefined, 
+    order_level: number | undefined, 
+    reorder_qty: number | undefined
+}[]
+
+export const FormTable = (props: {
+    tableName: string
+    tableHeaders: TableHeaders,
+    tableData: TableData
+    totalOrderQty: number, 
+    totalCost: number
+}) => {
+    return (
+        <Grid
+            container
+            direction="column"
+            spacing={1}
+            justifyContent="center"
+            alignItems="center"
+        >
+            <Grid item>
+                <Typography variant="h6">
+                    {props.tableName}
+                </Typography>
+            </Grid>
+            <Grid item>
+                <TableContainer component={Paper}>
+                    <Table aria-label="policy-details-table">
+                        <TableHead>
+                            <TableRow>
+                                {props.tableHeaders.map((row: string, key: any) => (
+                                    <TableCell key={key}>{row}</TableCell>
+                                ))}
+                            </TableRow>
+                        </TableHead>
+
+                        <TableBody>
+                            {props.tableData.map((obj: any, key: any) => (
+                                    <TableRow
+                                        key={key}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                    >
+                                        <TableCell>{obj.vendor}</TableCell>
+                                        <TableCell>{obj.order_level}</TableCell>
+                                        <TableCell>{obj.reorder_qty}</TableCell>
+                                        <TableCell>{obj.cost}</TableCell>
+                                    </TableRow>
+                            ))}
+                            <TableRow>
+                                <TableCell colSpan={2} align='center'>Total</TableCell>
+                                <TableCell>{props.totalOrderQty}</TableCell>
+                                <TableCell>{props.totalCost}</TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </Grid>
         </Grid>
     )
 }

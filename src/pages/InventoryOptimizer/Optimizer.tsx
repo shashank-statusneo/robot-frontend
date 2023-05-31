@@ -7,6 +7,7 @@ import {
 
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { uploadInventory, updateAnnualHoldingCost, updateFillRate, updateCycleServiceLevel } from '../../redux/actions/inventoryOptimizer'
+import { algorithmApi } from '../../redux/actions/algorithm'
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
 
 import downloadableTemplates from './Templates.'
@@ -22,6 +23,8 @@ const OptimizerContainer = () => {
 
     // @ts-ignore
     const state = useAppSelector(state => state.inventoryOptimizerReducer)
+
+
 
     const [leadTimeEnabled, setLeadTimeEnabled] = useState(true)
     const [volumneDiscountEnabled, setVolumeDiscountEnabled] = useState(true)
@@ -349,7 +352,10 @@ const OptimizerContainer = () => {
     const SubmitFormButton = () => {
 
         const handleSubmit = () => {
-            console.log(state);
+
+            console.log('Form State:', state);
+            // @ts-ignore
+            dispatch(algorithmApi(state))
         }
 
         return (
