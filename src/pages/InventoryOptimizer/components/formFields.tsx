@@ -20,6 +20,10 @@ import {
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined'
 
 
+
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+
+
 export const FormBackdropElement = (props: {loader: boolean}) =>{
     return (
         <Backdrop
@@ -443,6 +447,66 @@ export const FormTable = (props: {
                         </TableBody>
                     </Table>
                 </TableContainer>
+            </Grid>
+        </Grid>
+    )
+}
+
+type LineData = {
+    dataKey: string 
+    stroke: string 
+}[]
+
+export const FormGraph = (props: {
+    label: string
+    xLabel: string
+    yLabel: string
+    data: any
+    lineData: LineData
+}) => {
+    return (
+        <Grid
+            container
+            direction="column"
+            justifyContent="center"
+            alignItems="center"
+        >
+            <Grid item>
+                <Typography variant="h6">
+                    {props.label}
+                </Typography>
+            </Grid>
+
+            <Grid item>
+                <Paper
+                    sx={{
+                        width: 450,
+                        height: 400,
+                    }}
+                >
+                    <ResponsiveContainer width='100%' height='100%'>
+                        <LineChart
+                            width={450}
+                            height={400}
+                            data={props.data}
+                            margin={{
+                                top: 10,
+                                right: 50,
+                                left: 10,
+                                bottom: 5,
+                            }}
+                        >
+                            <CartesianGrid strokeDasharray='3 3' />
+                            <XAxis dataKey={props.xLabel} />
+                            <YAxis dataKey={props.yLabel} />
+                            <Tooltip />
+                            {/* <Legend/> */}
+                            {props.lineData.map((obj:any, key: any) => (
+                                 <Line key={key} type='monotone' dataKey={obj.dataKey} stroke={obj.stroke} activeDot={{ r: 8 }} />
+                            ))}
+                        </LineChart>
+                    </ResponsiveContainer>
+                </Paper>
             </Grid>
         </Grid>
     )
