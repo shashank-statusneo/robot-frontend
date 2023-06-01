@@ -3,6 +3,7 @@ import { Typography, Tabs, Tab, Container } from '@mui/material';
 import { TabContext } from '@mui/lab';
 import OptimizerContainer from './Optimizer';
 import OptimizerResultContainer from './OptimizerResult';
+import SimulatorContainer from './Simulator';
 
 const InventoryOptimizer = () => {
     const [currentTab, setCurrentTab] = useState('optimizer')
@@ -21,6 +22,8 @@ const InventoryOptimizer = () => {
                 return <OptimizerContainer />
             case 'optimizerResult':
                 return <OptimizerResultContainer />
+            case 'simulator': 
+                return <SimulatorContainer/>
             default:
                 return <></>
         }
@@ -31,6 +34,7 @@ const InventoryOptimizer = () => {
             <TabContext value={currentTab}>
                 <Tabs
                     centered
+                    style={{marginBottom: '10px'}}
                     selectionFollowsFocus
                     textColor="secondary"
                     indicatorColor="secondary"

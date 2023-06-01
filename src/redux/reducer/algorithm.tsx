@@ -18,9 +18,6 @@ export const algorithmDataReducer = createSlice({
             }
         },
         postAlgorithmApiSuccess(state, action){
-            console.log('hi')
-            console.log(action?.payload?.data?.result)
-
             return {
                 ...state,
                 result: action?.payload?.data?.result,

@@ -18,6 +18,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { useAppSelector } from '../../hooks/redux-hooks';
 
 import { FormCardField, FormTable, FormGraph } from './components/formFields';
+import { lineData, policyTableHeaders } from './constants';
+
 
 const theme = createTheme();
 
@@ -36,33 +38,6 @@ const OptimizerResultContainer = () => {
     const [vendor, setVendor] = useState('')
     const [fromDate, setFromDate] = React.useState<Dayjs | null>(dayjs())
     const [toDate, setToDate] = React.useState<Dayjs | null>(dayjs())
-
-    const lineData = [
-        {
-            dataKey: 'inventory_level',
-            stroke:'#8B7AFF',
-        },
-        {
-            dataKey: 'daily_demand',
-            stroke:'#45AC54',
-        },
-        {
-            dataKey: 'orders_fulfilled',
-            stroke:'#008E19',
-        },
-        {
-            dataKey: 'stockout_on',
-            stroke:'#8B7AFF',
-        },
-        {
-            dataKey: 'po_raised_on',
-            stroke:'#FF7073',
-        },
-        {
-            dataKey: 'po_received_on',
-            stroke:'#FF7078',
-        },
-    ]
 
     const handleVendorChange = (event:  SelectChangeEvent) => {
         setVendor(event.target.value)
@@ -187,13 +162,19 @@ const OptimizerResultContainer = () => {
             totalCost = totalCost + obj.cost
         })
 
+        const onDownloadClick = (event: any) => {
+            console.log(event)
+        }
+
         return (
             <FormTable 
                 tableName='POLICY DETAILS TABLE'
-                tableHeaders={Object.keys(apiPolicyDetail[0])}
+                tableHeaders={policyTableHeaders}
                 tableData={apiPolicyDetail}
                 totalOrderQty={totalOrderQty}
                 totalCost={totalCost}
+                downloadBtnId='policy-table-download-btn'
+                onClickFunc={onDownloadClick}
             />
         )
     }

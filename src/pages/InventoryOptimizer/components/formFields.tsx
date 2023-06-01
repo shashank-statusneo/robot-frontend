@@ -401,7 +401,9 @@ export const FormTable = (props: {
     tableHeaders: TableHeaders,
     tableData: TableData
     totalOrderQty: number, 
-    totalCost: number
+    totalCost: number,
+    downloadBtnId: string,
+    onClickFunc: any
 }) => {
     return (
         <Grid
@@ -447,6 +449,17 @@ export const FormTable = (props: {
                         </TableBody>
                     </Table>
                 </TableContainer>
+            </Grid>
+            <Grid item>
+                <Button
+                    variant="outlined"
+                    color="secondary"
+                    size="small"
+                    id={props.downloadBtnId}
+                    onClick={props.onClickFunc}
+                >
+                    DOWNLOAD TABLE AS EXCEL FILE
+                </Button>
             </Grid>
         </Grid>
     )
@@ -507,6 +520,84 @@ export const FormGraph = (props: {
                         </LineChart>
                     </ResponsiveContainer>
                 </Paper>
+            </Grid>
+        </Grid>
+    )
+}
+
+
+export const FormSimulation = (props: {
+    btnId: string
+    label: string,
+}) => {
+    return (
+        <Grid
+            container
+            direction="column"
+            justifyContent="center"
+            alignItems="center"
+            spacing={3}
+        
+        >   
+            {/* <Grid item>
+                <Typography variant="h6">
+                    {props.label}
+                </Typography>
+            </Grid> */}
+
+            <Grid 
+                container  
+                justifyContent="center"
+                alignItems="center" 
+            item>
+                <Grid container item justifyContent="center" alignItems="center" >
+                    <Grid item lg={6} md={6} sm={12}>
+                        <FormTextElement 
+                            label='Reorder Point'
+                            id='reorder_point'
+                            value=''
+                            onChange={() => console.log('clicked')}
+                        />
+                    </Grid>
+                    <Grid item lg={6} md={6} sm={12}>
+                        <FormTextElement 
+                            label='Reorder Qty'
+                            id='reorder_qty'
+                            value=''
+                            onChange={() => console.log('clicked')}
+                        />
+                    </Grid>
+                </Grid>
+                <Grid container item  justifyContent="center"
+                alignItems="center" >
+                    <Grid item lg={6} md={6} sm={12}>
+                        <FormTextElement
+                            label='Average lead Time' 
+                            id='average_lead_time'
+                            value=''
+                            onChange={() => console.log('clicked')}
+                        />
+                    </Grid>
+                    <Grid item lg={6} md={6} sm={12} >
+                        <FormTextElement
+                            label='SD of lead time' 
+                            id='sd_lead_time'
+                            value=''
+                            onChange={() => console.log('clicked')}
+                        />
+                    </Grid>
+                </Grid>
+            </Grid>
+            <Grid item>
+                <Button
+                    variant="outlined"
+                    color="secondary"
+                    size="small"
+                    id={props.btnId}
+                    onClick={() => console.log('btn clicked')}
+                >
+                    RUN SIMULATION
+                </Button>
             </Grid>
         </Grid>
     )
