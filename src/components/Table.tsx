@@ -5,8 +5,11 @@ import {
     TableRow,
     TableCell, 
     TableHead, 
-    TableBody, tableCellClasses, styled
+    TableBody, 
+    tableCellClasses, 
+    styled, 
 } from '@mui/material'
+import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -65,3 +68,26 @@ export const FormTable = (props: {
         </TableContainer>
     )
 }
+
+
+export const FormDataGrid = (props: {
+    columns: GridColDef[],
+    rows: any
+}) => {
+    return (
+        <DataGrid
+            rows={props.rows}
+            columns={props.columns}
+            initialState={{
+            pagination: {
+                paginationModel: {
+                pageSize: 5,
+                },
+            },
+            }}
+            pageSizeOptions={[5]}
+            // checkboxSelection
+            disableRowSelectionOnClick
+      />
+    )
+} 

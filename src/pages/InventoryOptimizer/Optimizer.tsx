@@ -42,7 +42,7 @@ const OptimizerContainer = () => {
                 loader={state.isLoading}
             />
         )
-    }
+    }   
 
     const WeeklyForcastContainer = () => {
 

@@ -12,6 +12,22 @@ export const apiClient = axios.create({
     },
 })
 
+export const warehouseApiClient = axios.create({
+    baseURL: `${process.env.REACT_APP_API_URL_WAREHOUSE}`,
+    headers: {
+        Authorization: token ? `Bearer ${token}` : '',
+        'Content-Type': 'application/json',
+    },
+})
+
+export const warehouseApiClientForForm = axios.create({
+    baseURL: `${process.env.REACT_APP_API_URL_WAREHOUSE}`,
+    headers: {
+        Authorization: token ? `Bearer ${token}` : '',
+        'Content-Type': 'multipart/form-data'
+    },
+})
+
 export const apiClientForForm = axios.create({
     baseURL: `${process.env.REACT_APP_API_URL}`,
     headers: {

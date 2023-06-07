@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import { Typography, Tabs, Tab, Container, Grid } from '@mui/material';
-import WarehouseSelect from './WarehouseSelection';
+import WarehouseSelect from './WarehouseSelect';
 import WarehouseRequirement from './WarehouseRequirement';
 import BenchmarkProductivity from './BenchmarkProductivity';
 import DemandForecast from './DemandForecast';

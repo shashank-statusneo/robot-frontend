@@ -1,7 +1,13 @@
+import {useEffect, useState} from 'react'
+
 import { Container, Grid } from '@mui/material';
 
 import { PrimaryButton } from '../../components/Buttons';
 import { FormDropDown, FormLabel, FormDateSelector } from '../../components/FormElements';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
+import { getWarehouse, updatePlanningWarehouse, updatePlanningStartDate, updatePlanningEndDate } from '../../redux/actions/warehouse'
+
+
 import { useNavigate } from 'react-router-dom'
 
 
@@ -11,10 +17,41 @@ const theme = createTheme();
 const WarehouseSelect = () => {
 
     const navigate = useNavigate()
+    const dispatch = useAppDispatch()
+
+    const [selectedWarehouse, setSelectedWarehouse] = useState(null)
+
+    const fetchData = () => {
+        // @ts-ignore
+        dispatch(getWarehouse())
+    }
+
+    // @ts-ignore
+    const warehouseState = useAppSelector(state => state.warehouseReducer)
+ 
+    useEffect(() => {
+        fetchData()
+    }, [])
+
+    useEffect(() => {
+        warehouseState?.warehouses ? setSelectedWarehouse(warehouseState?.warehouses[0]) : setSelectedWarehouse(null)
+    }, [warehouseState.warehouses])
 
     const Form = () => {
 
-        const data = ['a', 'b']
+        const handleWarehouseChange = (e: any) => {
+            setSelectedWarehouse(warehouseState.warehouses.find((obj: any) => {return obj.id === e.target.value}))
+            // @ts-ignore
+            dispatch(updatePlanningWarehouse(selectedWarehouse))
+        }
+        const handleWarehouseStartDateChange = (date: any) => {
+            // @ts-ignore
+            dispatch(updatePlanningStartDate(date))
+        }
+        const handleWarehouseEndDateChange = (date: any) => {
+            // @ts-ignore
+            dispatch(updatePlanningEndDate(date))
+        }
 
         return (
             <Grid container direction='column' spacing={2} sx={{marginTop: '100px'}}>
@@ -28,9 +65,9 @@ const WarehouseSelect = () => {
                         <FormDropDown 
                             id='select-warehouse-dropdown'
                             label=''
-                            value={data[0]}
-                            data={data}
-                            onChange={(e: any) => {console.log(e)}}
+                            value={selectedWarehouse}
+                            data={warehouseState?.warehouses ? warehouseState?.warehouses : []}
+                            onChange={handleWarehouseChange}
                         />
                     </Grid>
                 </Grid>
@@ -52,8 +89,8 @@ const WarehouseSelect = () => {
                     <Grid item lg={3}>
                         <FormDateSelector 
                             label=''
-                            value=''
-                            onChange={(e: any) => {console.log(e)}}
+                            value={warehouseState.planning_start_date}
+                            onChange={handleWarehouseStartDateChange}
                         />
                     </Grid>
                 </Grid>
@@ -67,8 +104,8 @@ const WarehouseSelect = () => {
                     <Grid item lg={3}>
                         <FormDateSelector 
                             label=''
-                            value=''
-                            onChange={(e: any) => {console.log(e)}}
+                            value={warehouseState.planning_end_date}
+                            onChange={handleWarehouseEndDateChange}
                         />
                     </Grid>
                 </Grid>
@@ -78,7 +115,7 @@ const WarehouseSelect = () => {
                         <PrimaryButton 
                             id='navigation-btn-next'
                             label='Next >'
-                            onClick={(e: any) => {console.log(e)}}
+                            onClick={() => console.log(warehouseState)}
                             // onClick={() => navigate('/warehouse/productivity')}
                             disabled={false}
                         />

@@ -46,7 +46,7 @@ export const FormUploadButton = (props: {
             sx={{fontWeight: 'bold'}}
         >
             {props.label}
-            <input hidden ref={props.fileRef} accept=".csv" type="file" onChange={props.onChange}></input>
+            <input hidden ref={props.fileRef} accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet application/vnd.ms-excel" type="file" onChange={props.onChange}></input>
         </Button>
     )
 }

@@ -44,25 +44,25 @@ export const FormLabel = (props: {label: string}) => {
 export const FormDropDown = (props: { 
     id: string
     label: string
-    value: string
-    data: string[] 
+    value: any
+    data: any,
     onChange: any
 }
-) => {
+) => {   
     return (
         <FormControl fullWidth>
             <InputLabel id={props.id}>
                 {props.label}
             </InputLabel>
             <Select
-                value={props.value}
+                value={props.value?.id ? props.value?.id: ''}
                 label={props.label}
                 labelId='vendor-select-input-label'
                 onChange={props.onChange}
             >
-                {props.data.map((item, key) => (
-                    <MenuItem value={item} key={key}>
-                        {item}
+                 {props.data.map((obj: any, key: any) => (
+                    <MenuItem value={obj.id} key={key}>
+                        {obj.name}
                     </MenuItem>
                 ))}
             </Select>
@@ -74,7 +74,7 @@ export const FormDropDown = (props: {
 // General function to export Form Date Selector
 export const FormDateSelector = (props: {
     label: string,
-    value: string,
+    value: any,
     onChange: any
 }) => {
 

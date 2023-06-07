@@ -15,7 +15,7 @@ const theme = createTheme();
 const SimulatorContainer = () => {
 
     // @ts-ignore
-    const algorithmResultState = useAppSelector(state => state.alalgorithmDataReducer)
+    const algorithmResultState = useAppSelector(state => state.algorithmDataReducer)
 
     const cardLabelMapping: any = {
         total_purchase_value: 'Total Purchase Value',

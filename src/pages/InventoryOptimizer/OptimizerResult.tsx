@@ -26,7 +26,7 @@ const theme = createTheme();
 const OptimizerResultContainer = () => {
     
     // @ts-ignore
-    const algorithmResultState = useAppSelector(state => state.alalgorithmDataReducer)
+    const algorithmResultState = useAppSelector(state => state.algorithmDataReducer)
 
     const cardLabelMapping: any = {
         total_purchase_value: 'Total Purchase Value',
