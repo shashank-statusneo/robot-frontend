@@ -46,7 +46,7 @@ const TopBar = () => {
                             onClick={() => navigate('/inventory_optimizer')}
                             sx={{ my: 2, color: 'white', display: 'block' }}
                         >
-                            Dashboard
+                            Optimization
                         </Button>
                     )}
                 </Box>
@@ -139,9 +139,11 @@ const TopBar = () => {
 
 
             </Toolbar>  
+         
             </Container>
-
+         
         </AppBar>
+    
     )
 }
 

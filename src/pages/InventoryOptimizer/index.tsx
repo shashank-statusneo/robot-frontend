@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography, Tabs, Tab, Container } from '@mui/material';
+import { Typography, Tabs, Tab, Container, Grid } from '@mui/material';
 import { TabContext } from '@mui/lab';
 import OptimizerContainer from './Optimizer';
 import OptimizerResultContainer from './OptimizerResult';
@@ -53,12 +53,17 @@ const InventoryOptimizer = () => {
     }
 
     return (
-        <Container>
-            <AppHeader />
-            <Container>
-                <AppTabs />
-                <FormData />
-            </Container>
+        <Container maxWidth="xl">
+                <Grid container>
+                    <Grid item lg={2} md={2} sm={2} bgcolor='#D0E8FD'>
+                        <Typography variant='h6'>INVENTORY OPTIMIZER</Typography>
+                    </Grid>
+                    <Grid item lg={10} md={10} sm={10} style={{borderStyle: 'solid', borderWidth: '0.2px', padding: '5px'}}>
+                        <AppTabs />
+                        <FormData />
+                    </Grid>
+                </Grid>
+              
         </Container>
     )
 }

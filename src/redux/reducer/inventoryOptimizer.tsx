@@ -14,7 +14,6 @@ const initialState = {
     annual_holding_cost: '',
     fill_rate: '',
     cycle_service_level: ''
-
 }
 
 export const inventoryOptimizerReducer = createSlice({

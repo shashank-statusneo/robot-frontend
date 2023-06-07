@@ -26,6 +26,7 @@ export const lineData = [
 ]
 
 export const policyTableHeaders = [
+    'Order Date',
     'Vendor',
     'Reorder Level',
     'Order Qty',

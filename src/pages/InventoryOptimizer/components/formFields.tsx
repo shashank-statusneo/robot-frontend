@@ -435,6 +435,7 @@ export const FormTable = (props: {
                                         key={key}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                     >
+                                        <TableCell>{obj.order_date}</TableCell>
                                         <TableCell>{obj.vendor}</TableCell>
                                         <TableCell>{obj.order_level}</TableCell>
                                         <TableCell>{obj.reorder_qty}</TableCell>
@@ -442,7 +443,7 @@ export const FormTable = (props: {
                                     </TableRow>
                             ))}
                             <TableRow>
-                                <TableCell colSpan={2} align='center'>Total</TableCell>
+                                <TableCell colSpan={3} align='left'>Total</TableCell>
                                 <TableCell>{props.totalOrderQty}</TableCell>
                                 <TableCell>{props.totalCost}</TableCell>
                             </TableRow>

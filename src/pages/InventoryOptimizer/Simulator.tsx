@@ -22,6 +22,7 @@ const SimulatorContainer = () => {
         total_purchase_qty: 'Total Purchase Qty',
         reorder_point: 'Reorder Point',
         reorder_qty: 'Reorder Qty',
+        safety_stock: 'Safety Stock'
     }
 
     const CardContainer = () => {
