@@ -7,12 +7,12 @@ import { FormLabel } from '../../components/FormElements';
 import { FormTable, FormDataGrid } from '../../components/Table';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
 import { useNavigate } from 'react-router-dom'
-import { uploadProductivityFile, getBenchmarkProductivityData } from '../../redux/actions/warehouse';
+import { uploadProductivityFile, getBenchmarkProductivityData, updateProductivityTableData } from '../../redux/actions/warehouse';
+import { GridRowModel } from '@mui/x-data-grid'
 
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 const theme = createTheme();
 
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import { benchmarkProductivityTableColumns } from './constants';
 
 
@@ -28,11 +28,30 @@ const BenchmarkProductivity = () => {
 
         const benchmarkProductivityFile = useRef() as MutableRefObject<HTMLInputElement>;
 
-        const benchmarkProductivityTableHeaders = [
-            'Category',
-            'Productivity - Experienced Employee',
-            'Productivity - New Employee'
-        ]
+        const [updatedTableData]: any = useState([])
+
+        const [flagTableDataUpdated, setFlagTableDataUpdated] = useState(false)
+
+        const processDataChange = (newRow: GridRowModel) => {
+            const updatedRow = {...newRow}
+            const selectedRow = warehouseState.productivity_table_data.find((row: any) => row.id === updatedRow.id)
+
+            if (JSON.stringify(selectedRow) !== JSON.stringify(updatedRow)) {
+                setFlagTableDataUpdated(true)
+                updatedTableData.push(updatedRow)
+            }        
+            return updatedRow
+        };
+
+        const handleClickSave = () => {
+            const tableData = JSON.parse(JSON.stringify(warehouseState.productivity_table_data))
+            updatedTableData.map((newObj: any, index: any) => {
+                const oldObjIndex = tableData.findIndex((oldObj: any) => oldObj.id === newObj.id)
+                tableData[oldObjIndex] = { ...newObj }
+            })
+            // @ts-ignore
+            dispatch(updateProductivityTableData(tableData))
+        }
 
         const handleChange = (event: any) => {
             event.preventDefault();
@@ -48,71 +67,6 @@ const BenchmarkProductivity = () => {
                 dispatch(getBenchmarkProductivityData(warehouseState.planning_warehouse?.id))
             }
         }
-
-        const tableData = [
-            {   
-                id: 1,
-                category_name: 'Category 1',
-                productivity_experienced_employee: 100,
-                productivity_new_employee: 70
-            },
-            {
-                id: 2,
-                category_name: 'Category 2',
-                productivity_experienced_employee: 200,
-                productivity_new_employee: 80
-            },
-            {
-                id: 3,
-                category_name: 'Category 3',
-                productivity_experienced_employee: 300,
-                productivity_new_employee: 90
-            },
-        ]
-
-        const columns = [
-            { field: 'id', headerName: 'ID', width: 90 },
-            {
-              field: 'firstName',
-              headerName: 'First name',
-              width: 150,
-              editable: true,
-            },
-            {
-              field: 'lastName',
-              headerName: 'Last name',
-              width: 150,
-              editable: true,
-            },
-            {
-              field: 'age',
-              headerName: 'Age',
-              type: 'number',
-              width: 110,
-              editable: true,
-            },
-            {
-              field: 'fullName',
-              headerName: 'Full name',
-              description: 'This column has a value getter and is not sortable.',
-              sortable: false,
-              width: 160,
-              valueGetter: (params: GridValueGetterParams) =>
-                `${params.row.firstName || ''} ${params.row.lastName || ''}`,
-            },
-          ];
-          
-          const rows = [
-            { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
-            { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
-            { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
-            { id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
-            { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-            { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-            { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-            { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-            { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-          ];
 
         return (
             <Grid container direction='column' spacing={2} sx={{marginTop: '20px'}}>
@@ -138,26 +92,25 @@ const BenchmarkProductivity = () => {
                 </Grid>
 
                 <Grid container item justifyContent='flex-start' alignContent='center' alignItems='center' sx={{marginTop: '50px'}}>
-                    {/* <FormTable 
-                        id='benchmark-productivity-table'
-                        tableName='benchmark-productivity-table'
-                        tableHeaders={benchmarkProductivityTableHeaders}
-                        tableKeys={['category_name', 'productivity_experienced_employee', 'productivity_new_employee']}
-                        tableData={tableData}
-                    /> */}
-                    <FormDataGrid 
-                        columns={benchmarkProductivityTableColumns}
-                        rows={tableData}
-                    />
+                    
+                    {warehouseState.productivity_table_data && (
+                        <FormDataGrid 
+                            columns={benchmarkProductivityTableColumns}
+                            rows={warehouseState.productivity_table_data}
+                            processDataChange={processDataChange}
+                        />
+                    )}
                 </Grid>
 
                 <Grid container item justifyContent='center' alignContent='center' alignItems='center' sx={{marginTop: '50px'}}>
-                    <PrimaryButton 
-                                id='save-benchmark-productivity-table-btn'
-                                label='Save Data'
-                                onClick={(e: any) => {console.log(e)}}
-                                disabled={false}
-                    />
+                    {flagTableDataUpdated && (
+                        <PrimaryButton 
+                            id='save-benchmark-productivity-table-btn'
+                            label='Save Data'
+                            onClick={() => {handleClickSave()}}
+                            disabled={false}
+                        />
+                    )}
                 </Grid>
 
                 <Grid container item justifyContent='space-between' alignItems='center' sx={{marginTop: '200px'}}>

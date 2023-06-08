@@ -9,7 +9,13 @@ import {
     tableCellClasses, 
     styled, 
 } from '@mui/material'
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+
+import {
+    DataGrid, 
+    GridColDef, 
+} from '@mui/x-data-grid'
+
+
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -69,13 +75,29 @@ export const FormTable = (props: {
     )
 }
 
+const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
+    '& .header': {
+        backgroundColor: '#4471C2',
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: '1rem',
+        borderWidth: 1, 
+        borderColor: 'white',
+        borderStyle: 'solid'
+    }
+  }));
+
 
 export const FormDataGrid = (props: {
     columns: GridColDef[],
-    rows: any
+    rows: any,  
+    processDataChange: any,  
 }) => {
+
     return (
-        <DataGrid
+        <StyledDataGrid
+
+            processRowUpdate={props.processDataChange}
             rows={props.rows}
             columns={props.columns}
             initialState={{
@@ -86,7 +108,6 @@ export const FormDataGrid = (props: {
             },
             }}
             pageSizeOptions={[5]}
-            // checkboxSelection
             disableRowSelectionOnClick
       />
     )

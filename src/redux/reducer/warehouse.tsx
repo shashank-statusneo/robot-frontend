@@ -9,13 +9,17 @@ const initialState = {
     planning_start_date: dayjs(null),
     planning_end_date: dayjs(null),
     productivity_file_name: '',
-    productivity_table_data: '',
+    productivity_table_data: null,
+    demand_file_name: '',
+    demand_table_data: null,
 }
 
 export const warehouseReducer = createSlice({
     name: 'warehouse',
     initialState,
     reducers: {
+
+        // START WAREHOUSE
         getWarehouses(state, action){
             return {
                 ...state,
@@ -59,14 +63,16 @@ export const warehouseReducer = createSlice({
                 planning_end_date:  action?.payload
             }
         },
+        // END WAREHOUSE
 
+        // START PRODUCTIVITY
         postProductivity(state, action){
             return {
                 ...state,
                 isLoading: true
             }
         },
-        
+
         postProductivitySuccess(state, action){
             return {
                 ...state,
@@ -106,6 +112,71 @@ export const warehouseReducer = createSlice({
                 isLoading: false
             }
         },
+
+        updateProductivityTableDataValue(state, action){
+            return {
+                ...state, 
+                productivity_table_data:  action?.payload
+            }
+        },
+        // END PRODUCTIVITY
+        
+        // START DEMAND
+        postDemand(state, action){
+            return {
+                ...state,
+                isLoading: true
+            }
+        },
+
+        postDemandSuccess(state, action){
+            return {
+                ...state,
+                demand_file_name: action?.payload?.fileName,
+                message: action?.payload?.message,
+                isLoading: false
+            }
+        },
+
+        postDemandFailed(state, action){
+            return {
+                ...state,
+                message: 'Demand file upload failed',
+                isLoading: false
+            }
+        },
+
+        getDemandForecast(state, action){
+            return {
+                ...state,
+                isLoading: true
+            }
+        },
+
+        getDemandForecastSuccess(state, action){
+            return {
+                ...state,
+                demand_table_data: action?.payload,
+                isLoading: false
+            }
+        },
+
+        getDemandForecastFailed(state, action){
+            return {
+                ...state,
+                message: 'Demand Forecast fetch failed',
+                isLoading: false
+            }
+        },
+
+        updateDemandTableDataValue(state, action){
+            return {
+                ...state, 
+                demand_table_data:  action?.payload
+            }
+        }
+        // END DEMAND
+       
     }
 })
 
@@ -121,7 +192,15 @@ export const {
     postProductivityFailed,
     getBenchmarkProductivity,
     getBenchmarkProductivitySuccess,
-    getBenchmarkProductivityFailed
+    getBenchmarkProductivityFailed,
+    updateProductivityTableDataValue,
+    postDemand,
+    postDemandSuccess,
+    postDemandFailed,
+    getDemandForecast,
+    getDemandForecastSuccess,
+    getDemandForecastFailed,
+    updateDemandTableDataValue
 } = warehouseReducer.actions
 
 export default warehouseReducer.reducer
