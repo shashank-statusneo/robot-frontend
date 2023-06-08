@@ -18,10 +18,12 @@ export const FormTextField = (props: {
     value: any,
     inputProps: any,
     onChange: any
+    type: any,
 }) => {
     return (
         <TextField
             id={props.id}
+            type={props.type}
             value={props.value}
             onChange={props.onChange}
             size="medium"

@@ -3,7 +3,7 @@ import { Container, Grid, InputAdornment } from '@mui/material';
 import { PrimaryButton } from '../../components/Buttons';
 import { FormLabel, FormTextField } from '../../components/FormElements';
 import { useNavigate } from 'react-router-dom'
-
+import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
 
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 const theme = createTheme();
@@ -11,10 +11,12 @@ const theme = createTheme();
 const WarehouseRequirement = () => {
 
     const navigate = useNavigate()
+    const dispatch = useAppDispatch()
+
+    // @ts-ignore
+    const warehouseState = useAppSelector(state => state.warehouseReducer)
 
     const Form = () => {
-
-        const data = ['a', 'b']
 
         return (
             <Grid container direction='column' spacing={2} sx={{marginTop: '100px'}}>
@@ -36,6 +38,7 @@ const WarehouseRequirement = () => {
                         <FormTextField 
                             id=''
                             value=''
+                            type='number'
                             onChange={(e: any) => {console.log(e)}}
                             inputProps={{
                                 endAdornment: <InputAdornment position="end">%</InputAdornment>,
@@ -54,6 +57,7 @@ const WarehouseRequirement = () => {
                         <FormTextField 
                             id=''
                             value=''
+                            type='number'
                             onChange={(e: any) => {console.log(e)}}
                             inputProps={{}}
                         />
@@ -70,6 +74,7 @@ const WarehouseRequirement = () => {
                         <FormTextField 
                             id=''
                             value=''
+                            type='number'
                             onChange={(e: any) => {console.log(e)}}
                             inputProps={{
                                 endAdornment: <InputAdornment position="end">₹</InputAdornment>,
@@ -88,6 +93,7 @@ const WarehouseRequirement = () => {
                         <FormTextField 
                             id=''
                             value=''
+                            type='number'
                             onChange={(e: any) => {console.log(e)}}
                             inputProps={{
                                 endAdornment: <InputAdornment position="end">₹</InputAdornment>,
@@ -106,6 +112,7 @@ const WarehouseRequirement = () => {
                         <FormTextField 
                             id=''
                             value=''
+                            type='number'
                             onChange={(e: any) => {console.log(e)}}
                             inputProps={{}}
                         />

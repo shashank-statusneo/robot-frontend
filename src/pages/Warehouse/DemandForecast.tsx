@@ -12,7 +12,7 @@ import { uploadDemandFile, getDemandForecastData, updateDemandTableData } from '
 
 import { PrimaryButton, FormUploadButton } from '../../components/Buttons';
 import { FormLabel } from '../../components/FormElements';
-import { FormTable, FormDataGrid } from '../../components/Table';
+import { FormDataGrid } from '../../components/Table';
 import { GridRowModel } from '@mui/x-data-grid'
 import { demandForecastTableColumns } from './constants';
 

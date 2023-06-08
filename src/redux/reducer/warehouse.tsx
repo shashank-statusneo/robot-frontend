@@ -12,6 +12,12 @@ const initialState = {
     productivity_table_data: null,
     demand_file_name: '',
     demand_table_data: null,
+    percentage_absent_expected: null, 
+    num_current_employees: null, 
+    total_hiring_budget: null,
+    cost_per_employee_per_month: null,
+    day_working_hours: null
+   
 }
 
 export const warehouseReducer = createSlice({
@@ -174,9 +180,46 @@ export const warehouseReducer = createSlice({
                 ...state, 
                 demand_table_data:  action?.payload
             }
-        }
+        },
         // END DEMAND
-       
+
+        // START REQUIREMENT
+        updatePercentageAbsentExpectedValue(state, action){
+        return {
+            ...state, 
+            percentage_absent_expected: action?.payload,
+            }
+        },
+
+        updateNumCurrentEmployeesValue(state, action){
+        return {
+            ...state, 
+            num_current_employees: action?.payload,
+            }
+        },
+
+        updateTotalHiringBudgetValue(state, action){
+        return {
+            ...state, 
+            total_hiring_budget: action?.payload,
+            }
+        },
+
+        updateCostPerEmployeePerMonthValue(state, action){
+        return {
+            ...state, 
+            cost_per_employee_per_month: action?.payload,
+            }
+        },
+        
+        updateDayWorkingHoursValue(state, action){
+        return {
+            ...state, 
+            day_working_hours: action?.payload,
+            }
+        },
+        // END REQUIREMENT
+
     }
 })
 
@@ -200,7 +243,12 @@ export const {
     getDemandForecast,
     getDemandForecastSuccess,
     getDemandForecastFailed,
-    updateDemandTableDataValue
+    updateDemandTableDataValue,
+    updatePercentageAbsentExpectedValue,
+    updateNumCurrentEmployeesValue,
+    updateTotalHiringBudgetValue,
+    updateCostPerEmployeePerMonthValue,
+    updateDayWorkingHoursValue
 } = warehouseReducer.actions
 
 export default warehouseReducer.reducer

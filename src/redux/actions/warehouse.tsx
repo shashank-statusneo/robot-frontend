@@ -20,7 +20,12 @@ import {
     getDemandForecast,
     getDemandForecastSuccess,
     getDemandForecastFailed,
-    updateDemandTableDataValue
+    updateDemandTableDataValue,
+    updatePercentageAbsentExpectedValue,
+    updateNumCurrentEmployeesValue,
+    updateTotalHiringBudgetValue,
+    updateCostPerEmployeePerMonthValue,
+    updateDayWorkingHoursValue
 } from '../reducer/warehouse'
 
 import { demandTableData } from '../../pages/Warehouse/constants'
@@ -137,4 +142,25 @@ export const getDemandForecastData = (payload, id) => async dispatch => {
 // @ts-ignore
 export const updateDemandTableData = (payload) => async dispatch => {
     await dispatch(updateDemandTableDataValue(payload))
+}
+
+// @ts-ignore
+export const updatePercentageAbsentExpected = (payload) => async dispatch => {
+    await dispatch(updatePercentageAbsentExpectedValue(payload))
+}
+// @ts-ignore
+export const updateNumCurrentEmployees = (payload) => async dispatch => {
+    await dispatch(updateNumCurrentEmployeesValue(payload))
+}
+// @ts-ignore
+export const updateTotalHiringBudget = (payload) => async dispatch => {
+    await dispatch(updateTotalHiringBudgetValue(payload))
+}
+// @ts-ignore
+export const updateCostPerEmployeePerMonth = (payload) => async dispatch => {
+    await dispatch(updateCostPerEmployeePerMonthValue(payload))
+}
+// @ts-ignore
+export const updateDayWorkingHours = (payload) => async dispatch => {
+    await dispatch(updateDayWorkingHoursValue(payload))
 }
