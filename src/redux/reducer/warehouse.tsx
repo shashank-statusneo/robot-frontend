@@ -12,11 +12,11 @@ const initialState = {
     productivity_table_data: null,
     demand_file_name: '',
     demand_table_data: null,
-    percentage_absent_expected: null, 
-    num_current_employees: null, 
-    total_hiring_budget: null,
-    cost_per_employee_per_month: null,
-    day_working_hours: null
+    percentage_absent_expected: '', 
+    num_current_employees: '', 
+    total_hiring_budget: '',
+    cost_per_employee_per_month: '',
+    day_working_hours: ''
    
 }
 

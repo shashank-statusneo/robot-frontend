@@ -1,9 +1,10 @@
 import { Container, Grid, InputAdornment } from '@mui/material';
-
+import {useState} from 'react'
 import { PrimaryButton } from '../../components/Buttons';
 import { FormLabel, FormTextField } from '../../components/FormElements';
 import { useNavigate } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
+import { useAppDispatch } from '../../hooks/redux-hooks';
+import { updatePercentageAbsentExpected, updateNumCurrentEmployees, updateTotalHiringBudget, updateCostPerEmployeePerMonth, updateDayWorkingHours } from '../../redux/actions/warehouse';
 
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 const theme = createTheme();
@@ -13,10 +14,26 @@ const WarehouseRequirement = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
 
-    // @ts-ignore
-    const warehouseState = useAppSelector(state => state.warehouseReducer)
-
     const Form = () => {
+
+        const [percentAbsentees, setPercentAbsentees] = useState('')
+        const [currentEmployees, setCurrentEmployees] = useState('')
+        const [hiringBudget, setHiringBudget] = useState('')
+        const [costPerEmployee, setCostPerEmployee] = useState('')
+        const [workingHours, setWorkingHours] = useState('')
+
+        const handleStateUpdate = () => {
+            // @ts-ignore
+            dispatch(updatePercentageAbsentExpected(percentAbsentees))
+             // @ts-ignore
+            dispatch(updateNumCurrentEmployees(currentEmployees))
+             // @ts-ignore
+            dispatch(updateTotalHiringBudget(hiringBudget))
+             // @ts-ignore
+            dispatch(updateCostPerEmployeePerMonth(costPerEmployee))
+             // @ts-ignore
+            dispatch(updateDayWorkingHours(workingHours))
+        } 
 
         return (
             <Grid container direction='column' spacing={2} sx={{marginTop: '100px'}}>
@@ -36,10 +53,10 @@ const WarehouseRequirement = () => {
                     </Grid>
                     <Grid item lg={3}>
                         <FormTextField 
-                            id=''
-                            value=''
+                            id='percent-absentees-textfield'
+                            value={percentAbsentees}
                             type='number'
-                            onChange={(e: any) => {console.log(e)}}
+                            onChange={(e: any) => setPercentAbsentees(e.target.value)}
                             inputProps={{
                                 endAdornment: <InputAdornment position="end">%</InputAdornment>,
                             }}
@@ -55,10 +72,10 @@ const WarehouseRequirement = () => {
                     </Grid>
                     <Grid item lg={3}>
                         <FormTextField 
-                            id=''
-                            value=''
+                            id='current-employees-textfield'
+                            value={currentEmployees}
                             type='number'
-                            onChange={(e: any) => {console.log(e)}}
+                            onChange={(e: any) => setCurrentEmployees(e.target.value)}
                             inputProps={{}}
                         />
                     </Grid>
@@ -72,10 +89,10 @@ const WarehouseRequirement = () => {
                     </Grid>
                     <Grid item lg={3}>
                         <FormTextField 
-                            id=''
-                            value=''
+                            id='hiring-budget-textfield'
+                            value={hiringBudget}
                             type='number'
-                            onChange={(e: any) => {console.log(e)}}
+                            onChange={(e: any) => setHiringBudget(e.target.value)}
                             inputProps={{
                                 endAdornment: <InputAdornment position="end">₹</InputAdornment>,
                             }}
@@ -91,10 +108,10 @@ const WarehouseRequirement = () => {
                     </Grid>
                     <Grid item lg={3}>
                         <FormTextField 
-                            id=''
-                            value=''
+                            id='cost-per-employee-textfield'
+                            value={costPerEmployee}
                             type='number'
-                            onChange={(e: any) => {console.log(e)}}
+                            onChange={(e: any) => setCostPerEmployee(e.target.value)}
                             inputProps={{
                                 endAdornment: <InputAdornment position="end">₹</InputAdornment>,
                             }}
@@ -110,10 +127,10 @@ const WarehouseRequirement = () => {
                     </Grid>
                     <Grid item lg={3}>
                         <FormTextField 
-                            id=''
-                            value=''
+                            id='working-hours-textfield'
+                            value={workingHours}
                             type='number'
-                            onChange={(e: any) => {console.log(e)}}
+                            onChange={(e: any) => setWorkingHours(e.target.value)}
                             inputProps={{}}
                         />
                     </Grid>
@@ -124,7 +141,7 @@ const WarehouseRequirement = () => {
                         <PrimaryButton 
                             id='navigation-btn-previous'
                             label='< Previous'
-                            onClick={(e: any) => {console.log(e)}}
+                            onClick={handleStateUpdate}
                             // onClick={() => navigate('/warehouse/productivity')}
                             disabled={false}
                         />
