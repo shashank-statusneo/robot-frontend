@@ -119,10 +119,26 @@ export const warehouseReducer = createSlice({
             }
         },
 
-        updateProductivityTableDataValue(state, action){
+        putBenchmarkProductivity(state, action){
             return {
-                ...state, 
-                productivity_table_data:  action?.payload
+                ...state,
+                isLoading: true
+            }
+        },
+
+        putBenchmarkProductivitySuccess(state, action){
+            return {
+                ...state,
+                productivity_table_data:  action?.payload,
+                isLoading: false
+            }
+        },
+
+        putBenchmarkProductivityFailed(state, action){
+            return {
+                ...state,
+                message: 'Benchmark Productivity update failed',
+                isLoading: false
             }
         },
         // END PRODUCTIVITY
@@ -236,7 +252,9 @@ export const {
     getBenchmarkProductivity,
     getBenchmarkProductivitySuccess,
     getBenchmarkProductivityFailed,
-    updateProductivityTableDataValue,
+    putBenchmarkProductivity,
+    putBenchmarkProductivitySuccess,
+    putBenchmarkProductivityFailed,
     postDemand,
     postDemandSuccess,
     postDemandFailed,

@@ -1,4 +1,4 @@
-import { GET_WAREHOUSE_API, UPLOAD_PRODUCTIVITY_FILE_API, GET_BENCHMARK_PRODUCTIVITY_API,UPLOAD_DEMAND_FILE_API, GET_DEMAND_FORECAST_API } from '../../services/routes'
+import { GET_WAREHOUSE_API, UPLOAD_PRODUCTIVITY_FILE_API, BENCHMARK_PRODUCTIVITY_API,UPLOAD_DEMAND_FILE_API, GET_DEMAND_FORECAST_API } from '../../services/routes'
 import {warehouseApiClient, warehouseApiClientForForm} from '../../services/apiClient'
 import { 
     getWarehouses,
@@ -13,7 +13,9 @@ import {
     getBenchmarkProductivity,
     getBenchmarkProductivitySuccess,
     getBenchmarkProductivityFailed,
-    updateProductivityTableDataValue,
+    putBenchmarkProductivity,
+    putBenchmarkProductivitySuccess,
+    putBenchmarkProductivityFailed,
     postDemand,
     postDemandSuccess,
     postDemandFailed,
@@ -28,7 +30,7 @@ import {
     updateDayWorkingHoursValue
 } from '../reducer/warehouse'
 
-import { demandTableData } from '../../pages/Warehouse/constants'
+import { demandTableData, updateData } from '../../pages/Warehouse/constants'
 
 // @ts-ignore
 export const getWarehouse = () => async dispatch => {
@@ -87,7 +89,7 @@ export const getBenchmarkProductivityData = (id) => async dispatch => {
     // @ts-ignore
     await dispatch(getBenchmarkProductivity())
     try {
-        const response = await warehouseApiClient.get(`${GET_BENCHMARK_PRODUCTIVITY_API}/${id}`);
+        const response = await warehouseApiClient.get(`${BENCHMARK_PRODUCTIVITY_API}/${id}`);
         if (response.status === 200){            
             return dispatch(getBenchmarkProductivitySuccess(response.data))
         }
@@ -98,8 +100,20 @@ export const getBenchmarkProductivityData = (id) => async dispatch => {
 }
 
 // @ts-ignore
-export const updateProductivityTableData = (payload) => async dispatch => {
-    await dispatch(updateProductivityTableDataValue(payload))
+export const putBenchmarkProductivityData = (payload, data) => async dispatch => {
+
+    console.log('Calling action : putBenchmarkProductivityData()')
+    // @ts-ignore
+    await dispatch(putBenchmarkProductivity())
+    try {
+        const response = await warehouseApiClient.put(BENCHMARK_PRODUCTIVITY_API, payload);
+        if (response.status === 200){            
+            return dispatch(putBenchmarkProductivitySuccess(data))
+        }
+        return dispatch(putBenchmarkProductivityFailed(response))
+    } catch (err) {
+        return dispatch(putBenchmarkProductivityFailed(err))
+    }
 }
 
 // @ts-ignore
@@ -131,7 +145,8 @@ export const getDemandForecastData = (payload, id) => async dispatch => {
         if (response.status === 200){    
             
             // TODO: resolve this
-            return dispatch(getDemandForecastSuccess(demandTableData))
+            // return dispatch(getDemandForecastSuccess(demandTableData))
+            return dispatch(getDemandForecastSuccess(updateData))
         }
         return dispatch(getDemandForecastFailed(response))
     } catch (err) {

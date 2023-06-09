@@ -7,7 +7,7 @@ import { FormLabel } from '../../components/FormElements';
 import { FormTable, FormDataGrid } from '../../components/Table';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
 import { useNavigate } from 'react-router-dom'
-import { uploadProductivityFile, getBenchmarkProductivityData, updateProductivityTableData } from '../../redux/actions/warehouse';
+import { uploadProductivityFile, getBenchmarkProductivityData, putBenchmarkProductivityData } from '../../redux/actions/warehouse';
 import { GridRowModel } from '@mui/x-data-grid'
 
 import { createTheme, ThemeProvider } from '@mui/material/styles'
@@ -30,6 +30,13 @@ const BenchmarkProductivity = () => {
 
         const [updatedTableData]: any = useState([])
 
+        const [updateRequestPayload]: any = useState([])
+
+        const editableCols = [
+            'productivity_experienced_employee',
+            'productivity_new_employee'
+        ]
+
         const [flagTableDataUpdated, setFlagTableDataUpdated] = useState(false)
 
         const processDataChange = (newRow: GridRowModel) => {
@@ -37,6 +44,27 @@ const BenchmarkProductivity = () => {
             const selectedRow = warehouseState.productivity_table_data.find((row: any) => row.id === updatedRow.id)
 
             if (JSON.stringify(selectedRow) !== JSON.stringify(updatedRow)) {
+          
+                const requestPayload: any = {
+                    id: selectedRow.id
+                }
+                
+                for (const col in editableCols){
+                    if (selectedRow[editableCols[col]] != updatedRow[editableCols[col]]){
+                        requestPayload[editableCols[col]] = updatedRow[editableCols[col]]
+                    }
+                }
+
+                updateRequestPayload.some((payload: any) => payload.id === requestPayload.id) 
+                    ? updateRequestPayload.map((obj: any) => {
+                        if(obj.id === requestPayload.id){
+                            obj = Object.assign(obj, requestPayload);
+                        }
+                    })
+                    : updateRequestPayload.push(requestPayload)
+                
+                if (selectedRow.productivity_experienced_employee !== updatedRow)
+
                 setFlagTableDataUpdated(true)
                 updatedTableData.push(updatedRow)
             }        
@@ -50,7 +78,7 @@ const BenchmarkProductivity = () => {
                 tableData[oldObjIndex] = { ...newObj }
             })
             // @ts-ignore
-            dispatch(updateProductivityTableData(tableData))
+            dispatch(putBenchmarkProductivityData({'productivity': updateRequestPayload}, tableData))
         }
 
         const handleChange = (event: any) => {

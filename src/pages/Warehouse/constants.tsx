@@ -132,3 +132,66 @@ export const demandTableData = [
     },
    
 ]
+
+export const updateData = [
+    {
+        date: '2023-05-24',
+        categories: [
+            {
+                id: 1,
+                category_name: 'category 1',
+                demand: 269,
+            },
+            {
+                id: 2,
+                category_name: 'category 2',
+                demand: 150,
+            },
+            {
+                id: 3,
+                category_name: 'category 3',
+                demand: 563,
+            },
+            {
+                id: 4,
+                category_name: 'category 4',
+                demand: 53,
+            },
+            {
+                id: 5,
+                category_name: 'category 5',
+                demand: 63,
+            },
+        ],
+    },
+    {
+        date: '2023-05-25',
+        categories: [
+            {
+                id: 6,
+                category_name: 'category 1',
+                demand: 269,
+            },
+            {
+                id: 7,
+                category_name: 'category 2',
+                demand: 123,
+            },
+            {
+                id: 8,
+                category_name: 'category 3',
+                demand: 600,
+            },
+            {
+                id: 9,
+                category_name: 'category 4',
+                demand: 127,
+            },
+            {
+                id: 10,
+                category_name: 'category 5',
+                demand: 709,
+            },
+        ],
+    },
+]
