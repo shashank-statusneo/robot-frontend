@@ -12,6 +12,8 @@ const initialState = {
     productivity_table_data: null,
     demand_file_name: '',
     demand_table_data: null,
+    modified_demand_table_data: null,
+    demand_table_cols: null,
     percentage_absent_expected: '', 
     num_current_employees: '', 
     total_hiring_budget: '',
@@ -191,6 +193,42 @@ export const warehouseReducer = createSlice({
             }
         },
 
+        putDemandForecast(state, action){
+            return {
+                ...state,
+                isLoading: true
+            }
+        },
+
+        putDemandForecastSuccess(state, action){
+            return {
+                ...state,
+                modified_demand_table_data: action?.payload,
+                isLoading: false
+            }
+        },
+
+        putDemandForecastFailed(state, action){
+            return {
+                ...state,
+                message: 'Demand Forecsat update failed',
+                isLoading: false
+            }
+        },
+
+        updateDemandTableDataColValue(state, action){
+            return {
+                ...state, 
+                demand_table_cols:  action?.payload
+            }
+        },
+
+        updateModifiedDemandTableDataValue(state, action){
+            return {
+                ...state, 
+                modified_demand_table_data:  action?.payload
+            }
+        },
         updateDemandTableDataValue(state, action){
             return {
                 ...state, 
@@ -261,6 +299,11 @@ export const {
     getDemandForecast,
     getDemandForecastSuccess,
     getDemandForecastFailed,
+    putDemandForecast,
+    putDemandForecastSuccess,
+    putDemandForecastFailed,
+    updateDemandTableDataColValue,
+    updateModifiedDemandTableDataValue,
     updateDemandTableDataValue,
     updatePercentageAbsentExpectedValue,
     updateNumCurrentEmployeesValue,

@@ -1,4 +1,4 @@
-import { GET_WAREHOUSE_API, UPLOAD_PRODUCTIVITY_FILE_API, BENCHMARK_PRODUCTIVITY_API,UPLOAD_DEMAND_FILE_API, GET_DEMAND_FORECAST_API } from '../../services/routes'
+import { GET_WAREHOUSE_API, UPLOAD_PRODUCTIVITY_FILE_API, BENCHMARK_PRODUCTIVITY_API,UPLOAD_DEMAND_FILE_API, DEMAND_FORECAST_API } from '../../services/routes'
 import {warehouseApiClient, warehouseApiClientForForm} from '../../services/apiClient'
 import { 
     getWarehouses,
@@ -22,6 +22,11 @@ import {
     getDemandForecast,
     getDemandForecastSuccess,
     getDemandForecastFailed,
+    putDemandForecast,
+    putDemandForecastSuccess,
+    putDemandForecastFailed,
+    updateDemandTableDataColValue,
+    updateModifiedDemandTableDataValue,
     updateDemandTableDataValue,
     updatePercentageAbsentExpectedValue,
     updateNumCurrentEmployeesValue,
@@ -30,7 +35,8 @@ import {
     updateDayWorkingHoursValue
 } from '../reducer/warehouse'
 
-import { demandTableData, updateData } from '../../pages/Warehouse/constants'
+import { demandForecastTableColumns } from '../../pages/Warehouse/constants'
+
 
 // @ts-ignore
 export const getWarehouse = () => async dispatch => {
@@ -141,12 +147,12 @@ export const getDemandForecastData = (payload, id) => async dispatch => {
     // @ts-ignore
     await dispatch(getDemandForecast())
     try {
-        const response = await warehouseApiClient.get(`${GET_DEMAND_FORECAST_API}/${id}?start_date=${payload.start_date}&end_date=${payload.end_date}`);
-        if (response.status === 200){    
+        const response = await warehouseApiClient.get(`${DEMAND_FORECAST_API}/${id}?start_date=${payload.start_date}&end_date=${payload.end_date}`);
+        if (response.status === 200){  
+
+            dispatch(modifyDemandTableData(response.data))
             
-            // TODO: resolve this
-            // return dispatch(getDemandForecastSuccess(demandTableData))
-            return dispatch(getDemandForecastSuccess(updateData))
+            return dispatch(getDemandForecastSuccess(response.data))
         }
         return dispatch(getDemandForecastFailed(response))
     } catch (err) {
@@ -154,6 +160,71 @@ export const getDemandForecastData = (payload, id) => async dispatch => {
     }
 }
 
+
+
+// @ts-ignore
+const modifyDemandTableData  = (data) => async dispatch => {
+
+    const records: any = []
+        
+    const columnList = (Object.keys(data[Object.keys(data)[0]]))
+
+    for (const col in columnList){
+        demandForecastTableColumns.push({
+            field: columnList[col],
+            headerName: columnList[col],
+            editable: true,
+            flex: 1,
+            type: 'number',
+            headerAlign: 'center',
+            align: 'center',
+            headerClassName: 'header',
+            minWidth: 200
+        })
+    }
+
+    Object.keys(data).forEach((key, index) => {
+        const record: any = {
+            id: index+1,
+            date: key,
+        }
+        Object.keys(data[key]).forEach((key_x: any, index_x: any) => {
+            record[key_x] = data[key][key_x]['demand']
+            
+        }) 
+        records.push(record)
+    })
+
+    await dispatch(updateDemandTableDataCol(demandForecastTableColumns))
+
+    await dispatch(updateModifiedDemandTableDataValue(records))
+}
+
+// @ts-ignore
+export const putDemandForecastData = (payload, data) => async dispatch => {
+
+    console.log('Calling action : putDemandForecastData()')
+    // @ts-ignore
+    await dispatch(putDemandForecast())
+    try {
+        const response = await warehouseApiClient.put(DEMAND_FORECAST_API, payload);
+        if (response.status === 200){            
+            return dispatch(putDemandForecastSuccess(data))
+        }
+        return dispatch(putDemandForecastFailed(response))
+    } catch (err) {
+        return dispatch(putDemandForecastFailed(err))
+    }
+}
+
+// @ts-ignore
+export const updateDemandTableDataCol = (payload) => async dispatch => {
+    await dispatch(updateDemandTableDataColValue(payload))
+}
+// @ts-ignore
+export const updateModifiedDemandTableData = (payload) => async dispatch => {
+    await dispatch(updateModifiedDemandTableDataValue(payload))
+}
 // @ts-ignore
 export const updateDemandTableData = (payload) => async dispatch => {
     await dispatch(updateDemandTableDataValue(payload))

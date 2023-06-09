@@ -62,11 +62,16 @@ const BenchmarkProductivity = () => {
                         }
                     })
                     : updateRequestPayload.push(requestPayload)
-                
-                if (selectedRow.productivity_experienced_employee !== updatedRow)
 
+                updatedTableData.some((payload: any) => payload.id === newRow.id )
+                    ? updatedTableData.map((obj: any) => {
+                    if(obj.id === newRow.id){
+                        obj = Object.assign(obj, newRow);
+                    }
+                    })
+                    : updatedTableData.push(newRow)
+                
                 setFlagTableDataUpdated(true)
-                updatedTableData.push(updatedRow)
             }        
             return updatedRow
         };
