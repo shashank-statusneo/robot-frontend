@@ -66,14 +66,13 @@ const App = () => {
       return (
         <BrowserRouter>
             <TopBar />
-            <AppTabs/>
-            <FormData />
-            {/* {UserSession.isAuthenticated() ? 
+            {UserSession.isAuthenticated() ? 
                 <>
-             
+                    <AppTabs/>
+                    <FormData />
                 </>
             : <></>
-        } */}
+        }
             <Routes>
                 <Route
                     // exact

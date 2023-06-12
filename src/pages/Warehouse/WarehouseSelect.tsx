@@ -35,6 +35,8 @@ const WarehouseSelect = () => {
 
     useEffect(() => {
         warehouseState?.warehouses ? setSelectedWarehouse(warehouseState?.warehouses[0]) : setSelectedWarehouse(null)
+        // @ts-ignore
+        warehouseState?.warehouses ? dispatch(updatePlanningWarehouse(warehouseState?.warehouses[0])) : null
     }, [warehouseState.warehouses])
 
     const Form = () => {
@@ -42,7 +44,7 @@ const WarehouseSelect = () => {
         const handleWarehouseChange = (e: any) => {
             setSelectedWarehouse(warehouseState.warehouses.find((obj: any) => {return obj.id === e.target.value}))
             // @ts-ignore
-            dispatch(updatePlanningWarehouse(selectedWarehouse))
+            dispatch(updatePlanningWarehouse(warehouseState.warehouses.find((obj: any) => {return obj.id === e.target.value})))
         }
         const handleWarehouseStartDateChange = (date: any) => {
             // @ts-ignore
@@ -106,18 +108,6 @@ const WarehouseSelect = () => {
                             label=''
                             value={warehouseState.planning_end_date}
                             onChange={handleWarehouseEndDateChange}
-                        />
-                    </Grid>
-                </Grid>
-
-                <Grid container item justifyContent='flex-end' sx={{marginTop: '200px'}}>
-                    <Grid item>
-                        <PrimaryButton 
-                            id='navigation-btn-next'
-                            label='Next >'
-                            onClick={() => console.log(warehouseState)}
-                            // onClick={() => navigate('/warehouse/productivity')}
-                            disabled={false}
                         />
                     </Grid>
                 </Grid>

@@ -22,7 +22,31 @@ export const PrimaryButton = (props: {
         >
             {props.label}
         </Button>
-    )
+    )     
+}
+// General function to export Form Navigation Button
+export const NavigationBtn = (props: {
+    id: string, 
+    label: string
+    onClick: any,
+    disabled: boolean
+    render: boolean
+}
+) => {
+    if (props.render){
+    return (
+        <Button
+            variant="contained"
+            color="primary"
+            size="medium"
+            id={props.id}
+            onClick={props.onClick}
+            disabled={props.disabled}
+        >
+            {props.label}
+        </Button>
+    )}
+        return <></>
 }
 
 // General function to export Form upload Btn

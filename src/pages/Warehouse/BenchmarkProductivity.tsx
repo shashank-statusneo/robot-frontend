@@ -145,27 +145,6 @@ const BenchmarkProductivity = () => {
                         />
                     )}
                 </Grid>
-
-                <Grid container item justifyContent='space-between' alignItems='center' sx={{marginTop: '200px'}}>
-                    <Grid item>
-                        <PrimaryButton 
-                            id='navigation-btn-previous'
-                            label='< Previous'
-                            onClick={(e: any) => {console.log(e)}}
-                            // onClick={() => navigate('/warehouse/productivity')}
-                            disabled={false}
-                        />
-                    </Grid>
-                    <Grid item>
-                        <PrimaryButton 
-                            id='navigation-btn-next'
-                            label='Next >'
-                            onClick={() => console.log(warehouseState)}
-                            // onClick={() => navigate('/warehouse/productivity')}
-                            disabled={false}
-                        />
-                    </Grid>
-                </Grid>
             </Grid>
         )
     }

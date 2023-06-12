@@ -97,17 +97,6 @@ const Result = () => {
                     />
                 </Grid>
 
-                <Grid container item justifyContent='flex-end' sx={{marginTop: '200px'}}>
-                    <Grid item>
-                        <PrimaryButton 
-                            id='navigation-btn-next'
-                            label='Next >'
-                            onClick={(e: any) => {console.log(e)}}
-                            // onClick={() => navigate('/warehouse/productivity')}
-                            disabled={false}
-                        />
-                    </Grid>
-                </Grid>
             </Grid>
         )
     }
