@@ -13,5 +13,6 @@ export const BENCHMARK_PRODUCTIVITY_API = 'wmp/benchmark_productivity'
 export const UPLOAD_DEMAND_FILE_API = 'wmp/demand_forecast_file'
 export const DEMAND_FORECAST_API = 'wmp/demands'
 
+export const RESULT_API = 'wmp/calculate'
 
 export const ALGORITHM_API = '/mock/algorithm'

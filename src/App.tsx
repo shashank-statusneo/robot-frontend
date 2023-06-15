@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import logo from './logo.svg';
 import styles from './App.module.css'; 
-import { BrowserRouter, Routes, Route, Navigate, Form } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import InventoryOptimizer from './pages/InventoryOptimizer';
 import WareHouse from './pages/Warehouse';
 import TopBar from './components/TopBar';
@@ -11,25 +11,17 @@ import Profile from './pages/Home/profile';
 import UserSession from './services/auth';
 import { TabContext } from '@mui/lab';
 import {Container, Tabs, Tab} from '@mui/material'
-import BenchmarkProductivity from './pages/Warehouse/BenchmarkProductivity';
+
 
 
 const App = () => {
 
     const [currentTab, setCurrentTab] = useState('warehouse');
-  
-    const FormData = () => {
-        switch (currentTab) {
-            case 'warehouse':
-                return <WareHouse />
-            case 'inventory':
-                return <InventoryOptimizer />
-            default:
-                return <></>
-        }
-    }
 
     const AppTabs = () => {
+
+
+        const navigate = useNavigate()
 
         const mainMenuTabs: any = {
                 warehouse: 'Warehouse',
@@ -50,6 +42,7 @@ const App = () => {
                         value={currentTab}
                         onChange={(_, value) => {
                             setCurrentTab(value)
+                            navigate(`/${value}`)
                         }}
                     >
                         {Object.keys(mainMenuTabs).map((value: any, index: any) => (
@@ -61,15 +54,14 @@ const App = () => {
         )
     }
 
-
     // @ts-ignore
       return (
         <BrowserRouter>
             <TopBar />
+    
             {UserSession.isAuthenticated() ? 
                 <>
                     <AppTabs/>
-                    <FormData />
                 </>
             : <></>
         }
@@ -78,17 +70,12 @@ const App = () => {
                     // exact
                     path="/"
                     element= {UserSession.isAuthenticated() ? <></> : <SignIn/>}
-                    // render={() => {
-                    //     return UserSession.isAuthenticated() ? (
-                    //         <Navigate to="/" />
-                    //     ) : (
-                    //         <Navigate to="/signin" />
-                    //     )
-                    // }}
                 />
 
-                {/* <Route path="/inventory_optimizer" element={<InventoryOptimizer />}></Route> */}
-                {/* <Route path="warehouse/productivity" element={<BenchmarkProductivity />}></Route> */}
+                <Route path="/warehouse" element={<WareHouse />}/>
+                <Route path="/warehouse/:pageName" element={<WareHouse />}/>
+
+                <Route path="/inventory" element={<InventoryOptimizer />}></Route>
                 <Route path="/signin" element={<SignIn />}></Route>
                 <Route path="/signup" element={<SignUp />}></Route>
                 <Route path="/profile" element={<Profile />}></Route>

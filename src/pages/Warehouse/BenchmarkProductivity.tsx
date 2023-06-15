@@ -7,7 +7,7 @@ import { FormLabel } from '../../components/FormElements';
 import { FormTable, FormDataGrid } from '../../components/Table';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
 import { useNavigate } from 'react-router-dom'
-import { uploadProductivityFile, getBenchmarkProductivityData, putBenchmarkProductivityData } from '../../redux/actions/warehouse';
+import { uploadProductivityFile, getBenchmarkProductivityData, putBenchmarkProductivityData, updateFlagProductivityTableUpdated } from '../../redux/actions/warehouse';
 import { GridRowModel } from '@mui/x-data-grid'
 
 import { createTheme, ThemeProvider } from '@mui/material/styles'
@@ -24,85 +24,97 @@ const BenchmarkProductivity = () => {
     // @ts-ignore
     const warehouseState = useAppSelector(state => state.warehouseReducer)
 
-    const Form = () => {
 
-        const benchmarkProductivityFile = useRef() as MutableRefObject<HTMLInputElement>;
+    const fetchData = () => {
+        // @ts-ignore
+        dispatch(getBenchmarkProductivityData(warehouseState.planning_warehouse?.id))
+    }
 
-        const [updatedTableData]: any = useState([])
+    useEffect(() => {
+        fetchData()
+    }, [])
 
-        const [updateRequestPayload]: any = useState([])
+    const benchmarkProductivityFile = useRef() as MutableRefObject<HTMLInputElement>;
 
-        const editableCols = [
-            'productivity_experienced_employee',
-            'productivity_new_employee'
-        ]
+    const [updatedTableData]: any = useState([])
 
-        const [flagTableDataUpdated, setFlagTableDataUpdated] = useState(false)
+    const [updateRequestPayload]: any = useState([])
 
-        const processDataChange = (newRow: GridRowModel) => {
-            const updatedRow = {...newRow}
-            const selectedRow = warehouseState.productivity_table_data.find((row: any) => row.id === updatedRow.id)
+    const editableCols = [
+        'productivity_experienced_employee',
+        'productivity_new_employee'
+    ]
 
-            if (JSON.stringify(selectedRow) !== JSON.stringify(updatedRow)) {
-          
-                const requestPayload: any = {
-                    id: selectedRow.id
-                }
-                
-                for (const col in editableCols){
-                    if (selectedRow[editableCols[col]] != updatedRow[editableCols[col]]){
-                        requestPayload[editableCols[col]] = updatedRow[editableCols[col]]
-                    }
-                }
+    const processDataChange = (newRow: GridRowModel) => {
+        const updatedRow = {...newRow}
+        const selectedRow = warehouseState.productivity_table_data.find((row: any) => row.id === updatedRow.id)
 
-                updateRequestPayload.some((payload: any) => payload.id === requestPayload.id) 
-                    ? updateRequestPayload.map((obj: any) => {
-                        if(obj.id === requestPayload.id){
-                            obj = Object.assign(obj, requestPayload);
-                        }
-                    })
-                    : updateRequestPayload.push(requestPayload)
-
-                updatedTableData.some((payload: any) => payload.id === newRow.id )
-                    ? updatedTableData.map((obj: any) => {
-                    if(obj.id === newRow.id){
-                        obj = Object.assign(obj, newRow);
-                    }
-                    })
-                    : updatedTableData.push(newRow)
-                
-                setFlagTableDataUpdated(true)
-            }        
-            return updatedRow
-        };
-
-        const handleClickSave = () => {
-            const tableData = JSON.parse(JSON.stringify(warehouseState.productivity_table_data))
-            updatedTableData.map((newObj: any, index: any) => {
-                const oldObjIndex = tableData.findIndex((oldObj: any) => oldObj.id === newObj.id)
-                tableData[oldObjIndex] = { ...newObj }
-            })
-            // @ts-ignore
-            dispatch(putBenchmarkProductivityData({'productivity': updateRequestPayload}, tableData))
-        }
-
-        const handleChange = (event: any) => {
-            event.preventDefault();
-            const fileObj = event.target.files && event.target.files[0];
-            if (fileObj) {
-                
-                const context = {
-                    file: fileObj
-                }
-                // @ts-ignore
-                dispatch(uploadProductivityFile(context, warehouseState.planning_warehouse?.id, fileObj.name))
-                // @ts-ignore
-                dispatch(getBenchmarkProductivityData(warehouseState.planning_warehouse?.id))
+        if (JSON.stringify(selectedRow) !== JSON.stringify(updatedRow)) {
+      
+            const requestPayload: any = {
+                id: selectedRow.id
             }
-        }
+            
+            for (const col in editableCols){
+                if (selectedRow[editableCols[col]] != updatedRow[editableCols[col]]){
+                    requestPayload[editableCols[col]] = updatedRow[editableCols[col]]
+                }
+            }
 
-        return (
-            <Grid container direction='column' spacing={2} sx={{marginTop: '20px'}}>
+            updateRequestPayload.some((payload: any) => payload.id === requestPayload.id) 
+                ? updateRequestPayload.map((obj: any) => {
+                    if(obj.id === requestPayload.id){
+                        obj = Object.assign(obj, requestPayload);
+                    }
+                })
+                : updateRequestPayload.push(requestPayload)
+
+            updatedTableData.some((payload: any) => payload.id === newRow.id )
+                ? updatedTableData.map((obj: any) => {
+                if(obj.id === newRow.id){
+                    obj = Object.assign(obj, newRow);
+                }
+                })
+                : updatedTableData.push(newRow)
+            
+            // @ts-ignore
+            dispatch(updateFlagProductivityTableUpdated(true))
+        }        
+        return updatedRow
+    };
+
+    const handleClickSave = () => {
+        const tableData = JSON.parse(JSON.stringify(warehouseState.productivity_table_data))
+        updatedTableData.map((newObj: any, index: any) => {
+            const oldObjIndex = tableData.findIndex((oldObj: any) => oldObj.id === newObj.id)
+            tableData[oldObjIndex] = { ...newObj }
+        })
+        // @ts-ignore
+        dispatch(putBenchmarkProductivityData({'productivity': updateRequestPayload}, tableData))
+        // @ts-ignore
+        dispatch(updateFlagProductivityTableUpdated(false))
+    }
+
+    const handleChange = (event: any) => {
+        event.preventDefault();
+        const fileObj = event.target.files && event.target.files[0];
+        if (fileObj) {
+            
+            const context = {
+                file: fileObj
+            }
+            // @ts-ignore
+            dispatch(uploadProductivityFile(context, warehouseState.planning_warehouse?.id, fileObj.name))
+            // @ts-ignore
+            dispatch(getBenchmarkProductivityData(warehouseState.planning_warehouse?.id))
+        }
+    }
+
+    return (
+
+        <ThemeProvider theme={theme}>
+            <Container component='main' sx={{ flexGrow: 1 }} fixed >
+                <Grid container direction='column' spacing={2} sx={{marginTop: '10px'}}>
                 <Grid container item justifyContent='flex-start' alignContent='center' alignItems='center'>
                     <Grid item lg={8}>
                         <FormLabel 
@@ -124,7 +136,7 @@ const BenchmarkProductivity = () => {
                     </Grid>
                 </Grid>
 
-                <Grid container item justifyContent='flex-start' alignContent='center' alignItems='center' sx={{marginTop: '50px'}}>
+                <Grid container item justifyContent='flex-start' alignContent='center' alignItems='center' sx={{marginTop: '10px', height: '350px'}}>
                     
                     {warehouseState.productivity_table_data && (
                         <FormDataGrid 
@@ -135,25 +147,15 @@ const BenchmarkProductivity = () => {
                     )}
                 </Grid>
 
-                <Grid container item justifyContent='center' alignContent='center' alignItems='center' sx={{marginTop: '50px'}}>
-                    {flagTableDataUpdated && (
+                <Grid container item justifyContent='center' alignContent='center' alignItems='center' sx={{marginTop: '10px'}}>
                         <PrimaryButton 
                             id='save-benchmark-productivity-table-btn'
                             label='Save Data'
                             onClick={() => {handleClickSave()}}
-                            disabled={false}
+                            disabled={!warehouseState.flag_productivity_table_updated}
                         />
-                    )}
                 </Grid>
             </Grid>
-        )
-    }
-
-    return (
-
-        <ThemeProvider theme={theme}>
-            <Container component='main' sx={{ flexGrow: 1 }} fixed >
-                <Form />
             </Container>
         </ThemeProvider>
     )  

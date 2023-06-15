@@ -10,18 +10,28 @@ const initialState = {
     planning_end_date: dayjs(null),
     productivity_file_name: '',
     productivity_table_data: null,
+    flag_productivity_table_updated: false,
     demand_file_name: '',
     demand_table_data: null,
     modified_demand_table_data: null,
     demand_table_cols: null,
+    flag_demand_table_updated: false,
     percentage_absent_expected: '', 
     num_current_employees: '', 
     total_hiring_budget: '',
     cost_per_employee_per_month: '',
-    day_working_hours: ''
-   
+    day_working_hours: '',
+    result_start_date: dayjs(null),
+    result_end_date: dayjs(null),
+    result_output: null,
+    result_additional_data: null,
+    result_warehouse_name: null,
+    result_demand_vs_fulfillment_data: null,
+    result_categories: null,
+    result_category: null
 }
 
+// @ts-ignore
 export const warehouseReducer = createSlice({
     name: 'warehouse',
     initialState,
@@ -31,6 +41,7 @@ export const warehouseReducer = createSlice({
         getWarehouses(state, action){
             return {
                 ...state,
+                message: '',
                 isLoading: true
             }
         },
@@ -71,12 +82,15 @@ export const warehouseReducer = createSlice({
                 planning_end_date:  action?.payload
             }
         },
+
+        
         // END WAREHOUSE
 
         // START PRODUCTIVITY
         postProductivity(state, action){
             return {
                 ...state,
+                message: '',
                 isLoading: true
             }
         },
@@ -85,7 +99,6 @@ export const warehouseReducer = createSlice({
             return {
                 ...state,
                 productivity_file_name: action?.payload?.fileName,
-                message: action?.payload?.message,
                 isLoading: false
             }
         },
@@ -93,7 +106,7 @@ export const warehouseReducer = createSlice({
         postProductivityFailed(state, action){
             return {
                 ...state,
-                message: 'Productivity file upload failed',
+                message: `Productivity file upload failed : ${action?.payload?.error ? action?.payload?.error : ''}`,
                 isLoading: false
             }
         },
@@ -114,6 +127,7 @@ export const warehouseReducer = createSlice({
         },
 
         getBenchmarkProductivityFailed(state, action){
+            console.log(action)
             return {
                 ...state,
                 message: 'Benchmark Productivity fetch failed',
@@ -124,6 +138,7 @@ export const warehouseReducer = createSlice({
         putBenchmarkProductivity(state, action){
             return {
                 ...state,
+                message: '',
                 isLoading: true
             }
         },
@@ -143,12 +158,21 @@ export const warehouseReducer = createSlice({
                 isLoading: false
             }
         },
+        
+        updateFlagProductivityTableUpdatedValue(state, action) {
+            return {
+                ...state, 
+                flag_productivity_table_updated: action?.payload
+            }
+        },
+
         // END PRODUCTIVITY
         
         // START DEMAND
         postDemand(state, action){
             return {
                 ...state,
+                message: '',
                 isLoading: true
             }
         },
@@ -157,7 +181,6 @@ export const warehouseReducer = createSlice({
             return {
                 ...state,
                 demand_file_name: action?.payload?.fileName,
-                message: action?.payload?.message,
                 isLoading: false
             }
         },
@@ -165,7 +188,7 @@ export const warehouseReducer = createSlice({
         postDemandFailed(state, action){
             return {
                 ...state,
-                message: 'Demand file upload failed',
+                message: `Demand file upload failed : ${action?.payload?.error ? action?.payload?.error : ''}`,
                 isLoading: false
             }
         },
@@ -173,6 +196,7 @@ export const warehouseReducer = createSlice({
         getDemandForecast(state, action){
             return {
                 ...state,
+                message: '',
                 isLoading: true
             }
         },
@@ -196,6 +220,7 @@ export const warehouseReducer = createSlice({
         putDemandForecast(state, action){
             return {
                 ...state,
+                message: '',
                 isLoading: true
             }
         },
@@ -235,6 +260,14 @@ export const warehouseReducer = createSlice({
                 demand_table_data:  action?.payload
             }
         },
+
+        updateFlagDemandTableUpdatedValue(state, action) {
+            return {
+                ...state, 
+                flag_demand_table_updated: action?.payload
+            }
+        },
+
         // END DEMAND
 
         // START REQUIREMENT
@@ -274,8 +307,75 @@ export const warehouseReducer = createSlice({
         },
         // END REQUIREMENT
 
+        // START RESULT
+
+        updateResultStartDateValue(state, action) {
+            return {
+                ...state, 
+                result_start_date:  action?.payload
+            }
+        },
+
+        updateResultEndDateValue(state, action) {
+            return {
+                ...state, 
+                result_end_date:  action?.payload
+            }
+        },
+
+        postResult(state, action){
+            return {
+                ...state,
+                message: '',
+                isLoading: true
+            }
+        },
+
+        // @ts-ignore
+        postResultSuccess(state, action){
+            return {
+                ...state,
+                result_output: action?.payload?.output,
+                result_additional_data: action?.payload?.result_additional_data,
+                result_warehouse_name: action?.payload?.warehouse_name,
+                result_demand_vs_fulfillment_data: action?.payload?.demand_vs_fulfillment_data,
+                // @ts-ignore
+                result_categories: getResultCategories(action?.payload?.output),
+                isLoading: false
+            }
+        },
+
+        postResultFailed(state, action){
+            return {
+                ...state,
+                message: 'Result Calculate failed',
+                isLoading: false
+            }
+        },
+
+        updateResultCategoriesValue(state, action) {
+            return {
+                ...state, 
+                result_categories:  action?.payload
+            }
+        },
+
+        updateResultCategoryValue(state, action) {
+            return {
+                ...state, 
+                result_category:  action?.payload
+            }
+        },
+       
+        // END RESULT
+
     }
 })
+
+const getResultCategories = (output: any) => {
+    const resultCategoriesCols = (Object.keys (output[Object.keys(output)[0]]))
+    return resultCategoriesCols
+}
 
 export const {
     getWarehouses,
@@ -293,6 +393,7 @@ export const {
     putBenchmarkProductivity,
     putBenchmarkProductivitySuccess,
     putBenchmarkProductivityFailed,
+    updateFlagProductivityTableUpdatedValue,
     postDemand,
     postDemandSuccess,
     postDemandFailed,
@@ -305,11 +406,19 @@ export const {
     updateDemandTableDataColValue,
     updateModifiedDemandTableDataValue,
     updateDemandTableDataValue,
+    updateFlagDemandTableUpdatedValue,
     updatePercentageAbsentExpectedValue,
     updateNumCurrentEmployeesValue,
     updateTotalHiringBudgetValue,
     updateCostPerEmployeePerMonthValue,
-    updateDayWorkingHoursValue
+    updateDayWorkingHoursValue,
+    updateResultStartDateValue,
+    updateResultEndDateValue,
+    postResult,
+    postResultSuccess,
+    postResultFailed,
+    updateResultCategoriesValue,
+    updateResultCategoryValue
 } = warehouseReducer.actions
 
 export default warehouseReducer.reducer

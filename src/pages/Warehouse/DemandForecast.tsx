@@ -85,10 +85,8 @@ const DemandForecast = () => {
             if (fileObj) {
                 
                 const context = {
-                    start_date: '2023-05-24',
-                    // start_date: dayjs(warehouseState.planning_start_date).format('YYYY-MM-DD'),
-                    end_date: '2023-05-31',
-                    // end_date: dayjs(warehouseState.planning_end_date).format('YYYY-MM-DD'),
+                    start_date: dayjs(warehouseState.planning_start_date).format('YYYY-MM-DD'),
+                    end_date: dayjs(warehouseState.planning_end_date).format('YYYY-MM-DD'),
 
                 }
                 // @ts-ignore
@@ -99,7 +97,7 @@ const DemandForecast = () => {
         }
 
         return (
-            <Grid container direction='column' spacing={2} sx={{marginTop: '20px'}}>
+            <Grid container direction='column' spacing={2} sx={{marginTop: '10px'}}>
                 <Grid container item justifyContent='flex-start' alignContent='center' alignItems='center'>
                     <Grid item lg={8}>
                         <FormLabel 
@@ -121,7 +119,7 @@ const DemandForecast = () => {
                     </Grid>
                 </Grid>
 
-                <Grid container item justifyContent='flex-start' alignContent='center' alignItems='center' sx={{marginTop: '50px'}}>
+                <Grid container item justifyContent='flex-start' alignContent='center' alignItems='center' sx={{marginTop: '10px', height: '350px'}}>
 
                     { warehouseState.demand_table_cols && warehouseState.modified_demand_table_data && (
                         <FormDataGrid 
@@ -132,7 +130,7 @@ const DemandForecast = () => {
                     )}
                 </Grid>
 
-                <Grid container item justifyContent='center' alignContent='center' alignItems='center' sx={{marginTop: '50px'}}>
+                <Grid container item justifyContent='center' alignContent='center' alignItems='center' sx={{marginTop: '10px', height: '50px'}}>
                     {flagTableDataUpdated && (
                         <PrimaryButton 
                             id='save-demand-forecast-table-btn'

@@ -96,19 +96,14 @@ export const FormDataGrid = (props: {
 
     return (
         <StyledDataGrid
-
             processRowUpdate={props.processDataChange}
             rows={props.rows}
             columns={props.columns}
-            initialState={{
-            pagination: {
-                paginationModel: {
-                pageSize: 5,
-                },
-            },
-            }}
-            pageSizeOptions={[5]}
+            hideFooter={true}
             disableRowSelectionOnClick
+            // scrollbarSize={0}
+            showCellVerticalBorder={true}
+            showColumnVerticalBorder={true}            
       />
     )
 } 
