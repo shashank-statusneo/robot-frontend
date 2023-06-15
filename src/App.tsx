@@ -1,6 +1,4 @@
-import React, { useState } from 'react';
-import logo from './logo.svg';
-import styles from './App.module.css'; 
+import { useState } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import InventoryOptimizer from './pages/InventoryOptimizer';
 import WareHouse from './pages/Warehouse';

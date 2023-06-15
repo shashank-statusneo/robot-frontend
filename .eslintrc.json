@@ -29,7 +29,7 @@
         "@typescript-eslint/no-explicit-any": "off",
         // "@typescript-eslint/camelcase": ["warn"],
         "react/react-in-jsx-scope": "off",
-        "camelcase": "warn",
+        "camelcase": "off",
         "spaced-comment": "warn",
         "quotes": ["error", "single"],
         "no-duplicate-imports": "error"
