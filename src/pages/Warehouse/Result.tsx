@@ -1,7 +1,7 @@
-import { Container, Grid, Paper, Typography } from '@mui/material'
+import { Container, Grid, Paper } from '@mui/material'
 import { useEffect, useState } from 'react'
 
-import { PrimaryButton } from '../../components/Buttons'
+import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks'
 import {
     FormMultiDropDown,
     FormLabel,
@@ -10,133 +10,42 @@ import {
     FormSubLabel,
     FormDropDown,
 } from '../../components/FormElements'
-import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks'
 import { FormGraph } from '../../components/Table'
-import { useNavigate } from 'react-router-dom'
 import {
     updateResultStartDate,
     updateResultEndDate,
     postResultData,
     updateResultCategories,
     updateResultCategory,
+    updateResultTable,
 } from '../../redux/actions/warehouse'
 import dayjs from 'dayjs'
-import { lineData } from './constants'
+import { lineData, ResultTableTypes } from './constants'
 
 import { createTheme, ThemeProvider } from '@mui/material/styles'
-import warehouse from '../../redux/reducer/warehouse'
 const theme = createTheme()
 
 const Result = () => {
-    const navigate = useNavigate()
     const dispatch = useAppDispatch()
 
     // @ts-ignore
     const warehouseState = useAppSelector((state) => state.warehouseReducer)
 
-    // const [selectedCategory, setSelectedCategory] = useState(null)
     const [selectedCategory, setSelectedCategory] = useState<any[]>([])
 
     const [resultChartData, setResultChartData] = useState<any>({})
 
     const [selectedTable, setSelectedTable] = useState(null)
 
-    const TableTypes = [
-        {
-            id: 0,
-            name: 'Category-wise schedule',
-        },
-        {
-            id: 1,
-            name: 'Other Type',
-        },
-    ]
+    const [cardData, setCardData] = useState({
+        num_employees_to_be_hired: 0,
+        project_fulfillment: 0,
+        total_hiring_budget: '',
+    })
 
-    const fetchData = () => {
-        const payload = {
-            plan_from_date: dayjs(warehouseState.planning_start_date).format(
-                'YYYY-MM-DD',
-            ),
-            plan_to_date: dayjs(warehouseState.planning_end_date).format(
-                'YYYY-MM-DD',
-            ),
-            num_current_employees: warehouseState.num_current_employees,
-            day_working_hours: warehouseState.day_working_hours,
-            warehouse_id: warehouseState.planning_warehouse.id,
-            cost_per_employee_per_month:
-                warehouseState.cost_per_employee_per_month,
-            percentage_absent_expected:
-                warehouseState.percentage_absent_expected,
-            total_hiring_budget: warehouseState.total_hiring_budget,
-        }
-        // @ts-ignore
-        dispatch(postResultData(payload))
-    }
-
-    useEffect(() => {
-        fetchData()
-    }, [])
-
-    useEffect(() => {
-        const startDate = dayjs(warehouseState.result_start_date).format(
-            'YYYY-MM-DD',
-        )
-        const endDate = dayjs(warehouseState.result_end_date).format(
-            'YYYY-MM-DD',
-        )
-
-        const filteredDates = Object.keys(
-            warehouseState.result_demand_vs_fulfillment_data,
-        ).filter((date) => {
-            if (startDate && endDate) {
-                return date >= startDate && date <= endDate
-            } else if (startDate) {
-                return date >= startDate
-            } else if (endDate) {
-                return date <= endDate
-            }
-            return true
-        })
-
-        let demands: any = []
-        let expected_fulfillments: any = []
-        let existing_fulfillments: any = []
-        if (warehouseState.result_category.length === 0) {
-            console.log('no selected category')
-            demands = filteredDates.map(
-                (date) =>
-                    warehouseState.result_demand_vs_fulfillment_data[date].total
-                        .expected_demand,
-            )
-            expected_fulfillments = filteredDates.map(
-                (date) =>
-                    warehouseState.result_demand_vs_fulfillment_data[date].total
-                        .fulfillment_with_total,
-            )
-            existing_fulfillments = filteredDates.map(
-                (date) =>
-                    warehouseState.result_demand_vs_fulfillment_data[date].total
-                        .fulfillment_with_current,
-            )
-        }
-
-        // TODO: add logic for result category selected
-        const graphData: any = []
-        for (let i = 0; i < demands.length; i++) {
-            graphData.push({
-                date: filteredDates[i],
-                Demand: demands[i],
-                'Expected Fulfillment': expected_fulfillments[i],
-                'Fulfillment With Existing': existing_fulfillments[i],
-            })
-        }
-
-        setResultChartData(graphData)
-    }, [
-        warehouseState.result_category,
-        warehouseState.result_start_date,
-        warehouseState.result_end_date,
-    ])
+    const [outputData, setOutputData] = useState(null)
+    const [totalData, setTotalData] = useState<any>(null)
+    const [demandData, setDemandData] = useState(null)
 
     const handleSelectedCategoryChange = (e: any) => {
         const {
@@ -163,27 +72,262 @@ const Result = () => {
     }
 
     const handleSelectedTableChange = (e: any) => {
-        setSelectedTable(e.target.value)
+        setSelectedTable(
+            ResultTableTypes.find((obj: any) => {
+                return obj.id === e.target.value
+            }),
+        )
+        dispatch(
+            // @ts-ignore
+            updateResultTable(
+                ResultTableTypes.find((obj: any) => {
+                    return obj.id === e.target.value
+                }),
+            ),
+        )
     }
+
+    const TotalValueFromResult = (filterDates: any, valueType: any) => {
+        return filterDates.map((date: any) => {
+            let totalSum = 0
+            for (const category of warehouseState.result_category) {
+                totalSum =
+                    totalSum +
+                    warehouseState.result_demand_vs_fulfillment_data[date][
+                        category
+                    ][valueType]
+            }
+            return totalSum
+        })
+    }
+
+    const fetchData = () => {
+        const payload = {
+            plan_from_date: dayjs(warehouseState.planning_start_date).format(
+                'YYYY-MM-DD',
+            ),
+            plan_to_date: dayjs(warehouseState.planning_end_date).format(
+                'YYYY-MM-DD',
+            ),
+            num_current_employees: warehouseState.num_current_employees,
+            day_working_hours: warehouseState.day_working_hours,
+            warehouse_id: warehouseState.planning_warehouse.id,
+            cost_per_employee_per_month:
+                warehouseState.cost_per_employee_per_month,
+            percentage_absent_expected:
+                warehouseState.percentage_absent_expected,
+            total_hiring_budget: warehouseState.total_hiring_budget,
+        }
+        // @ts-ignore
+        dispatch(postResultData(payload))
+        setSelectedTable(ResultTableTypes[0])
+    }
+
+    useEffect(() => {
+        fetchData()
+    }, [])
+
+    useEffect(() => {
+        const startDate = dayjs(warehouseState.result_start_date).format(
+            'YYYY-MM-DD',
+        )
+        const endDate = dayjs(warehouseState.result_end_date).format(
+            'YYYY-MM-DD',
+        )
+
+        if (warehouseState.result_demand_vs_fulfillment_data) {
+            const filteredDates = Object.keys(
+                warehouseState.result_demand_vs_fulfillment_data,
+            ).filter((date) => {
+                if (startDate && endDate) {
+                    return date >= startDate && date <= endDate
+                } else if (startDate) {
+                    return date >= startDate
+                } else if (endDate) {
+                    return date <= endDate
+                }
+                return true
+            })
+
+            let demands: any = []
+            let expected_fulfillments: any = []
+            let existing_fulfillments: any = []
+            if (warehouseState.result_category.length === 0) {
+                demands = filteredDates.map(
+                    (date) =>
+                        warehouseState.result_demand_vs_fulfillment_data[date]
+                            .total.expected_demand,
+                )
+                expected_fulfillments = filteredDates.map(
+                    (date) =>
+                        warehouseState.result_demand_vs_fulfillment_data[date]
+                            .total.fulfillment_with_total,
+                )
+                existing_fulfillments = filteredDates.map(
+                    (date) =>
+                        warehouseState.result_demand_vs_fulfillment_data[date]
+                            .total.fulfillment_with_current,
+                )
+            } else {
+                demands = TotalValueFromResult(filteredDates, 'expected_demand')
+                expected_fulfillments = TotalValueFromResult(
+                    filteredDates,
+                    'fulfillment_with_total',
+                )
+                existing_fulfillments = TotalValueFromResult(
+                    filteredDates,
+                    'fulfillment_with_current',
+                )
+            }
+
+            const graphData: any = []
+            for (let i = 0; i < demands.length; i++) {
+                graphData.push({
+                    date: filteredDates[i],
+                    Demand: demands[i],
+                    'Expected Fulfillment': expected_fulfillments[i],
+                    'Fulfillment With Existing': existing_fulfillments[i],
+                })
+            }
+            setResultChartData(graphData)
+        }
+
+        if (
+            warehouseState.result_output &&
+            warehouseState.result_demand_vs_fulfillment_data
+        ) {
+            const filteredData = Object.keys(warehouseState.result_output)
+                .filter((date) => {
+                    if (startDate && endDate) {
+                        return date >= startDate && date <= endDate
+                    } else if (startDate) {
+                        return date >= startDate
+                    } else if (endDate) {
+                        return date <= endDate
+                    }
+                    return true
+                })
+                .reduce((filtered: any, date) => {
+                    const categories = Object.keys(
+                        warehouseState.result_output[date],
+                    )
+                    categories.forEach((category) => {
+                        if (
+                            selectedCategory.length == 0 ||
+                            selectedCategory.includes(category)
+                        ) {
+                            if (!filtered[date]) {
+                                filtered[date] = {}
+                            }
+                            filtered[date][category] =
+                                warehouseState.result_output[date][category]
+                        }
+                    })
+                    return filtered
+                }, {})
+
+            const filteredDemandData = Object.keys(
+                warehouseState.result_demand_vs_fulfillment_data,
+            )
+                .filter((date) => {
+                    if (startDate && endDate) {
+                        return date >= startDate && date <= endDate
+                    } else if (startDate) {
+                        return date >= startDate
+                    } else if (endDate) {
+                        return date <= endDate
+                    }
+                    return true
+                })
+                .reduce((filtered: any, date) => {
+                    const categories = Object.keys(
+                        warehouseState.result_demand_vs_fulfillment_data[date],
+                    )
+                    categories.forEach((category) => {
+                        if (
+                            selectedCategory.length == 0 ||
+                            selectedCategory.includes(category)
+                        ) {
+                            if (!filtered[date]) {
+                                filtered[date] = {}
+                            }
+                            filtered[date][category] =
+                                warehouseState.result_demand_vs_fulfillment_data[
+                                    date
+                                ][category]
+                        }
+                    })
+                    return filtered
+                }, {})
+
+            const uniqueDates = Object.keys(filteredData).filter(
+                (key) => key !== 'total' && key !== 'additional_data',
+            )
+
+            const totalData = uniqueDates.reduce(
+                (acc, date) => {
+                    const categories = Object.keys(filteredData[date])
+                    categories.forEach((category) => {
+                        acc.num_of_existing_to_deploy +=
+                            filteredData[date][
+                                category
+                            ].num_of_existing_to_deploy
+                        acc.num_of_new_to_deploy +=
+                            filteredData[date][category].num_of_new_to_deploy
+                        acc.total += filteredData[date][category].total
+                    })
+                    return acc
+                },
+                {
+                    num_of_existing_to_deploy: 0,
+                    num_of_new_to_deploy: 0,
+                    total: 0,
+                },
+            )
+            setOutputData(filteredData)
+            setTotalData(totalData)
+            setDemandData(filteredDemandData)
+        }
+    }, [
+        warehouseState.result_demand_vs_fulfillment_data,
+        warehouseState.result_category,
+        warehouseState.result_start_date,
+        warehouseState.result_end_date,
+    ])
+
+    useEffect(() => {
+        if (warehouseState.result_additional_data) {
+            setCardData({
+                ...cardData,
+                project_fulfillment: warehouseState.result_additional_data
+                    .project_fulfillment
+                    ? warehouseState.result_additional_data.project_fulfillment
+                    : 0,
+                // @ts-ignore
+                total_hiring_budget: warehouseState.result_additional_data
+                    .total_hiring_budget
+                    ? ' ' +
+                      warehouseState.result_additional_data.total_hiring_budget.toLocaleString(
+                          'en-IN',
+                      )
+                    : 0,
+            })
+        }
+    }, [warehouseState.result_additional_data])
 
     const cardItems = [
         {
-            value: warehouseState?.result_additional_data?.project_fulfillment
-                ? warehouseState?.result_additional_data?.project_fulfillment
+            value: totalData?.num_of_new_to_deploy
+                ? totalData?.num_of_new_to_deploy
                 : 0,
             label: 'Num employees to be hired',
         },
         {
-            value: warehouseState?.result_additional_data?.project_fulfillment
-                ? warehouseState?.result_additional_data?.project_fulfillment
-                : 0,
+            value: cardData?.project_fulfillment,
             label: 'Project fulfillment',
         },
         {
-            // value: '₹ 2,25,000',
-            value: warehouseState?.result_additional_data?.total_hiring_budget
-                ? warehouseState?.result_additional_data?.total_hiring_budget
-                : 0,
+            value: cardData?.total_hiring_budget,
             label: 'Project total expenditure',
         },
     ]
@@ -196,10 +340,13 @@ const Result = () => {
                                 'DD MMM YYYY',
                             )}`
 
+    console.log('outputData', outputData)
+    console.log('totalData', totalData)
+    console.log('demandData', demandData)
+
     return (
         <ThemeProvider theme={theme}>
             <Container component='main' sx={{ flexGrow: 1 }} fixed>
-                {/* <Form /> */}
                 <Grid
                     container
                     direction='column'
@@ -327,7 +474,7 @@ const Result = () => {
                             alignItems='center'
                         >
                             <Grid item>
-                                <FormLabel label='Expected Demand vs Fulfilment' />
+                                <FormLabel label='Expected Demand vs Fulfillment' />
                             </Grid>
                             <Grid item lg={12}>
                                 <Paper
@@ -374,11 +521,11 @@ const Result = () => {
                                         labelId='select-table-dropdown-input-label'
                                         label=''
                                         value={
-                                            selectedTable
-                                                ? selectedTable
-                                                : TableTypes[0]
+                                            warehouseState.result_table
+                                                ? warehouseState.result_table
+                                                : selectedTable
                                         }
-                                        data={TableTypes}
+                                        data={ResultTableTypes}
                                         onChange={handleSelectedTableChange}
                                     />
                                 </Grid>

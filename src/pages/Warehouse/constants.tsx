@@ -57,3 +57,14 @@ export const lineData = [
         stroke: '#FF7078',
     },
 ]
+
+export const ResultTableTypes: any = [
+    {
+        id: 1,
+        name: 'Category-wise schedule',
+    },
+    {
+        id: 2,
+        name: 'Other Type',
+    },
+]

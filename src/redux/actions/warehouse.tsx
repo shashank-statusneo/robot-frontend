@@ -52,6 +52,7 @@ import {
     postResultFailed,
     updateResultCategoriesValue,
     updateResultCategoryValue,
+    updateResultTableValue,
 } from '../reducer/warehouse'
 
 import { demandForecastTableColumns } from '../../pages/Warehouse/constants'
@@ -322,4 +323,9 @@ export const updateResultCategories = (payload) => async (dispatch) => {
 // @ts-ignore
 export const updateResultCategory = (payload) => async (dispatch) => {
     await dispatch(updateResultCategoryValue(payload))
+}
+
+// @ts-ignore
+export const updateResultTable = (payload) => async (dispatch) => {
+    await dispatch(updateResultTableValue(payload))
 }

@@ -16,8 +16,8 @@ const initialState = {
     modified_demand_table_data: null,
     demand_table_cols: null,
     flag_demand_table_updated: false,
-    percentage_absent_expected: '', 
-    num_current_employees: '', 
+    percentage_absent_expected: '',
+    num_current_employees: '',
     total_hiring_budget: '',
     cost_per_employee_per_month: '',
     day_working_hours: '',
@@ -28,7 +28,8 @@ const initialState = {
     result_warehouse_name: null,
     result_demand_vs_fulfillment_data: null,
     result_categories: null,
-    result_category: null
+    result_category: [],
+    result_table: null,
 }
 
 // @ts-ignore
@@ -36,273 +37,275 @@ export const warehouseReducer = createSlice({
     name: 'warehouse',
     initialState,
     reducers: {
-
         // START WAREHOUSE
-        getWarehouses(state, action){
+        getWarehouses(state, action) {
             return {
                 ...state,
                 message: '',
-                isLoading: true
+                isLoading: true,
             }
         },
 
-        getWarehousesSuccess(state, action){
+        getWarehousesSuccess(state, action) {
             return {
                 ...state,
                 warehouses: action?.payload,
-                isLoading: false
+                isLoading: false,
             }
         },
 
-        getWarehousesFailed(state, action){
+        getWarehousesFailed(state, action) {
             return {
                 ...state,
                 message: 'Warehouse fetch failed',
-                isLoading: false
+                isLoading: false,
             }
         },
 
         updatePlanningWarehouseValue(state, action) {
             return {
-                ...state, 
-                planning_warehouse:  action?.payload
+                ...state,
+                planning_warehouse: action?.payload,
             }
         },
-       
+
         updatePlanningStartDateValue(state, action) {
             return {
-                ...state, 
-                planning_start_date:  action?.payload
+                ...state,
+                planning_start_date: action?.payload,
             }
         },
 
         updatePlanningEndDateValue(state, action) {
             return {
-                ...state, 
-                planning_end_date:  action?.payload
+                ...state,
+                planning_end_date: action?.payload,
             }
         },
 
-        
         // END WAREHOUSE
 
         // START PRODUCTIVITY
-        postProductivity(state, action){
+        postProductivity(state, action) {
             return {
                 ...state,
                 message: '',
-                isLoading: true
+                isLoading: true,
             }
         },
 
-        postProductivitySuccess(state, action){
+        postProductivitySuccess(state, action) {
             return {
                 ...state,
                 productivity_file_name: action?.payload?.fileName,
-                isLoading: false
+                isLoading: false,
             }
         },
 
-        postProductivityFailed(state, action){
+        postProductivityFailed(state, action) {
             return {
                 ...state,
-                message: `Productivity file upload failed : ${action?.payload?.error ? action?.payload?.error : ''}`,
-                isLoading: false
+                message: `Productivity file upload failed : ${
+                    action?.payload?.error ? action?.payload?.error : ''
+                }`,
+                isLoading: false,
             }
         },
 
-        getBenchmarkProductivity(state, action){
+        getBenchmarkProductivity(state, action) {
             return {
                 ...state,
-                isLoading: true
+                isLoading: true,
             }
         },
 
-        getBenchmarkProductivitySuccess(state, action){
+        getBenchmarkProductivitySuccess(state, action) {
             return {
                 ...state,
                 productivity_table_data: action?.payload,
-                isLoading: false
+                isLoading: false,
             }
         },
 
-        getBenchmarkProductivityFailed(state, action){
+        getBenchmarkProductivityFailed(state, action) {
             console.log(action)
             return {
                 ...state,
                 message: 'Benchmark Productivity fetch failed',
-                isLoading: false
+                isLoading: false,
             }
         },
 
-        putBenchmarkProductivity(state, action){
+        putBenchmarkProductivity(state, action) {
             return {
                 ...state,
                 message: '',
-                isLoading: true
+                isLoading: true,
             }
         },
 
-        putBenchmarkProductivitySuccess(state, action){
+        putBenchmarkProductivitySuccess(state, action) {
             return {
                 ...state,
-                productivity_table_data:  action?.payload,
-                isLoading: false
+                productivity_table_data: action?.payload,
+                isLoading: false,
             }
         },
 
-        putBenchmarkProductivityFailed(state, action){
+        putBenchmarkProductivityFailed(state, action) {
             return {
                 ...state,
                 message: 'Benchmark Productivity update failed',
-                isLoading: false
+                isLoading: false,
             }
         },
-        
+
         updateFlagProductivityTableUpdatedValue(state, action) {
             return {
-                ...state, 
-                flag_productivity_table_updated: action?.payload
+                ...state,
+                flag_productivity_table_updated: action?.payload,
             }
         },
 
         // END PRODUCTIVITY
-        
+
         // START DEMAND
-        postDemand(state, action){
+        postDemand(state, action) {
             return {
                 ...state,
                 message: '',
-                isLoading: true
+                isLoading: true,
             }
         },
 
-        postDemandSuccess(state, action){
+        postDemandSuccess(state, action) {
             return {
                 ...state,
                 demand_file_name: action?.payload?.fileName,
-                isLoading: false
+                isLoading: false,
             }
         },
 
-        postDemandcls(state, action){
+        postDemandcls(state, action) {
             return {
                 ...state,
-                message: `Demand file upload failed : ${action?.payload?.error ? action?.payload?.error : ''}`,
-                isLoading: false
+                message: `Demand file upload failed : ${
+                    action?.payload?.error ? action?.payload?.error : ''
+                }`,
+                isLoading: false,
             }
         },
 
-        getDemandForecast(state, action){
+        getDemandForecast(state, action) {
             return {
                 ...state,
                 message: '',
-                isLoading: true
+                isLoading: true,
             }
         },
 
-        getDemandForecastSuccess(state, action){
+        getDemandForecastSuccess(state, action) {
             return {
                 ...state,
                 demand_table_data: action?.payload,
-                isLoading: false
+                isLoading: false,
             }
         },
 
-        getDemandForecastFailed(state, action){
+        getDemandForecastFailed(state, action) {
             return {
                 ...state,
                 message: 'Demand Forecast fetch failed',
-                isLoading: false
+                isLoading: false,
             }
         },
 
-        putDemandForecast(state, action){
+        putDemandForecast(state, action) {
             return {
                 ...state,
                 message: '',
-                isLoading: true
+                isLoading: true,
             }
         },
 
-        putDemandForecastSuccess(state, action){
+        putDemandForecastSuccess(state, action) {
             return {
                 ...state,
                 modified_demand_table_data: action?.payload,
-                isLoading: false
+                isLoading: false,
             }
         },
 
-        putDemandForecastFailed(state, action){
+        putDemandForecastFailed(state, action) {
             return {
                 ...state,
                 message: 'Demand Forecsat update failed',
-                isLoading: false
+                isLoading: false,
             }
         },
 
-        updateDemandTableDataColValue(state, action){
+        updateDemandTableDataColValue(state, action) {
             return {
-                ...state, 
-                demand_table_cols:  action?.payload
+                ...state,
+                demand_table_cols: action?.payload,
             }
         },
 
-        updateModifiedDemandTableDataValue(state, action){
+        updateModifiedDemandTableDataValue(state, action) {
             return {
-                ...state, 
-                modified_demand_table_data:  action?.payload
+                ...state,
+                modified_demand_table_data: action?.payload,
             }
         },
-        updateDemandTableDataValue(state, action){
+        updateDemandTableDataValue(state, action) {
             return {
-                ...state, 
-                demand_table_data:  action?.payload
+                ...state,
+                demand_table_data: action?.payload,
             }
         },
 
         updateFlagDemandTableUpdatedValue(state, action) {
             return {
-                ...state, 
-                flag_demand_table_updated: action?.payload
+                ...state,
+                flag_demand_table_updated: action?.payload,
             }
         },
 
         // END DEMAND
 
         // START REQUIREMENT
-        updatePercentageAbsentExpectedValue(state, action){
-        return {
-            ...state, 
-            percentage_absent_expected: action?.payload,
+        updatePercentageAbsentExpectedValue(state, action) {
+            return {
+                ...state,
+                percentage_absent_expected: action?.payload,
             }
         },
 
-        updateNumCurrentEmployeesValue(state, action){
-        return {
-            ...state, 
-            num_current_employees: action?.payload,
+        updateNumCurrentEmployeesValue(state, action) {
+            return {
+                ...state,
+                num_current_employees: action?.payload,
             }
         },
 
-        updateTotalHiringBudgetValue(state, action){
-        return {
-            ...state, 
-            total_hiring_budget: action?.payload,
+        updateTotalHiringBudgetValue(state, action) {
+            return {
+                ...state,
+                total_hiring_budget: action?.payload,
             }
         },
 
-        updateCostPerEmployeePerMonthValue(state, action){
-        return {
-            ...state, 
-            cost_per_employee_per_month: action?.payload,
+        updateCostPerEmployeePerMonthValue(state, action) {
+            return {
+                ...state,
+                cost_per_employee_per_month: action?.payload,
             }
         },
-        
-        updateDayWorkingHoursValue(state, action){
-        return {
-            ...state, 
-            day_working_hours: action?.payload,
+
+        updateDayWorkingHoursValue(state, action) {
+            return {
+                ...state,
+                day_working_hours: action?.payload,
             }
         },
         // END REQUIREMENT
@@ -311,69 +314,76 @@ export const warehouseReducer = createSlice({
 
         updateResultStartDateValue(state, action) {
             return {
-                ...state, 
-                result_start_date:  action?.payload
+                ...state,
+                result_start_date: action?.payload,
             }
         },
 
         updateResultEndDateValue(state, action) {
             return {
-                ...state, 
-                result_end_date:  action?.payload
+                ...state,
+                result_end_date: action?.payload,
             }
         },
 
-        postResult(state, action){
+        postResult(state, action) {
             return {
                 ...state,
                 message: '',
-                isLoading: true
+                isLoading: true,
             }
         },
 
         // @ts-ignore
-        postResultSuccess(state, action){
+        postResultSuccess(state, action) {
             return {
                 ...state,
                 result_output: action?.payload?.output,
-                result_additional_data: action?.payload?.result_additional_data,
+                result_additional_data: action?.payload?.additional_data,
                 result_warehouse_name: action?.payload?.warehouse_name,
-                result_demand_vs_fulfillment_data: action?.payload?.demand_vs_fulfillment_data,
+                result_demand_vs_fulfillment_data:
+                    action?.payload?.demand_vs_fulfillment_data,
                 // @ts-ignore
                 result_categories: getResultCategories(action?.payload?.output),
-                isLoading: false
+                isLoading: false,
             }
         },
 
-        postResultFailed(state, action){
+        postResultFailed(state, action) {
             return {
                 ...state,
                 message: 'Result Calculate failed',
-                isLoading: false
+                isLoading: false,
             }
         },
 
         updateResultCategoriesValue(state, action) {
             return {
-                ...state, 
-                result_categories:  action?.payload
+                ...state,
+                result_categories: action?.payload,
             }
         },
 
         updateResultCategoryValue(state, action) {
             return {
-                ...state, 
-                result_category:  action?.payload
+                ...state,
+                result_category: action?.payload,
             }
         },
-       
-        // END RESULT
 
-    }
+        updateResultTableValue(state, action) {
+            return {
+                ...state,
+                result_table: action?.payload,
+            }
+        },
+
+        // END RESULT
+    },
 })
 
 const getResultCategories = (output: any) => {
-    const resultCategoriesCols = (Object.keys (output[Object.keys(output)[0]]))
+    const resultCategoriesCols = Object.keys(output[Object.keys(output)[0]])
     return resultCategoriesCols
 }
 
@@ -418,8 +428,8 @@ export const {
     postResultSuccess,
     postResultFailed,
     updateResultCategoriesValue,
-    updateResultCategoryValue
+    updateResultCategoryValue,
+    updateResultTableValue,
 } = warehouseReducer.actions
 
 export default warehouseReducer.reducer
-
