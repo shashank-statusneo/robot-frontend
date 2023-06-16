@@ -1,4 +1,4 @@
-import { GridColDef } from '@mui/x-data-grid';
+import { GridColDef } from '@mui/x-data-grid'
 
 export const benchmarkProductivityTableColumns: GridColDef[] = [
     {
@@ -31,12 +31,29 @@ export const benchmarkProductivityTableColumns: GridColDef[] = [
     },
 ]
 
-export const demandForecastTableColumns: GridColDef[] = [{
-    field: 'date',
-    headerName: 'Date',
-    flex: 1,
-    headerAlign: 'center',
-    align: 'center',
-    headerClassName: 'header',
-    minWidth: 200
-}]
+export const demandForecastTableColumns: GridColDef[] = [
+    {
+        field: 'date',
+        headerName: 'Date',
+        flex: 1,
+        headerAlign: 'center',
+        align: 'center',
+        headerClassName: 'header',
+        minWidth: 200,
+    },
+]
+
+export const lineData = [
+    {
+        key: 'Demand',
+        stroke: '#8B7AFF',
+    },
+    {
+        key: 'Expected Fulfillment',
+        stroke: '#45AC54',
+    },
+    {
+        key: 'Fulfillment With Existing',
+        stroke: '#FF7078',
+    },
+]

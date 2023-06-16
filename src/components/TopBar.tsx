@@ -1,11 +1,23 @@
-import React from 'react';
-import {AppBar, Container, Toolbar, Box, Button, IconButton, Badge, Tooltip, Menu, Avatar, MenuItem, Typography} from '@mui/material'
+import React from 'react'
+import {
+    AppBar,
+    Container,
+    Toolbar,
+    Box,
+    Button,
+    IconButton,
+    Badge,
+    Tooltip,
+    Menu,
+    Avatar,
+    MenuItem,
+    Typography,
+} from '@mui/material'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import { useLocation, useNavigate } from 'react-router-dom'
-import UserSession from '../services/auth';
+import UserSession from '../services/auth'
 
 const TopBar = () => {
-
     const location = useLocation()
     const navigate = useNavigate()
 
@@ -15,7 +27,7 @@ const TopBar = () => {
     // @ts-ignore
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget)
-    }   
+    }
 
     // @ts-ignore
     const handleOpenUserMenu = (event) => {
@@ -32,26 +44,26 @@ const TopBar = () => {
 
     return (
         <AppBar position='static'>
-            <Container maxWidth="xl">
-            <Toolbar disableGutters> 
-                <Box
-                    sx={{
-                        flexGrow: 1,
-                        display: { xs: 'none', md: 'flex' },
-                    }}
-                >   
-                  {UserSession.isAuthenticated() && (
-                        <Button
-                            key="dashboard"
-                            onClick={() => navigate('/inventory_optimizer')}
-                            sx={{ my: 2, color: 'white', display: 'block' }}
-                        >
-                            Optimization
-                        </Button>
-                    )}
-                </Box>
+            <Container maxWidth='xl'>
+                <Toolbar disableGutters>
+                    <Box
+                        sx={{
+                            flexGrow: 1,
+                            display: { xs: 'none', md: 'flex' },
+                        }}
+                    >
+                        {UserSession.isAuthenticated() && (
+                            <Button
+                                key='dashboard'
+                                onClick={() => navigate('/inventory_optimizer')}
+                                sx={{ my: 2, color: 'white', display: 'block' }}
+                            >
+                                Optimization
+                            </Button>
+                        )}
+                    </Box>
 
-                {UserSession.isAuthenticated() ? (
+                    {UserSession.isAuthenticated() ? (
                         <>
                             {/* <IconButton
                                 size="large"
@@ -63,20 +75,20 @@ const TopBar = () => {
                                 </Badge>
                             </IconButton> */}
                             <Box sx={{ flexGrow: 0 }}>
-                                <Tooltip title="Open settings">
+                                <Tooltip title='Open settings'>
                                     <IconButton
                                         onClick={handleOpenUserMenu}
                                         sx={{ p: 0 }}
                                     >
                                         <Avatar
-                                            alt="Remy Sharp"
-                                            src="./profilepic.svg"
+                                            alt='Remy Sharp'
+                                            src='./profilepic.svg'
                                         />
                                     </IconButton>
                                 </Tooltip>
                                 <Menu
                                     sx={{ mt: '45px' }}
-                                    id="menu-appbar"
+                                    id='menu-appbar'
                                     anchorEl={anchorElUser}
                                     anchorOrigin={{
                                         vertical: 'top',
@@ -98,12 +110,12 @@ const TopBar = () => {
                                         Profile
                                     </MenuItem>
                                     <MenuItem onClick={handleCloseUserMenu}>
-                                        <Typography textAlign="center">
+                                        <Typography textAlign='center'>
                                             Account
                                         </Typography>
                                     </MenuItem>
                                     <MenuItem onClick={handleCloseUserMenu}>
-                                        <Typography textAlign="center">
+                                        <Typography textAlign='center'>
                                             Dashboard
                                         </Typography>
                                     </MenuItem>
@@ -120,7 +132,7 @@ const TopBar = () => {
                         </>
                     ) : location.pathname === '/signup' ? (
                         <Button
-                            key="Login"
+                            key='Login'
                             onClick={() => navigate('/signin')}
                             sx={{ my: 2, color: 'white', display: 'block' }}
                         >
@@ -128,23 +140,17 @@ const TopBar = () => {
                         </Button>
                     ) : (
                         <Button
-                            key="Signup"
+                            key='Signup'
                             onClick={() => navigate('/signup')}
                             sx={{ my: 2, color: 'white', display: 'block' }}
                         >
                             Sign Up
                         </Button>
                     )}
-
-
-
-            </Toolbar>  
-         
+                </Toolbar>
             </Container>
-         
         </AppBar>
-    
     )
 }
 
-export default TopBar;
+export default TopBar

@@ -1,7 +1,6 @@
-
 interface User {
-    access_token: null | undefined;
-    refresh_token: null | undefined;
+    access_token: null | undefined
+    refresh_token: null | undefined
 }
 
 const getToken = () => {
@@ -21,7 +20,6 @@ const setUserToken = (token: string) => {
     const user = JSON.parse(localStorage.getItem('user'))
     user.access_token = token
 }
-  
 
 const getUser = () => {
     return localStorage.getItem('user')
@@ -39,7 +37,6 @@ const removeUser = () => {
 const isAuthenticated = () => {
     //@ts-ignore
     return JSON.parse(localStorage.getItem('user')) !== null
-
 }
 
 const UserSession = {

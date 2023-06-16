@@ -1,6 +1,16 @@
-import { GET_WAREHOUSE_API, UPLOAD_PRODUCTIVITY_FILE_API, BENCHMARK_PRODUCTIVITY_API,UPLOAD_DEMAND_FILE_API, DEMAND_FORECAST_API, RESULT_API } from '../../services/routes'
-import {warehouseApiClient, warehouseApiClientForForm} from '../../services/apiClient'
-import { 
+import {
+    GET_WAREHOUSE_API,
+    UPLOAD_PRODUCTIVITY_FILE_API,
+    BENCHMARK_PRODUCTIVITY_API,
+    UPLOAD_DEMAND_FILE_API,
+    DEMAND_FORECAST_API,
+    RESULT_API,
+} from '../../services/routes'
+import {
+    warehouseApiClient,
+    warehouseApiClientForForm,
+} from '../../services/apiClient'
+import {
     getWarehouses,
     getWarehousesSuccess,
     getWarehousesFailed,
@@ -41,21 +51,19 @@ import {
     postResultSuccess,
     postResultFailed,
     updateResultCategoriesValue,
-    updateResultCategoryValue
+    updateResultCategoryValue,
 } from '../reducer/warehouse'
 
 import { demandForecastTableColumns } from '../../pages/Warehouse/constants'
 
-
 // @ts-ignore
-export const getWarehouse = () => async dispatch => {
-
+export const getWarehouse = () => async (dispatch) => {
     console.log('Calling action : getWarehouse()')
     // @ts-ignore
     await dispatch(getWarehouses())
     try {
-        const response = await warehouseApiClient.get(GET_WAREHOUSE_API);
-        if (response.status === 200){            
+        const response = await warehouseApiClient.get(GET_WAREHOUSE_API)
+        if (response.status === 200) {
             return dispatch(getWarehousesSuccess(response.data))
         }
         return dispatch(getWarehousesFailed(response))
@@ -65,49 +73,52 @@ export const getWarehouse = () => async dispatch => {
 }
 
 // @ts-ignore
-export const updatePlanningWarehouse = (payload) => async dispatch => {
+export const updatePlanningWarehouse = (payload) => async (dispatch) => {
     await dispatch(updatePlanningWarehouseValue(payload))
 }
 
 // @ts-ignore
-export const updatePlanningStartDate = (payload) => async dispatch => {
+export const updatePlanningStartDate = (payload) => async (dispatch) => {
     await dispatch(updatePlanningStartDateValue(payload))
 }
 
 // @ts-ignore
-export const updatePlanningEndDate = (payload) => async dispatch => {
+export const updatePlanningEndDate = (payload) => async (dispatch) => {
     await dispatch(updatePlanningEndDateValue(payload))
 }
 
-// @ts-ignore
-export const uploadProductivityFile = (payload, id, fileName) => async dispatch => {
-
-    console.log('Calling action : uploadProductivityFile()')
+export const uploadProductivityFile =
     // @ts-ignore
-    await dispatch(postProductivity())
-    try {
-        const response = await warehouseApiClientForForm.post(`${UPLOAD_PRODUCTIVITY_FILE_API}/${id}`, payload);
-        if (response.status === 201){ 
-            response.data.fileName = fileName           
-            return dispatch(postProductivitySuccess(response.data))
+    (payload, id, fileName) => async (dispatch) => {
+        console.log('Calling action : uploadProductivityFile()')
+        // @ts-ignore
+        await dispatch(postProductivity())
+        try {
+            const response = await warehouseApiClientForForm.post(
+                `${UPLOAD_PRODUCTIVITY_FILE_API}/${id}`,
+                payload,
+            )
+            if (response.status === 201) {
+                response.data.fileName = fileName
+                return dispatch(postProductivitySuccess(response.data))
+            }
+            return dispatch(postProductivityFailed(response))
+        } catch (err: any) {
+            const error = err?.response?.data ? err?.response?.data : err
+            return dispatch(postProductivityFailed(error))
         }
-        return dispatch(postProductivityFailed(response))
-    } catch (err: any) {
-        const error = err?.response?.data ? err?.response?.data: err
-        return dispatch(postProductivityFailed(error))
     }
-}
-
 
 // @ts-ignore
-export const getBenchmarkProductivityData = (id) => async dispatch => {
-
+export const getBenchmarkProductivityData = (id) => async (dispatch) => {
     console.log('Calling action : getBenchmarkProductivityData()')
     // @ts-ignore
     await dispatch(getBenchmarkProductivity())
     try {
-        const response = await warehouseApiClient.get(`${BENCHMARK_PRODUCTIVITY_API}/${id}`);
-        if (response.status === 200){            
+        const response = await warehouseApiClient.get(
+            `${BENCHMARK_PRODUCTIVITY_API}/${id}`,
+        )
+        if (response.status === 200) {
             return dispatch(getBenchmarkProductivitySuccess(response.data))
         }
         return dispatch(getBenchmarkProductivityFailed(response))
@@ -116,59 +127,65 @@ export const getBenchmarkProductivityData = (id) => async dispatch => {
     }
 }
 
-// @ts-ignore
-export const putBenchmarkProductivityData = (payload, data) => async dispatch => {
-
-    console.log('Calling action : putBenchmarkProductivityData()')
+export const putBenchmarkProductivityData =
     // @ts-ignore
-    await dispatch(putBenchmarkProductivity())
-    try {
-        const response = await warehouseApiClient.put(BENCHMARK_PRODUCTIVITY_API, payload);
-        if (response.status === 200){            
-            return dispatch(putBenchmarkProductivitySuccess(data))
+    (payload, data) => async (dispatch) => {
+        console.log('Calling action : putBenchmarkProductivityData()')
+        // @ts-ignore
+        await dispatch(putBenchmarkProductivity())
+        try {
+            const response = await warehouseApiClient.put(
+                BENCHMARK_PRODUCTIVITY_API,
+                payload,
+            )
+            if (response.status === 200) {
+                return dispatch(putBenchmarkProductivitySuccess(data))
+            }
+            return dispatch(putBenchmarkProductivityFailed(response))
+        } catch (err) {
+            return dispatch(putBenchmarkProductivityFailed(err))
         }
-        return dispatch(putBenchmarkProductivityFailed(response))
-    } catch (err) {
-        return dispatch(putBenchmarkProductivityFailed(err))
     }
-}
+
+export const updateFlagProductivityTableUpdated =
+    // @ts-ignore
+    (payload) => async (dispatch) => {
+        await dispatch(updateFlagProductivityTableUpdatedValue(payload))
+    }
 
 // @ts-ignore
-export const updateFlagProductivityTableUpdated = (payload) => async dispatch => {
-    await dispatch(updateFlagProductivityTableUpdatedValue(payload))
-}
-
-// @ts-ignore
-export const uploadDemandFile = (payload, id, fileName) => async dispatch => {
-
+export const uploadDemandFile = (payload, id, fileName) => async (dispatch) => {
     console.log('Calling action : uploadDemandFile()')
     // @ts-ignore
     await dispatch(postDemand())
     try {
-        const response = await warehouseApiClientForForm.post(`${UPLOAD_DEMAND_FILE_API}/${id}`, payload);
-        if (response.status === 201){ 
-            response.data.fileName = fileName           
+        const response = await warehouseApiClientForForm.post(
+            `${UPLOAD_DEMAND_FILE_API}/${id}`,
+            payload,
+        )
+        if (response.status === 201) {
+            response.data.fileName = fileName
             return dispatch(postDemandSuccess(response.data))
         }
         return dispatch(postDemandFailed(response))
     } catch (err: any) {
-        const error = err?.response?.data ? err?.response?.data: err
+        const error = err?.response?.data ? err?.response?.data : err
         return dispatch(postProductivityFailed(error))
     }
 }
 
 // @ts-ignore
-export const getDemandForecastData = (payload, id) => async dispatch => {
-
+export const getDemandForecastData = (payload, id) => async (dispatch) => {
     console.log('Calling action : getDemandForecastData()')
     // @ts-ignore
     await dispatch(getDemandForecast())
     try {
-        const response = await warehouseApiClient.get(`${DEMAND_FORECAST_API}/${id}?start_date=${payload.start_date}&end_date=${payload.end_date}`);
-        if (response.status === 200){  
-
+        const response = await warehouseApiClient.get(
+            `${DEMAND_FORECAST_API}/${id}?start_date=${payload.start_date}&end_date=${payload.end_date}`,
+        )
+        if (response.status === 200) {
             dispatch(modifyDemandTableData(response.data))
-            
+
             return dispatch(getDemandForecastSuccess(response.data))
         }
         return dispatch(getDemandForecastFailed(response))
@@ -177,16 +194,13 @@ export const getDemandForecastData = (payload, id) => async dispatch => {
     }
 }
 
-
-
 // @ts-ignore
-const modifyDemandTableData  = (data) => async dispatch => {
-
+const modifyDemandTableData = (data) => async (dispatch) => {
     const records: any = []
-        
-    const columnList = (Object.keys(data[Object.keys(data)[0]]))
 
-    for (const col in columnList){
+    const columnList = Object.keys(data[Object.keys(data)[0]])
+
+    for (const col in columnList) {
         demandForecastTableColumns.push({
             field: columnList[col],
             headerName: columnList[col],
@@ -196,19 +210,18 @@ const modifyDemandTableData  = (data) => async dispatch => {
             headerAlign: 'center',
             align: 'center',
             headerClassName: 'header',
-            minWidth: 200
+            minWidth: 200,
         })
     }
 
     Object.keys(data).forEach((key, index) => {
         const record: any = {
-            id: index+1,
+            id: index + 1,
             date: key,
         }
         Object.keys(data[key]).forEach((key_x: any, index_x: any) => {
             record[key_x] = data[key][key_x]['demand']
-            
-        }) 
+        })
         records.push(record)
     })
 
@@ -218,14 +231,16 @@ const modifyDemandTableData  = (data) => async dispatch => {
 }
 
 // @ts-ignore
-export const putDemandForecastData = (payload, data) => async dispatch => {
-
+export const putDemandForecastData = (payload, data) => async (dispatch) => {
     console.log('Calling action : putDemandForecastData()')
     // @ts-ignore
     await dispatch(putDemandForecast())
     try {
-        const response = await warehouseApiClient.put(DEMAND_FORECAST_API, payload);
-        if (response.status === 200){            
+        const response = await warehouseApiClient.put(
+            DEMAND_FORECAST_API,
+            payload,
+        )
+        if (response.status === 200) {
             return dispatch(putDemandForecastSuccess(data))
         }
         return dispatch(putDemandForecastFailed(response))
@@ -235,64 +250,62 @@ export const putDemandForecastData = (payload, data) => async dispatch => {
 }
 
 // @ts-ignore
-export const updateDemandTableDataCol = (payload) => async dispatch => {
+export const updateDemandTableDataCol = (payload) => async (dispatch) => {
     await dispatch(updateDemandTableDataColValue(payload))
 }
 // @ts-ignore
-export const updateModifiedDemandTableData = (payload) => async dispatch => {
+export const updateModifiedDemandTableData = (payload) => async (dispatch) => {
     await dispatch(updateModifiedDemandTableDataValue(payload))
 }
 // @ts-ignore
-export const updateDemandTableData = (payload) => async dispatch => {
+export const updateDemandTableData = (payload) => async (dispatch) => {
     await dispatch(updateDemandTableDataValue(payload))
 }
 
 // @ts-ignore
-export const updateFlagDemandTableUpdated = (payload) => async dispatch => {
+export const updateFlagDemandTableUpdated = (payload) => async (dispatch) => {
     await dispatch(updateFlagDemandTableUpdatedValue(payload))
 }
 
 // @ts-ignore
-export const updatePercentageAbsentExpected = (payload) => async dispatch => {
+export const updatePercentageAbsentExpected = (payload) => async (dispatch) => {
     await dispatch(updatePercentageAbsentExpectedValue(payload))
 }
 // @ts-ignore
-export const updateNumCurrentEmployees = (payload) => async dispatch => {
+export const updateNumCurrentEmployees = (payload) => async (dispatch) => {
     await dispatch(updateNumCurrentEmployeesValue(payload))
 }
 // @ts-ignore
-export const updateTotalHiringBudget = (payload) => async dispatch => {
+export const updateTotalHiringBudget = (payload) => async (dispatch) => {
     await dispatch(updateTotalHiringBudgetValue(payload))
 }
 // @ts-ignore
-export const updateCostPerEmployeePerMonth = (payload) => async dispatch => {
+export const updateCostPerEmployeePerMonth = (payload) => async (dispatch) => {
     await dispatch(updateCostPerEmployeePerMonthValue(payload))
 }
 // @ts-ignore
-export const updateDayWorkingHours = (payload) => async dispatch => {
+export const updateDayWorkingHours = (payload) => async (dispatch) => {
     await dispatch(updateDayWorkingHoursValue(payload))
 }
 
 // @ts-ignore
-export const updateResultStartDate = (payload) => async dispatch => {
+export const updateResultStartDate = (payload) => async (dispatch) => {
     await dispatch(updateResultStartDateValue(payload))
 }
 
 // @ts-ignore
-export const updateResultEndDate = (payload) => async dispatch => {
+export const updateResultEndDate = (payload) => async (dispatch) => {
     await dispatch(updateResultEndDateValue(payload))
 }
 
 // @ts-ignore
-export const postResultData = (payload) => async dispatch => {
-
+export const postResultData = (payload) => async (dispatch) => {
     console.log('Calling action : postResultData()')
     // @ts-ignore
     await dispatch(postResult())
     try {
-        const response = await warehouseApiClient.post(RESULT_API, payload);
-        warehouseApiClient.get(RESULT_API)
-        if (response.status === 200){            
+        const response = await warehouseApiClient.post(RESULT_API, payload)
+        if (response.status === 200) {
             return dispatch(postResultSuccess(response.data))
         }
         return dispatch(postResultFailed(response))
@@ -302,11 +315,11 @@ export const postResultData = (payload) => async dispatch => {
 }
 
 // @ts-ignore
-export const updateResultCategories = (payload) => async dispatch => {
+export const updateResultCategories = (payload) => async (dispatch) => {
     await dispatch(updateResultCategoriesValue(payload))
 }
 
 // @ts-ignore
-export const updateResultCategory = (payload) => async dispatch => {
+export const updateResultCategory = (payload) => async (dispatch) => {
     await dispatch(updateResultCategoryValue(payload))
 }

@@ -185,7 +185,7 @@ export const warehouseReducer = createSlice({
             }
         },
 
-        postDemandFailed(state, action){
+        postDemandcls(state, action){
             return {
                 ...state,
                 message: `Demand file upload failed : ${action?.payload?.error ? action?.payload?.error : ''}`,

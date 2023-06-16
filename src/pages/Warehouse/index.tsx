@@ -1,74 +1,77 @@
-import {useState, useEffect} from 'react'
-import { Container, Grid } from '@mui/material';
-import WarehouseSelect from './WarehouseSelect';
-import WarehouseRequirement from './WarehouseRequirement';
-import BenchmarkProductivity from './BenchmarkProductivity';
-import DemandForecast from './DemandForecast';
-import Result from './Result';
-import { NavigationBtn } from '../../components/Buttons';
-import { useAppSelector } from '../../hooks/redux-hooks';
-import { FormBackdropElement, FormSnackBarElement, FormAlertElement } from '../../components/FormElements';
+import { useState, useEffect } from 'react'
+import { Container, Grid } from '@mui/material'
+import WarehouseSelect from './WarehouseSelect'
+import WarehouseRequirement from './WarehouseRequirement'
+import BenchmarkProductivity from './BenchmarkProductivity'
+import DemandForecast from './DemandForecast'
+import Result from './Result'
+import { NavigationBtn } from '../../components/Buttons'
+import { useAppSelector } from '../../hooks/redux-hooks'
+import {
+    FormBackdropElement,
+    FormSnackBarElement,
+    FormAlertElement,
+} from '../../components/FormElements'
 import dayjs from 'dayjs'
 import { useParams, useNavigate } from 'react-router-dom'
 
-
 const WareHouse = () => {
-
-    
     const navigate = useNavigate()
     // @ts-ignore
-    const warehouseState = useAppSelector(state => state.warehouseReducer)
+    const warehouseState = useAppSelector((state) => state.warehouseReducer)
 
-    const [snackbarState, setSnackbarState] = useState(false);
+    const [snackbarState, setSnackbarState] = useState(false)
 
-    const [alertState, setAlertState] = useState(false);
+    const [alertState, setAlertState] = useState(false)
 
     const PageToScreen: any = {
-        select:  {
-            element: <WarehouseSelect/>,
+        select: {
+            element: <WarehouseSelect />,
             previous: null,
             next: 'benchmark',
-            complete: warehouseState?.planning_warehouse 
-                        && dayjs(warehouseState.planning_start_date).format('YYYY-MM-DD') !== 'Invalid Date'
-                        && dayjs(warehouseState.planning_end_date).format('YYYY-MM-DD') !== 'Invalid Date'
-                        && (warehouseState.planning_end_date >= warehouseState.planning_start_date)
-                        ? true
-                        : false,
+            complete:
+                warehouseState?.planning_warehouse &&
+                dayjs(warehouseState.planning_start_date).format(
+                    'YYYY-MM-DD',
+                ) !== 'Invalid Date' &&
+                dayjs(warehouseState.planning_end_date).format('YYYY-MM-DD') !==
+                    'Invalid Date' &&
+                warehouseState.planning_end_date >=
+                    warehouseState.planning_start_date
+                    ? true
+                    : false,
             prompt: null,
         },
-        benchmark:  {
-            element: <BenchmarkProductivity/>,
+        benchmark: {
+            element: <BenchmarkProductivity />,
             previous: 'select',
             next: 'demand',
-            complete: warehouseState?.productivity_table_data
-                        ? true
-                        : false,
-            prompt: warehouseState.flag_productivity_table_updated
+            complete: warehouseState?.productivity_table_data ? true : false,
+            prompt: warehouseState.flag_productivity_table_updated,
         },
-        demand:  {
-            element: <DemandForecast/>,
+        demand: {
+            element: <DemandForecast />,
             previous: 'benchmark',
             next: 'requirement',
-            complete: warehouseState?.demand_table_data
-                        ? true
-                        : false,
-            prompt: warehouseState.flag_productivity_table_updated
+            complete: warehouseState?.demand_table_data ? true : false,
+            prompt: warehouseState.flag_productivity_table_updated,
         },
         requirement: {
-            element: <WarehouseRequirement/>,
+            element: <WarehouseRequirement />,
             previous: 'demand',
             next: 'result',
-            complete: warehouseState?.percentage_absent_expected
-                        && warehouseState?.num_current_employees
-                        && warehouseState?.total_hiring_budget
-                        && warehouseState?.cost_per_employee_per_month
-                        && warehouseState?.day_working_hours
-                        ? true
-                        : false,
+            complete:
+                warehouseState?.percentage_absent_expected &&
+                warehouseState?.num_current_employees &&
+                warehouseState?.total_hiring_budget &&
+                warehouseState?.cost_per_employee_per_month &&
+                warehouseState?.day_working_hours
+                    ? true
+                    : false,
             prompt: null,
         },
         result: {
-            element: <Result/>,
+            element: <Result />,
             previous: 'requirement',
             next: null,
             prompt: null,
@@ -77,24 +80,23 @@ const WareHouse = () => {
 
     const ScreenNames = Object.keys(PageToScreen)
 
-    const {pageName=ScreenNames[0]} = useParams();
+    const { pageName = ScreenNames[0] } = useParams()
 
     const handleNext = () => {
-        if (PageToScreen[pageName].prompt){
-            setAlertState(true)   
-        }       
-        else{
-            navigate(`/warehouse/${PageToScreen[pageName].next}` )
+        if (PageToScreen[pageName].prompt) {
+            setAlertState(true)
+        } else {
+            navigate(`/warehouse/${PageToScreen[pageName].next}`)
         }
-    };
-    
+    }
+
     const handlePrevious = () => {
-        navigate(`/warehouse/${PageToScreen[pageName].previous}` )
-    };
+        navigate(`/warehouse/${PageToScreen[pageName].previous}`)
+    }
 
     const handleProceed = () => {
         setAlertState(false)
-        navigate(`/warehouse/${PageToScreen[pageName].next}` )
+        navigate(`/warehouse/${PageToScreen[pageName].next}`)
     }
 
     const handleCancel = () => {
@@ -106,16 +108,14 @@ const WareHouse = () => {
     }, [warehouseState.message])
 
     return (
-         <Container maxWidth="xl">
+        <Container maxWidth='xl'>
             <Grid container>
-                <FormBackdropElement
-                    loader={warehouseState.isLoading}
-                />
+                <FormBackdropElement loader={warehouseState.isLoading} />
                 {snackbarState && warehouseState.message && (
                     <FormSnackBarElement
                         message={warehouseState.message}
                         onClose={() => setSnackbarState(false)}
-                 />
+                    />
                 )}
 
                 {alertState && (
@@ -126,22 +126,35 @@ const WareHouse = () => {
                         id='warehouse-form-save-alert'
                         title='Review Changes'
                         content='There are unsaved changes! Do you wish to continue?'
-                        buttons={ 
-                            [{label: 'Proceed', onClick: handleProceed},
-                            {label: 'Cancel', onClick: handleCancel}]
-                        }
-                 />
+                        buttons={[
+                            { label: 'Proceed', onClick: handleProceed },
+                            { label: 'Cancel', onClick: handleCancel },
+                        ]}
+                    />
                 )}
-                <Grid item lg={2} md={2} sm={2} bgcolor='#D0E8FD'>
-                </Grid>
-                <Grid item lg={10} md={10} sm={10} style={{borderStyle: 'solid', borderWidth: '0.2px', padding: '5px'}}>
-                    <Grid item>
-                        {PageToScreen[pageName].element}
-                    </Grid>
+                <Grid item lg={2} md={2} sm={2} bgcolor='#D0E8FD'></Grid>
+                <Grid
+                    item
+                    lg={10}
+                    md={10}
+                    sm={10}
+                    style={{
+                        borderStyle: 'solid',
+                        borderWidth: '0.2px',
+                        padding: '5px',
+                    }}
+                >
+                    <Grid item>{PageToScreen[pageName].element}</Grid>
 
-                    <Grid container item justifyContent='space-between' alignItems='center' sx={{marginTop: '150px'}}>
+                    <Grid
+                        container
+                        item
+                        justifyContent='space-between'
+                        alignItems='center'
+                        sx={{ marginTop: '150px' }}
+                    >
                         <Grid item>
-                            <NavigationBtn 
+                            <NavigationBtn
                                 id='navigation-btn-previous'
                                 label='< Previous'
                                 onClick={handlePrevious}
@@ -150,7 +163,7 @@ const WareHouse = () => {
                             />
                         </Grid>
                         <Grid item>
-                            <NavigationBtn 
+                            <NavigationBtn
                                 id='navigation-btn-next'
                                 label='Next >'
                                 onClick={handleNext}
@@ -160,9 +173,8 @@ const WareHouse = () => {
                         </Grid>
                     </Grid>
                 </Grid>
-            </Grid> 
+            </Grid>
         </Container>
-
     )
 }
 

@@ -3,41 +3,44 @@ import {
     MenuItem,
     Select,
     FormControl,
-    Typography, 
+    Typography,
     TextField,
-    Grid, 
+    Grid,
     Paper,
     Backdrop,
     CircularProgress,
     Snackbar,
-    Alert, 
-    Checkbox, 
+    Alert,
+    Checkbox,
     ListItemText,
     Dialog,
     DialogTitle,
     DialogContent,
     DialogContentText,
     DialogActions,
-    Button
+    Button,
 } from '@mui/material'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 
 // General function to export Form Loader
-export const FormBackdropElement = (props: {loader: boolean}) =>{
+export const FormBackdropElement = (props: { loader: boolean }) => {
     return (
         <Backdrop
             sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
             open={props.loader}
         >
-            <CircularProgress color="primary" />
+            <CircularProgress color='primary' />
         </Backdrop>
     )
 }
 
 // General function to export Form SnackBar
-export const FormSnackBarElement = (props: {message: boolean, onClose: any}) =>{
+export const FormSnackBarElement = (props: {
+    message: boolean
+    onClose: any
+}) => {
     return (
         <Snackbar
             anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
@@ -45,66 +48,60 @@ export const FormSnackBarElement = (props: {message: boolean, onClose: any}) =>{
             autoHideDuration={6000}
             onClose={props.onClose}
         >
-        <Alert severity="error">{props.message}</Alert>
-    </Snackbar>
+            <Alert severity='error'>{props.message}</Alert>
+        </Snackbar>
     )
 }
 
 type AlertBtn = {
     onClick: any
     label: string
- }[] 
-
+}[]
 
 // General function to export Form Alert Dialog
 export const FormAlertElement = (props: {
     open: boolean
-    onClose: any,
-    label: string,
+    onClose: any
+    label: string
     id: string
     title: string
-    content: string,
-    buttons: AlertBtn,
-}) =>{
+    content: string
+    buttons: AlertBtn
+}) => {
     return (
         <Dialog
-        open={props.open}
-        onClose={props.onClose}
-        aria-labelledby={props.label}
-      >
-        <DialogTitle id={props.id}>
-          {props.title}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            {props.content}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-
-        {props.buttons.map((obj: any, index: any) => (
-            <Button key={index} onClick={obj.onClick}>
-              {obj.label}
-            </Button>
-        ))}
-          {/* <Button autoFocus onClick={handleClose}>
+            open={props.open}
+            onClose={props.onClose}
+            aria-labelledby={props.label}
+        >
+            <DialogTitle id={props.id}>{props.title}</DialogTitle>
+            <DialogContent>
+                <DialogContentText>{props.content}</DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                {props.buttons.map((obj: any, index: any) => (
+                    <Button key={index} onClick={obj.onClick}>
+                        {obj.label}
+                    </Button>
+                ))}
+                {/* <Button autoFocus onClick={handleClose}>
             Disagree
           </Button>
           <Button onClick={handleClose} autoFocus>
             Agree
           </Button> */}
-        </DialogActions>
-      </Dialog>
+            </DialogActions>
+        </Dialog>
     )
 }
 
 // General function to export Form Textfield
 export const FormTextField = (props: {
-    id: string,
-    value: any,
-    inputProps: any,
+    id: string
+    value: any
+    inputProps: any
     onChange: any
-    type: any,
+    type: any
 }) => {
     return (
         <TextField
@@ -112,53 +109,55 @@ export const FormTextField = (props: {
             type={props.type}
             value={props.value}
             onChange={props.onChange}
-            size="medium"
-            variant="outlined"
+            size='medium'
+            variant='outlined'
             InputProps={props.inputProps}
         />
     )
 }
 
 // General function to export Form label
-export const FormLabel = (props: {label: string}) => {
+export const FormLabel = (props: { label: string }) => {
     return (
-        <Typography variant="h6" fontWeight="bold">
+        <Typography variant='h6' fontWeight='bold'>
             {props.label}
         </Typography>
     )
 }
 
 // General function to export Form Sub label
-export const FormSubLabel = (props: {label: string}) => {
+export const FormSubLabel = (props: { label: string }) => {
     return (
-        <Typography variant="h6" fontWeight="bold" color='text.secondary' paddingX='10px'>
+        <Typography
+            variant='h6'
+            fontWeight='bold'
+            color='text.secondary'
+            paddingX='10px'
+        >
             {props.label}
         </Typography>
     )
 }
 
 // General function to export Form Dropdown
-export const FormDropDown = (props: { 
+export const FormDropDown = (props: {
     id: string
     label: string
     labelId: string
     value: any
-    data: any,
+    data: any
     onChange: any
-}
-) => {   
+}) => {
     return (
         <FormControl fullWidth>
-            <InputLabel id={props.id}>
-                {props.label}
-            </InputLabel>
+            <InputLabel id={props.id}>{props.label}</InputLabel>
             <Select
-                value={props.value?.id ? props.value?.id: ''}
+                value={props.value?.id ? props.value?.id : ''}
                 label={props.label}
                 labelId={props.labelId}
                 onChange={props.onChange}
             >
-                 {props.data.map((obj: any, key: any) => (
+                {props.data.map((obj: any, key: any) => (
                     <MenuItem value={obj.id} key={key}>
                         {obj.name}
                     </MenuItem>
@@ -169,21 +168,17 @@ export const FormDropDown = (props: {
 }
 
 // General function to export Form Multiple Select Dropdown
-export const FormMultiDropDown = (props: { 
+export const FormMultiDropDown = (props: {
     id: string
     label: string
     labelId: string
     value: any
-    data: any,
+    data: any
     onChange: any
-}
-) => {   
-
+}) => {
     return (
         <FormControl fullWidth>
-            <InputLabel id={props.id}>
-                {props.label}
-            </InputLabel>
+            <InputLabel id={props.id}>{props.label}</InputLabel>
             <Select
                 value={props.value}
                 label={props.label}
@@ -192,7 +187,7 @@ export const FormMultiDropDown = (props: {
                 onChange={props.onChange}
                 renderValue={(selected) => selected.join(', ')}
             >
-                 {props.data.map((obj: any, key: any) => (
+                {props.data.map((obj: any, key: any) => (
                     <MenuItem value={obj} key={key}>
                         <Checkbox checked={props.value.indexOf(obj) > -1} />
                         <ListItemText primary={obj} />
@@ -205,12 +200,11 @@ export const FormMultiDropDown = (props: {
 
 // General function to export Form Date Selector
 export const FormDateSelector = (props: {
-    label: string,
-    value: any,
-    onChange: any,
-    minDate: any,
+    label: string
+    value: any
+    onChange: any
+    minDate: any
 }) => {
-
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
@@ -220,54 +214,50 @@ export const FormDateSelector = (props: {
                 minDate={props.minDate}
             />
         </LocalizationProvider>
-    )                    
+    )
 }
 
 // General function to export Form Card
-const FormCard = (params: { value: string | number; label: string}) => {
+const FormCard = (params: { value: string | number; label: string }) => {
     return (
         <Paper elevation={2}>
             <Grid
                 container
-                direction="column"
-                justifyContent="center"
-                alignItems="center"
+                direction='column'
+                justifyContent='center'
+                alignItems='center'
             >
                 <Grid item>
-                    <Typography variant="h4" fontWeight="bold">
+                    <Typography variant='h4' fontWeight='bold'>
                         {params.value}
                     </Typography>
                 </Grid>
                 <Grid item>
-                    <Typography variant="body1">{params.label} </Typography>
+                    <Typography variant='body1'>{params.label} </Typography>
                 </Grid>
             </Grid>
         </Paper>
     )
 }
 
-
 type CardItems = {
     value: number | string | undefined
     label: string
- }[] 
+}[]
 
 // General function to export Form Card Field
-export const FormCardField = (props: {items: CardItems}) => {
+export const FormCardField = (props: { items: CardItems }) => {
     return (
-        <Grid 
-            container 
-            direction="row"  
-            justifyContent="space-around"
-            alignItems="center"
+        <Grid
+            container
+            direction='row'
+            justifyContent='space-around'
+            alignItems='center'
         >
             {props.items.map((obj: any, key: any) => (
                 <Grid item lg={3} md={3} sm={6} key={key}>
-                    <FormCard
-                        value={obj.value}
-                        label={obj.label}
-                    />
-            </Grid>
+                    <FormCard value={obj.value} label={obj.label} />
+                </Grid>
             ))}
         </Grid>
     )
