@@ -11,8 +11,10 @@ import {
     FormDropDown,
 } from '../../components/FormElements'
 import { FormGraph, FormTable } from '../../components/Table'
+import { PrimaryButton } from '../../components/Buttons'
 
 import object from 'lodash'
+import { utils, writeFile } from 'xlsx'
 
 import {
     updateResultStartDate,
@@ -66,7 +68,7 @@ const Result = () => {
     const [outputData, setOutputData] = useState<any>(null)
     const [dateWiseTotal, setDateWiseTotal] = useState(null)
     const [totalData, setTotalData] = useState<any>(null)
-    const [demandData, setDemandData] = useState(null)
+    const [demandData, setDemandData] = useState<any>(null)
 
     const handleSelectedCategoryChange = (e: any) => {
         const {
@@ -142,6 +144,14 @@ const Result = () => {
         }
         // @ts-ignore
         dispatch(postResultData(payload))
+
+        dispatch(
+            // @ts-ignore
+            updateResultStartDate(warehouseSelectState.planning_start_date),
+        )
+        // @ts-ignore
+        dispatch(updateResultEndDate(warehouseSelectState.planning_end_date))
+
         setSelectedTable(ResultTableTypes[0])
     }
 
@@ -396,6 +406,53 @@ const Result = () => {
                                 warehouseSelectState.planning_end_date,
                             ).format('DD MMM YYYY')}`
 
+    const DownloadResultData = (tableType: string) => {
+        const worksheetData: any = []
+
+        if (tableType === 'category') {
+            for (const date of Object.keys(outputData)) {
+                for (const category of Object.keys(outputData[date])) {
+                    worksheetData.push({
+                        DATE: date,
+                        CATEGORY: category,
+                        'NUM EXISTING TO DEPLOY':
+                            outputData[date][category]
+                                .num_of_existing_to_deploy,
+                        'NUM NEW TO DEPLOY':
+                            outputData[date][category].num_of_new_to_deploy,
+                        TOTAL: outputData[date][category].total,
+                    })
+                }
+            }
+        } else if (tableType === 'demand') {
+            for (const date of Object.keys(demandData)) {
+                for (const category of Object.keys(demandData[date]).filter(
+                    (obj: any) => obj !== 'total',
+                )) {
+                    worksheetData.push({
+                        DATE: date,
+                        CATEGORY: category,
+                        'EXPECTED DEMAND':
+                            demandData[date][category].expected_demand,
+                        'FULLFILLMENT WITH EXISTING EMPLOYEE':
+                            demandData[date][category].fulfillment_with_current,
+                        'FULLFILLMENT WITH TOTAL EMPLOYEE':
+                            demandData[date][category].fulfillment_with_total,
+                    })
+                }
+            }
+        }
+
+        const worksheet = utils.json_to_sheet(worksheetData)
+        worksheet['!cols'] = [{ wch: 10 }, { wch: 9 }, { wch: 21 }]
+        const workbook = utils.book_new()
+        utils.book_append_sheet(workbook, worksheet, 'Sheet1')
+
+        tableType === 'category'
+            ? writeFile(workbook, 'category-wise-schedule' + '.xlsx')
+            : writeFile(workbook, 'demand-wise-schedule' + '.xlsx')
+    }
+
     return (
         <ThemeProvider theme={theme}>
             <Container component='main' sx={{ flexGrow: 1 }} fixed>
@@ -591,35 +648,88 @@ const Result = () => {
                                     />
                                 </Grid>
                             </Grid>
-                            <Grid
-                                item
-                                lg={12}
-                                justifyContent='center'
-                                alignContent='center'
-                                alignItems='center'
-                                sx={{ height: '400px' }}
-                            >
-                                {outputData && selectedTable?.id === 1 && (
-                                    <FormTable
-                                        id='result-category-wise-data-table'
-                                        tableType='category'
-                                        tableHeaders={
-                                            resultCategoryTableHeaders
-                                        }
-                                        tableData={outputData}
-                                        total={dateWiseTotal}
-                                    />
+                            {outputData &&
+                                !object.isEmpty(outputData) &&
+                                selectedTable?.id === 1 && (
+                                    <Grid
+                                        item
+                                        container
+                                        lg={12}
+                                        flex='column'
+                                        justifyContent='center'
+                                        alignContent='center'
+                                        alignItems='center'
+                                        rowGap={5}
+                                    >
+                                        <Grid
+                                            item
+                                            xs={12}
+                                            sx={{ height: '400px' }}
+                                        >
+                                            <FormTable
+                                                id='result-category-wise-data-table'
+                                                tableType='category'
+                                                tableHeaders={
+                                                    resultCategoryTableHeaders
+                                                }
+                                                tableData={outputData}
+                                                total={dateWiseTotal}
+                                            />
+                                        </Grid>
+                                        <Grid item>
+                                            <PrimaryButton
+                                                id='result-category-wise-data-table-download-btn'
+                                                label='DOWNLOAD TABLE AS EXCEL'
+                                                onClick={() =>
+                                                    DownloadResultData(
+                                                        'category',
+                                                    )
+                                                }
+                                                disabled={false}
+                                            />
+                                        </Grid>
+                                    </Grid>
                                 )}
-                                {demandData && selectedTable?.id === 2 && (
-                                    <FormTable
-                                        id='result-demand-wise-data-table'
-                                        tableType='demand'
-                                        tableHeaders={resultDemandTableHeaders}
-                                        tableData={demandData}
-                                        total={null}
-                                    />
+                            {demandData &&
+                                !object.isEmpty(demandData) &&
+                                selectedTable?.id === 2 && (
+                                    <Grid
+                                        item
+                                        container
+                                        lg={12}
+                                        flex='column'
+                                        justifyContent='center'
+                                        alignContent='center'
+                                        alignItems='center'
+                                        rowGap={5}
+                                    >
+                                        <Grid
+                                            item
+                                            xs={12}
+                                            sx={{ height: '400px' }}
+                                        >
+                                            <FormTable
+                                                id='result-demand-wise-data-table'
+                                                tableType='demand'
+                                                tableHeaders={
+                                                    resultDemandTableHeaders
+                                                }
+                                                tableData={demandData}
+                                                total={null}
+                                            />
+                                        </Grid>
+                                        <Grid item>
+                                            <PrimaryButton
+                                                id='result-demand-wise-data-table-download-btn'
+                                                label='DOWNLOAD TABLE AS EXCEL'
+                                                onClick={() =>
+                                                    DownloadResultData('demand')
+                                                }
+                                                disabled={false}
+                                            />
+                                        </Grid>
+                                    </Grid>
                                 )}
-                            </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
