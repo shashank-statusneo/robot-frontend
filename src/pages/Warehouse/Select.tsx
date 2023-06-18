@@ -2,34 +2,38 @@ import { useEffect, useState } from 'react'
 
 import { Container, Grid } from '@mui/material'
 
-import { PrimaryButton, NavigationBtn } from '../../components/Buttons'
 import {
     FormDropDown,
     FormLabel,
     FormDateSelector,
+    FormBackdropElement,
+    FormSnackBarElement,
 } from '../../components/FormElements'
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks'
+
 import {
     getWarehouse,
     updatePlanningWarehouse,
     updatePlanningStartDate,
     updatePlanningEndDate,
-} from '../../redux/actions/warehouse'
+} from '../../redux/actions/warehouse/select'
 
 import dayjs from 'dayjs'
-import { useNavigate } from 'react-router-dom'
 
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 const theme = createTheme()
 
 const WarehouseSelect = () => {
-    const navigate = useNavigate()
     const dispatch = useAppDispatch()
 
     const [selectedWarehouse, setSelectedWarehouse] = useState(null)
 
-    // @ts-ignore
-    const warehouseState = useAppSelector((state) => state.warehouseReducer)
+    const warehouseSelectState = useAppSelector(
+        // @ts-ignore
+        (state) => state.warehouseSelect,
+    )
+
+    const [snackbarState, setSnackbarState] = useState(false)
 
     const fetchData = () => {
         // @ts-ignore
@@ -37,38 +41,42 @@ const WarehouseSelect = () => {
     }
 
     useEffect(() => {
-        if (!warehouseState.planning_warehouse) {
+        if (!warehouseSelectState.planning_warehouse) {
             fetchData()
         }
     }, [])
 
     useEffect(() => {
-        if (warehouseState?.warehouses) {
+        if (warehouseSelectState?.warehouses) {
             let warehouseToBeUpdated = null
-            if (warehouseState.planning_warehouse) {
-                warehouseToBeUpdated = warehouseState.planning_warehouse
+            if (warehouseSelectState.planning_warehouse) {
+                warehouseToBeUpdated = warehouseSelectState.planning_warehouse
             } else if (
-                !warehouseState.planning_warehouse &&
-                warehouseState?.warehouses[0]
+                !warehouseSelectState.planning_warehouse &&
+                warehouseSelectState?.warehouses[0]
             ) {
-                warehouseToBeUpdated = warehouseState?.warehouses[0]
+                warehouseToBeUpdated = warehouseSelectState?.warehouses[0]
             }
             setSelectedWarehouse(warehouseToBeUpdated)
             // @ts-ignore
             dispatch(updatePlanningWarehouse(warehouseToBeUpdated))
         }
-    }, [warehouseState.warehouses])
+    }, [warehouseSelectState.warehouses])
+
+    useEffect(() => {
+        setSnackbarState(true)
+    }, [warehouseSelectState.message])
 
     const handleWarehouseChange = (e: any) => {
         setSelectedWarehouse(
-            warehouseState.warehouses.find((obj: any) => {
+            warehouseSelectState.warehouses.find((obj: any) => {
                 return obj.id === e.target.value
             }),
         )
         dispatch(
             // @ts-ignore
             updatePlanningWarehouse(
-                warehouseState.warehouses.find((obj: any) => {
+                warehouseSelectState.warehouses.find((obj: any) => {
                     return obj.id === e.target.value
                 }),
             ),
@@ -86,6 +94,13 @@ const WarehouseSelect = () => {
     return (
         <ThemeProvider theme={theme}>
             <Container component='main' sx={{ flexGrow: 1 }} fixed>
+                <FormBackdropElement loader={warehouseSelectState.isLoading} />
+                {snackbarState && warehouseSelectState.message && (
+                    <FormSnackBarElement
+                        message={warehouseSelectState.message}
+                        onClose={() => setSnackbarState(false)}
+                    />
+                )}
                 <Grid
                     container
                     direction='column'
@@ -108,13 +123,13 @@ const WarehouseSelect = () => {
                                 labelId='select-warehouse-dropdown-input-label'
                                 label=''
                                 value={
-                                    warehouseState.planning_warehouse
-                                        ? warehouseState.planning_warehouse
+                                    warehouseSelectState.planning_warehouse
+                                        ? warehouseSelectState.planning_warehouse
                                         : selectedWarehouse
                                 }
                                 data={
-                                    warehouseState?.warehouses
-                                        ? warehouseState?.warehouses
+                                    warehouseSelectState?.warehouses
+                                        ? warehouseSelectState?.warehouses
                                         : []
                                 }
                                 onChange={handleWarehouseChange}
@@ -147,7 +162,7 @@ const WarehouseSelect = () => {
                         <Grid item lg={3}>
                             <FormDateSelector
                                 label=''
-                                value={warehouseState.planning_start_date}
+                                value={warehouseSelectState.planning_start_date}
                                 onChange={handleWarehouseStartDateChange}
                                 minDate={dayjs()}
                             />
@@ -167,12 +182,12 @@ const WarehouseSelect = () => {
                         <Grid item lg={3}>
                             <FormDateSelector
                                 label=''
-                                value={warehouseState.planning_end_date}
+                                value={warehouseSelectState.planning_end_date}
                                 onChange={handleWarehouseEndDateChange}
                                 minDate={
-                                    warehouseState.planning_start_date >=
+                                    warehouseSelectState.planning_start_date >=
                                     dayjs()
-                                        ? warehouseState.planning_start_date
+                                        ? warehouseSelectState.planning_start_date
                                         : dayjs()
                                 }
                             />

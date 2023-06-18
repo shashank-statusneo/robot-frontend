@@ -11,16 +11,24 @@ import {
     FormDropDown,
 } from '../../components/FormElements'
 import { FormGraph, FormTable } from '../../components/Table'
+
+import object from 'lodash'
+
 import {
     updateResultStartDate,
     updateResultEndDate,
     postResultData,
-    updateResultCategories,
     updateResultCategory,
     updateResultTable,
-} from '../../redux/actions/warehouse'
+} from '../../redux/actions/warehouse/result'
+
 import dayjs from 'dayjs'
-import { lineData, ResultTableTypes, resultTableHeaders } from './constants'
+import {
+    lineData,
+    ResultTableTypes,
+    resultCategoryTableHeaders,
+    resultDemandTableHeaders,
+} from './constants'
 
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 const theme = createTheme()
@@ -28,14 +36,26 @@ const theme = createTheme()
 const Result = () => {
     const dispatch = useAppDispatch()
 
-    // @ts-ignore
-    const warehouseState = useAppSelector((state) => state.warehouseReducer)
+    const warehouseSelectState = useAppSelector(
+        // @ts-ignore
+        (state) => state.warehouseSelect,
+    )
+
+    const warehouseRequirementState = useAppSelector(
+        // @ts-ignore
+        (state) => state.warehouseRequirement,
+    )
+
+    const warehouseResultState = useAppSelector(
+        // @ts-ignore
+        (state) => state.warehouseResult,
+    )
 
     const [selectedCategory, setSelectedCategory] = useState<any[]>([])
 
     const [resultChartData, setResultChartData] = useState<any>({})
 
-    const [selectedTable, setSelectedTable] = useState(null)
+    const [selectedTable, setSelectedTable] = useState<any>(null)
 
     const [cardData, setCardData] = useState({
         num_employees_to_be_hired: 0,
@@ -43,7 +63,8 @@ const Result = () => {
         total_hiring_budget: '',
     })
 
-    const [outputData, setOutputData] = useState(null)
+    const [outputData, setOutputData] = useState<any>(null)
+    const [dateWiseTotal, setDateWiseTotal] = useState(null)
     const [totalData, setTotalData] = useState<any>(null)
     const [demandData, setDemandData] = useState(null)
 
@@ -90,12 +111,12 @@ const Result = () => {
     const TotalValueFromResult = (filterDates: any, valueType: any) => {
         return filterDates.map((date: any) => {
             let totalSum = 0
-            for (const category of warehouseState.result_category) {
+            for (const category of warehouseResultState.result_category) {
                 totalSum =
                     totalSum +
-                    warehouseState.result_demand_vs_fulfillment_data[date][
-                        category
-                    ][valueType]
+                    warehouseResultState.result_demand_vs_fulfillment_data[
+                        date
+                    ][category][valueType]
             }
             return totalSum
         })
@@ -103,20 +124,21 @@ const Result = () => {
 
     const fetchData = () => {
         const payload = {
-            plan_from_date: dayjs(warehouseState.planning_start_date).format(
+            plan_from_date: dayjs(
+                warehouseSelectState.planning_start_date,
+            ).format('YYYY-MM-DD'),
+            plan_to_date: dayjs(warehouseSelectState.planning_end_date).format(
                 'YYYY-MM-DD',
             ),
-            plan_to_date: dayjs(warehouseState.planning_end_date).format(
-                'YYYY-MM-DD',
-            ),
-            num_current_employees: warehouseState.num_current_employees,
-            day_working_hours: warehouseState.day_working_hours,
-            warehouse_id: warehouseState.planning_warehouse.id,
+            num_current_employees:
+                warehouseRequirementState.num_current_employees,
+            day_working_hours: warehouseRequirementState.day_working_hours,
+            warehouse_id: warehouseSelectState.planning_warehouse?.id,
             cost_per_employee_per_month:
-                warehouseState.cost_per_employee_per_month,
+                warehouseRequirementState.cost_per_employee_per_month,
             percentage_absent_expected:
-                warehouseState.percentage_absent_expected,
-            total_hiring_budget: warehouseState.total_hiring_budget,
+                warehouseRequirementState.percentage_absent_expected,
+            total_hiring_budget: warehouseRequirementState.total_hiring_budget,
         }
         // @ts-ignore
         dispatch(postResultData(payload))
@@ -128,16 +150,16 @@ const Result = () => {
     }, [])
 
     useEffect(() => {
-        const startDate = dayjs(warehouseState.result_start_date).format(
+        const startDate = dayjs(warehouseResultState.result_start_date).format(
             'YYYY-MM-DD',
         )
-        const endDate = dayjs(warehouseState.result_end_date).format(
+        const endDate = dayjs(warehouseResultState.result_end_date).format(
             'YYYY-MM-DD',
         )
 
-        if (warehouseState.result_demand_vs_fulfillment_data) {
+        if (warehouseResultState.result_demand_vs_fulfillment_data) {
             const filteredDates = Object.keys(
-                warehouseState.result_demand_vs_fulfillment_data,
+                warehouseResultState.result_demand_vs_fulfillment_data,
             ).filter((date) => {
                 if (startDate && endDate) {
                     return date >= startDate && date <= endDate
@@ -152,21 +174,24 @@ const Result = () => {
             let demands: any = []
             let expected_fulfillments: any = []
             let existing_fulfillments: any = []
-            if (warehouseState.result_category.length === 0) {
+            if (warehouseResultState.result_category.length === 0) {
                 demands = filteredDates.map(
                     (date) =>
-                        warehouseState.result_demand_vs_fulfillment_data[date]
-                            .total.expected_demand,
+                        warehouseResultState.result_demand_vs_fulfillment_data[
+                            date
+                        ].total.expected_demand,
                 )
                 expected_fulfillments = filteredDates.map(
                     (date) =>
-                        warehouseState.result_demand_vs_fulfillment_data[date]
-                            .total.fulfillment_with_total,
+                        warehouseResultState.result_demand_vs_fulfillment_data[
+                            date
+                        ].total.fulfillment_with_total,
                 )
                 existing_fulfillments = filteredDates.map(
                     (date) =>
-                        warehouseState.result_demand_vs_fulfillment_data[date]
-                            .total.fulfillment_with_current,
+                        warehouseResultState.result_demand_vs_fulfillment_data[
+                            date
+                        ].total.fulfillment_with_current,
                 )
             } else {
                 demands = TotalValueFromResult(filteredDates, 'expected_demand')
@@ -193,10 +218,10 @@ const Result = () => {
         }
 
         if (
-            warehouseState.result_output &&
-            warehouseState.result_demand_vs_fulfillment_data
+            warehouseResultState.result_output &&
+            warehouseResultState.result_demand_vs_fulfillment_data
         ) {
-            const filteredData = Object.keys(warehouseState.result_output)
+            const filteredData = Object.keys(warehouseResultState.result_output)
                 .filter((date) => {
                     if (startDate && endDate) {
                         return date >= startDate && date <= endDate
@@ -209,7 +234,7 @@ const Result = () => {
                 })
                 .reduce((filtered: any, date) => {
                     const categories = Object.keys(
-                        warehouseState.result_output[date],
+                        warehouseResultState.result_output[date],
                     )
                     categories.forEach((category) => {
                         if (
@@ -220,14 +245,16 @@ const Result = () => {
                                 filtered[date] = {}
                             }
                             filtered[date][category] =
-                                warehouseState.result_output[date][category]
+                                warehouseResultState.result_output[date][
+                                    category
+                                ]
                         }
                     })
                     return filtered
                 }, {})
 
             const filteredDemandData = Object.keys(
-                warehouseState.result_demand_vs_fulfillment_data,
+                warehouseResultState.result_demand_vs_fulfillment_data,
             )
                 .filter((date) => {
                     if (startDate && endDate) {
@@ -241,7 +268,9 @@ const Result = () => {
                 })
                 .reduce((filtered: any, date) => {
                     const categories = Object.keys(
-                        warehouseState.result_demand_vs_fulfillment_data[date],
+                        warehouseResultState.result_demand_vs_fulfillment_data[
+                            date
+                        ],
                     )
                     categories.forEach((category) => {
                         if (
@@ -252,7 +281,7 @@ const Result = () => {
                                 filtered[date] = {}
                             }
                             filtered[date][category] =
-                                warehouseState.result_demand_vs_fulfillment_data[
+                                warehouseResultState.result_demand_vs_fulfillment_data[
                                     date
                                 ][category]
                         }
@@ -285,35 +314,62 @@ const Result = () => {
                 },
             )
             setOutputData(filteredData)
+            // setDateWiseTotal(dateTotal)
             setTotalData(totalData)
             setDemandData(filteredDemandData)
         }
     }, [
-        warehouseState.result_demand_vs_fulfillment_data,
-        warehouseState.result_category,
-        warehouseState.result_start_date,
-        warehouseState.result_end_date,
+        warehouseResultState.result_demand_vs_fulfillment_data,
+        warehouseResultState.result_category,
+        warehouseResultState.result_start_date,
+        warehouseResultState.result_end_date,
     ])
 
     useEffect(() => {
-        if (warehouseState.result_additional_data) {
+        if (outputData && !object.isEmpty(outputData)) {
+            const dateTotal: any = {}
+
+            Object.keys(outputData).map((date: any, index: any) => {
+                let total_num_existing_to_deploy = 0
+                let total_num_new_to_deploy = 0
+                let total_category_wise_total = 0
+                for (const key of Object.keys(outputData[date])) {
+                    total_num_existing_to_deploy +=
+                        outputData[date][key].num_of_existing_to_deploy
+                    total_num_new_to_deploy +=
+                        outputData[date][key].num_of_new_to_deploy
+                    total_category_wise_total += outputData[date][key].total
+                }
+                dateTotal[date] = {
+                    total_num_existing_to_deploy: total_num_existing_to_deploy,
+                    total_num_new_to_deploy: total_num_new_to_deploy,
+                    total_category_wise_total: total_category_wise_total,
+                }
+            })
+            setDateWiseTotal(dateTotal)
+        }
+    }, [outputData])
+
+    useEffect(() => {
+        if (warehouseResultState.result_additional_data) {
             setCardData({
                 ...cardData,
-                project_fulfillment: warehouseState.result_additional_data
+                project_fulfillment: warehouseResultState.result_additional_data
                     .project_fulfillment
-                    ? warehouseState.result_additional_data.project_fulfillment
+                    ? warehouseResultState.result_additional_data
+                          .project_fulfillment
                     : 0,
                 // @ts-ignore
-                total_hiring_budget: warehouseState.result_additional_data
+                total_hiring_budget: warehouseResultState.result_additional_data
                     .total_hiring_budget
                     ? ' ' +
-                      warehouseState.result_additional_data.total_hiring_budget.toLocaleString(
+                      warehouseResultState.result_additional_data.total_hiring_budget.toLocaleString(
                           'en-IN',
                       )
                     : 0,
             })
         }
-    }, [warehouseState.result_additional_data])
+    }, [warehouseResultState.result_additional_data])
 
     const cardItems = [
         {
@@ -332,17 +388,13 @@ const Result = () => {
         },
     ]
 
-    const ResultSubLabel = `${warehouseState.result_warehouse_name}: 
-                            ${dayjs(warehouseState.planning_start_date).format(
-                                'DD MMM YYYY',
-                            )} 
-                            to ${dayjs(warehouseState.planning_end_date).format(
-                                'DD MMM YYYY',
-                            )}`
-
-    console.log('outputData', outputData)
-    console.log('totalData', totalData)
-    console.log('demandData', demandData)
+    const ResultSubLabel = `${warehouseResultState.result_warehouse_name}: 
+                            ${dayjs(
+                                warehouseSelectState.planning_start_date,
+                            ).format('DD MMM YYYY')} 
+                            to ${dayjs(
+                                warehouseSelectState.planning_end_date,
+                            ).format('DD MMM YYYY')}`
 
     return (
         <ThemeProvider theme={theme}>
@@ -388,7 +440,9 @@ const Result = () => {
                             <Grid item lg={8}>
                                 <FormDateSelector
                                     label=''
-                                    value={warehouseState.result_start_date}
+                                    value={
+                                        warehouseResultState.result_start_date
+                                    }
                                     onChange={handleWarehouseStartDateChange}
                                     minDate={dayjs()}
                                 />
@@ -410,7 +464,7 @@ const Result = () => {
                             <Grid item lg={8}>
                                 <FormDateSelector
                                     label=''
-                                    value={warehouseState.result_end_date}
+                                    value={warehouseResultState.result_end_date}
                                     onChange={handleWarehouseEndDateChange}
                                     minDate={dayjs()}
                                 />
@@ -434,10 +488,15 @@ const Result = () => {
                                     id='select-category-dropdown'
                                     labelId='select-category-dropdown-input-label'
                                     label=''
-                                    value={selectedCategory}
+                                    // value={selectedCategory}
+                                    value={
+                                        warehouseResultState.result_category
+                                            ? warehouseResultState.result_category
+                                            : selectedCategory
+                                    }
                                     data={
-                                        warehouseState.result_categories
-                                            ? warehouseState.result_categories
+                                        warehouseResultState.result_categories
+                                            ? warehouseResultState.result_categories
                                             : []
                                     }
                                     onChange={handleSelectedCategoryChange}
@@ -464,11 +523,13 @@ const Result = () => {
                         justifyContent='center'
                         alignContent='center'
                         alignItems='center'
+                        columnSpacing={1}
+                        rowSpacing={4}
                     >
                         <Grid
                             container
                             item
-                            lg={6}
+                            lg={12}
                             justifyContent='center'
                             alignContent='center'
                             alignItems='center'
@@ -495,11 +556,11 @@ const Result = () => {
                         <Grid
                             container
                             item
-                            lg={6}
+                            lg={12}
                             justifyContent='center'
                             alignContent='center'
                             alignItems='center'
-                            spacing={2}
+                            rowSpacing={2}
                         >
                             <Grid item>
                                 <FormLabel label='Deployment Schedule' />
@@ -521,8 +582,8 @@ const Result = () => {
                                         labelId='select-table-dropdown-input-label'
                                         label=''
                                         value={
-                                            warehouseState.result_table
-                                                ? warehouseState.result_table
+                                            warehouseResultState.result_table
+                                                ? warehouseResultState.result_table
                                                 : selectedTable
                                         }
                                         data={ResultTableTypes}
@@ -530,16 +591,35 @@ const Result = () => {
                                     />
                                 </Grid>
                             </Grid>
-                            {/* <Grid item>
-                                {outputData && (
+                            <Grid
+                                item
+                                lg={12}
+                                justifyContent='center'
+                                alignContent='center'
+                                alignItems='center'
+                                sx={{ height: '400px' }}
+                            >
+                                {outputData && selectedTable?.id === 1 && (
                                     <FormTable
-                                        id='result-data-table'
-                                        tableHeaders={resultTableHeaders}
+                                        id='result-category-wise-data-table'
+                                        tableType='category'
+                                        tableHeaders={
+                                            resultCategoryTableHeaders
+                                        }
                                         tableData={outputData}
-                                        tableKeys={['date']}
+                                        total={dateWiseTotal}
                                     />
                                 )}
-                            </Grid> */}
+                                {demandData && selectedTable?.id === 2 && (
+                                    <FormTable
+                                        id='result-demand-wise-data-table'
+                                        tableType='demand'
+                                        tableHeaders={resultDemandTableHeaders}
+                                        tableData={demandData}
+                                        total={null}
+                                    />
+                                )}
+                            </Grid>
                         </Grid>
                     </Grid>
                 </Grid>

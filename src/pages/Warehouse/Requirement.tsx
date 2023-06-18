@@ -1,24 +1,25 @@
 import { Container, Grid, InputAdornment } from '@mui/material'
 import { FormLabel, FormTextField } from '../../components/FormElements'
-import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks'
+
 import {
     updatePercentageAbsentExpected,
     updateNumCurrentEmployees,
     updateTotalHiringBudget,
     updateCostPerEmployeePerMonth,
     updateDayWorkingHours,
-} from '../../redux/actions/warehouse'
+} from '../../redux/actions/warehouse/requirement'
 
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 const theme = createTheme()
 
 const WarehouseRequirement = () => {
-    const navigate = useNavigate()
     const dispatch = useAppDispatch()
 
-    // @ts-ignore
-    const warehouseState = useAppSelector((state) => state.warehouseReducer)
+    const warehouseRequirementState = useAppSelector(
+        // @ts-ignore
+        (state) => state.warehouseRequirement,
+    )
 
     return (
         <ThemeProvider theme={theme}>
@@ -56,7 +57,7 @@ const WarehouseRequirement = () => {
                             <FormTextField
                                 id='percent-absentees-textfield'
                                 value={
-                                    warehouseState.percentage_absent_expected
+                                    warehouseRequirementState.percentage_absent_expected
                                 }
                                 type='number'
                                 onChange={(e: any) => {
@@ -92,7 +93,9 @@ const WarehouseRequirement = () => {
                         <Grid item lg={3}>
                             <FormTextField
                                 id='current-employees-textfield'
-                                value={warehouseState.num_current_employees}
+                                value={
+                                    warehouseRequirementState.num_current_employees
+                                }
                                 type='number'
                                 onChange={(e: any) => {
                                     dispatch(
@@ -121,7 +124,9 @@ const WarehouseRequirement = () => {
                         <Grid item lg={3}>
                             <FormTextField
                                 id='hiring-budget-textfield'
-                                value={warehouseState.total_hiring_budget}
+                                value={
+                                    warehouseRequirementState.total_hiring_budget
+                                }
                                 type='number'
                                 onChange={(e: any) => {
                                     dispatch(
@@ -155,7 +160,7 @@ const WarehouseRequirement = () => {
                             <FormTextField
                                 id='cost-per-employee-textfield'
                                 value={
-                                    warehouseState.cost_per_employee_per_month
+                                    warehouseRequirementState.cost_per_employee_per_month
                                 }
                                 type='number'
                                 onChange={(e: any) => {
@@ -191,7 +196,9 @@ const WarehouseRequirement = () => {
                         <Grid item lg={3}>
                             <FormTextField
                                 id='working-hours-textfield'
-                                value={warehouseState.day_working_hours}
+                                value={
+                                    warehouseRequirementState.day_working_hours
+                                }
                                 type='number'
                                 onChange={(e: any) => {
                                     dispatch(

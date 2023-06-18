@@ -1,18 +1,24 @@
-import React, { useState, useEffect, useRef, MutableRefObject } from 'react'
+import { useState, useEffect, useRef, MutableRefObject } from 'react'
 
 import { Container, Grid, Typography } from '@mui/material'
 
 import { PrimaryButton, FormUploadButton } from '../../components/Buttons'
-import { FormLabel } from '../../components/FormElements'
+import {
+    FormLabel,
+    FormBackdropElement,
+    FormSnackBarElement,
+} from '../../components/FormElements'
 import { FormDataGrid } from '../../components/Table'
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks'
 import { useNavigate } from 'react-router-dom'
+
 import {
     uploadProductivityFile,
     getBenchmarkProductivityData,
     putBenchmarkProductivityData,
     updateFlagProductivityTableUpdated,
-} from '../../redux/actions/warehouse'
+} from '../../redux/actions/warehouse/productivity'
+
 import { GridRowModel } from '@mui/x-data-grid'
 
 import { createTheme, ThemeProvider } from '@mui/material/styles'
@@ -24,19 +30,34 @@ const BenchmarkProductivity = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
 
-    // @ts-ignore
-    const warehouseState = useAppSelector((state) => state.warehouseReducer)
+    const warehouseSelectState = useAppSelector(
+        // @ts-ignore
+        (state) => state.warehouseSelect,
+    )
+
+    const warehouseProductivityState = useAppSelector(
+        // @ts-ignore
+        (state) => state.warehouseProductivity,
+    )
+
+    const [snackbarState, setSnackbarState] = useState(false)
 
     const fetchData = () => {
         dispatch(
             // @ts-ignore
-            getBenchmarkProductivityData(warehouseState.planning_warehouse?.id),
+            getBenchmarkProductivityData(
+                warehouseSelectState.planning_warehouse?.id,
+            ),
         )
     }
 
     useEffect(() => {
         fetchData()
     }, [])
+
+    useEffect(() => {
+        setSnackbarState(true)
+    }, [warehouseProductivityState.message])
 
     const benchmarkProductivityFile =
         useRef() as MutableRefObject<HTMLInputElement>
@@ -52,9 +73,10 @@ const BenchmarkProductivity = () => {
 
     const processDataChange = (newRow: GridRowModel) => {
         const updatedRow = { ...newRow }
-        const selectedRow = warehouseState.productivity_table_data.find(
-            (row: any) => row.id === updatedRow.id,
-        )
+        const selectedRow =
+            warehouseProductivityState.productivity_table_data.find(
+                (row: any) => row.id === updatedRow.id,
+            )
 
         if (JSON.stringify(selectedRow) !== JSON.stringify(updatedRow)) {
             const requestPayload: any = {
@@ -97,7 +119,7 @@ const BenchmarkProductivity = () => {
 
     const handleClickSave = () => {
         const tableData = JSON.parse(
-            JSON.stringify(warehouseState.productivity_table_data),
+            JSON.stringify(warehouseProductivityState.productivity_table_data),
         )
         updatedTableData.map((newObj: any, index: any) => {
             const oldObjIndex = tableData.findIndex(
@@ -127,14 +149,8 @@ const BenchmarkProductivity = () => {
                 // @ts-ignore
                 uploadProductivityFile(
                     context,
-                    warehouseState.planning_warehouse?.id,
+                    warehouseSelectState.planning_warehouse?.id,
                     fileObj.name,
-                ),
-            )
-            dispatch(
-                // @ts-ignore
-                getBenchmarkProductivityData(
-                    warehouseState.planning_warehouse?.id,
                 ),
             )
         }
@@ -143,6 +159,16 @@ const BenchmarkProductivity = () => {
     return (
         <ThemeProvider theme={theme}>
             <Container component='main' sx={{ flexGrow: 1 }} fixed>
+                <FormBackdropElement
+                    loader={warehouseProductivityState.isLoading}
+                />
+                {snackbarState && warehouseProductivityState.message && (
+                    <FormSnackBarElement
+                        message={warehouseProductivityState.message}
+                        onClose={() => setSnackbarState(false)}
+                    />
+                )}
+
                 <Grid
                     container
                     direction='column'
@@ -171,7 +197,9 @@ const BenchmarkProductivity = () => {
                         </Grid>
                         <Grid item lg={2}>
                             <Typography>
-                                {warehouseState.productivity_file_name}
+                                {
+                                    warehouseProductivityState.productivity_file_name
+                                }
                             </Typography>
                         </Grid>
                     </Grid>
@@ -184,10 +212,17 @@ const BenchmarkProductivity = () => {
                         alignItems='center'
                         sx={{ marginTop: '10px', height: '350px' }}
                     >
-                        {warehouseState.productivity_table_data && (
+                        {warehouseProductivityState.productivity_table_data && (
                             <FormDataGrid
-                                columns={benchmarkProductivityTableColumns}
-                                rows={warehouseState.productivity_table_data}
+                                columns={
+                                    warehouseProductivityState
+                                        .productivity_table_data.length > 0
+                                        ? benchmarkProductivityTableColumns
+                                        : []
+                                }
+                                rows={
+                                    warehouseProductivityState.productivity_table_data
+                                }
                                 processDataChange={processDataChange}
                             />
                         )}
@@ -208,7 +243,7 @@ const BenchmarkProductivity = () => {
                                 handleClickSave()
                             }}
                             disabled={
-                                !warehouseState.flag_productivity_table_updated
+                                !warehouseProductivityState.flag_productivity_table_updated
                             }
                         />
                     </Grid>

@@ -65,12 +65,21 @@ export const ResultTableTypes: any = [
     },
     {
         id: 2,
-        name: 'Other Type',
+        name: 'Demand-wise schedule',
     },
 ]
-export const resultTableHeaders = [
-    'Date',
-    'Category',
-    'Num Existing to Deploy',
-    'Num New to Deploy',
+export const resultCategoryTableHeaders = [
+    'DATE',
+    'CATEGORY',
+    'NUM EXISTING TO DEPLOY',
+    'NUM NEW TO DEPLOY',
+    'TOTAL',
+]
+
+export const resultDemandTableHeaders = [
+    'DATE',
+    'CATEGORY',
+    'EXPECTED DEMAND',
+    'FULLFILLMENT WITH EXISTING EMPLOYEE',
+    'FULLFILLMENT WITH TOTAL EMPLOYEE',
 ]

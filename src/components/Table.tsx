@@ -24,12 +24,14 @@ import {
     ResponsiveContainer,
 } from 'recharts'
 
+import object from 'lodash'
+
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.common.white,
         fontWeight: 'bold',
-        fontSize: '1rem',
+        fontSize: '0.8rem',
         borderWidth: 1,
         borderColor: 'white',
         borderStyle: 'solid',
@@ -46,13 +48,15 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 
 export const FormTable = (props: {
     id: string
+    tableType: any
     tableHeaders: any
-    tableKeys: any
     tableData: any
+    total: any
 }) => {
+
     return (
-        <TableContainer component={Paper}>
-            <Table aria-label={props.id}>
+        <TableContainer component={Paper} sx={{ maxHeight: '100%' }}>
+            <Table aria-label={props.id} stickyHeader>
                 <TableHead>
                     <TableRow>
                         {props.tableHeaders.map((row: string, key: any) => (
@@ -62,20 +66,138 @@ export const FormTable = (props: {
                         ))}
                     </TableRow>
                 </TableHead>
-
                 <TableBody>
-                    {props.tableData.map((obj: any, key: any) => (
-                        <TableRow key={key}>
-                            {props.tableKeys.map((row: string, key: any) => (
-                                <StyledTableCell align='center' key={key}>
-                                    {obj[row]}
-                                </StyledTableCell>
-                            ))}
-                        </TableRow>
-                    ))}
+                    {Object.keys(props.tableData).map(
+                        (date: any, index: any) => (
+                            <GetTableRows
+                                date={date}
+                                rowData={props.tableData[date]}
+                                index={index}
+                                total={
+                                    props.total && props.total[date] ? props.total[date] : null
+                                }
+                                tableType={props.tableType}
+                                key={index}
+                            />
+                        ),
+                    )}
                 </TableBody>
             </Table>
         </TableContainer>
+    )
+}
+
+const GetTableRows = (props: {
+    date: any
+    rowData: any
+    total: any
+    tableType: any
+    index: any
+}) => {
+    const childRows: any = object.omit(
+        props.rowData,
+        Object.keys(props.rowData)[0],
+    )
+
+    return (
+        <>
+            <TableRow key={props.index}>
+                <StyledTableCell
+                    rowSpan={Object.keys(props.rowData).length}
+                    align='center'
+                >
+                    {props.date}
+                </StyledTableCell>
+
+                {props.tableType === 'category' ? (
+                    <CategoryWiseOutputDataCells
+                        rowData={props.rowData[Object.keys(props.rowData)[0]]}
+                        rowKey={Object.keys(props.rowData)[0]}
+                    />
+                ) : (
+                    <DemandWiseOutputDataCells
+                        rowData={props.rowData[Object.keys(props.rowData)[0]]}
+                        rowKey={Object.keys(props.rowData)[0]}
+                    />
+                )}
+            </TableRow>
+
+            {Object.keys(childRows).map((category: any, index: any) => (
+                <TableRow key={index}>
+                    {props.tableType === 'category' ? (
+                        <CategoryWiseOutputDataCells
+                            rowData={childRows[category]}
+                            rowKey={category}
+                        />
+                    ) : (
+                        <DemandWiseOutputDataCells
+                            rowData={childRows[category]}
+                            rowKey={category}
+                        />
+                    )}
+                </TableRow>
+            ))}
+            {props.total && (
+                <TableRow>
+                    <StyledTableCell colSpan={2} align='right'>
+                        Total
+                    </StyledTableCell>
+                    <StyledTableCell rowSpan={1} align='center'>
+                        {props.total.total_num_existing_to_deploy}
+                    </StyledTableCell>
+                    <StyledTableCell rowSpan={1} align='center'>
+                        {props.total.total_num_new_to_deploy}
+                    </StyledTableCell>
+                    <StyledTableCell rowSpan={1} align='center'>
+                        {props.total.total_category_wise_total}
+                    </StyledTableCell>
+                </TableRow>
+            )}
+        </>
+    )
+}
+
+const CategoryWiseOutputDataCells = (props: { rowData: any; rowKey: any }) => {
+    return (
+        <>
+            <StyledTableCell rowSpan={1} align='center'>
+                {props.rowKey}
+            </StyledTableCell>
+
+            <StyledTableCell rowSpan={1} align='center'>
+                {props.rowData.num_of_existing_to_deploy}
+            </StyledTableCell>
+
+            <StyledTableCell rowSpan={1} align='center'>
+                {props.rowData.num_of_new_to_deploy}
+            </StyledTableCell>
+
+            <StyledTableCell rowSpan={1} align='center'>
+                {props.rowData.total}
+            </StyledTableCell>
+        </>
+    )
+}
+
+const DemandWiseOutputDataCells = (props: { rowData: any; rowKey: any }) => {
+    return (
+        <>
+            <StyledTableCell rowSpan={1} align='center'>
+                {props.rowKey}
+            </StyledTableCell>
+
+            <StyledTableCell rowSpan={1} align='center'>
+                {props.rowData.expected_demand}
+            </StyledTableCell>
+
+            <StyledTableCell rowSpan={1} align='center'>
+                {props.rowData.fulfillment_with_current}
+            </StyledTableCell>
+
+            <StyledTableCell rowSpan={1} align='center'>
+                {props.rowData.fulfillment_with_total}
+            </StyledTableCell>
+        </>
     )
 }
 
@@ -137,7 +259,6 @@ export const FormGraph = (props: {
     }
 
     const selectLine = (e: any) => {
-        console.log(e.dataKey)
 
         setGraphProps({
             ...graphProps,

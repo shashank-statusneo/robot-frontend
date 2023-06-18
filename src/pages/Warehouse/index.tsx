@@ -1,26 +1,39 @@
 import { useState, useEffect } from 'react'
 import { Container, Grid } from '@mui/material'
-import WarehouseSelect from './WarehouseSelect'
-import WarehouseRequirement from './WarehouseRequirement'
-import BenchmarkProductivity from './BenchmarkProductivity'
-import DemandForecast from './DemandForecast'
+import WarehouseSelect from './Select'
+import WarehouseRequirement from './Requirement'
+import BenchmarkProductivity from './Productivity'
+import DemandForecast from './Demand'
 import Result from './Result'
 import { NavigationBtn } from '../../components/Buttons'
 import { useAppSelector } from '../../hooks/redux-hooks'
-import {
-    FormBackdropElement,
-    FormSnackBarElement,
-    FormAlertElement,
-} from '../../components/FormElements'
+import { FormAlertElement } from '../../components/FormElements'
 import dayjs from 'dayjs'
 import { useParams, useNavigate } from 'react-router-dom'
+import object from 'lodash'
 
 const WareHouse = () => {
     const navigate = useNavigate()
-    // @ts-ignore
-    const warehouseState = useAppSelector((state) => state.warehouseReducer)
 
-    const [snackbarState, setSnackbarState] = useState(false)
+    const warehouseSelectState = useAppSelector(
+        // @ts-ignore
+        (state) => state.warehouseSelect,
+    )
+
+    const warehouseProductivityState = useAppSelector(
+        // @ts-ignore
+        (state) => state.warehouseProductivity,
+    )
+
+    const warehouseDemandState = useAppSelector(
+        // @ts-ignore
+        (state) => state.warehouseDemand,
+    )
+
+    const warehouseRequirementState = useAppSelector(
+        // @ts-ignore
+        (state) => state.warehouseRequirement,
+    )
 
     const [alertState, setAlertState] = useState(false)
 
@@ -30,14 +43,15 @@ const WareHouse = () => {
             previous: null,
             next: 'benchmark',
             complete:
-                warehouseState?.planning_warehouse &&
-                dayjs(warehouseState.planning_start_date).format(
+                warehouseSelectState?.planning_warehouse &&
+                dayjs(warehouseSelectState.planning_start_date).format(
                     'YYYY-MM-DD',
                 ) !== 'Invalid Date' &&
-                dayjs(warehouseState.planning_end_date).format('YYYY-MM-DD') !==
-                    'Invalid Date' &&
-                warehouseState.planning_end_date >=
-                    warehouseState.planning_start_date
+                dayjs(warehouseSelectState.planning_end_date).format(
+                    'YYYY-MM-DD',
+                ) !== 'Invalid Date' &&
+                warehouseSelectState.planning_end_date >=
+                    warehouseSelectState.planning_start_date
                     ? true
                     : false,
             prompt: null,
@@ -46,26 +60,34 @@ const WareHouse = () => {
             element: <BenchmarkProductivity />,
             previous: 'select',
             next: 'demand',
-            complete: warehouseState?.productivity_table_data ? true : false,
-            prompt: warehouseState.flag_productivity_table_updated,
+            complete:
+                warehouseProductivityState?.productivity_table_data &&
+                warehouseProductivityState?.productivity_table_data.length > 0
+                    ? true
+                    : false,
+            prompt: warehouseProductivityState.flag_productivity_table_updated,
         },
         demand: {
             element: <DemandForecast />,
             previous: 'benchmark',
             next: 'requirement',
-            complete: warehouseState?.demand_table_data ? true : false,
-            prompt: warehouseState.flag_productivity_table_updated,
+            complete:
+                warehouseDemandState?.demand_table_data &&
+                !object.isEmpty(warehouseDemandState?.demand_table_data)
+                    ? true
+                    : false,
+            prompt: warehouseDemandState.flag_demand_table_updated,
         },
         requirement: {
             element: <WarehouseRequirement />,
             previous: 'demand',
             next: 'result',
             complete:
-                warehouseState?.percentage_absent_expected &&
-                warehouseState?.num_current_employees &&
-                warehouseState?.total_hiring_budget &&
-                warehouseState?.cost_per_employee_per_month &&
-                warehouseState?.day_working_hours
+                warehouseRequirementState?.percentage_absent_expected &&
+                warehouseRequirementState?.num_current_employees &&
+                warehouseRequirementState?.total_hiring_budget &&
+                warehouseRequirementState?.cost_per_employee_per_month &&
+                warehouseRequirementState?.day_working_hours
                     ? true
                     : false,
             prompt: null,
@@ -74,13 +96,40 @@ const WareHouse = () => {
             element: <Result />,
             previous: 'requirement',
             next: null,
+            complete:
+                warehouseSelectState?.planning_warehouse &&
+                dayjs(warehouseSelectState.planning_start_date).format(
+                    'YYYY-MM-DD',
+                ) !== 'Invalid Date' &&
+                dayjs(warehouseSelectState.planning_end_date).format(
+                    'YYYY-MM-DD',
+                ) !== 'Invalid Date' &&
+                warehouseSelectState.planning_end_date >=
+                    warehouseSelectState.planning_start_date &&
+                warehouseProductivityState?.productivity_table_data &&
+                warehouseProductivityState?.productivity_table_data.length >
+                    0 &&
+                warehouseDemandState?.demand_table_data &&
+                !object.isEmpty(warehouseDemandState?.demand_table_data) &&
+                warehouseRequirementState?.percentage_absent_expected &&
+                warehouseRequirementState?.num_current_employees &&
+                warehouseRequirementState?.total_hiring_budget &&
+                warehouseRequirementState?.cost_per_employee_per_month &&
+                warehouseRequirementState?.day_working_hours
+                    ? true
+                    : false,
             prompt: null,
         },
     }
-
     const ScreenNames = Object.keys(PageToScreen)
 
     const { pageName = ScreenNames[0] } = useParams()
+
+    useEffect(() => {
+        if (!PageToScreen[pageName].complete) {
+            navigate('/warehouse/select')
+        }
+    }, [])
 
     const handleNext = () => {
         if (PageToScreen[pageName].prompt) {
@@ -103,21 +152,9 @@ const WareHouse = () => {
         setAlertState(false)
     }
 
-    useEffect(() => {
-        setSnackbarState(true)
-    }, [warehouseState.message])
-
     return (
         <Container maxWidth='xl'>
             <Grid container>
-                <FormBackdropElement loader={warehouseState.isLoading} />
-                {snackbarState && warehouseState.message && (
-                    <FormSnackBarElement
-                        message={warehouseState.message}
-                        onClose={() => setSnackbarState(false)}
-                    />
-                )}
-
                 {alertState && (
                     <FormAlertElement
                         open={alertState}
