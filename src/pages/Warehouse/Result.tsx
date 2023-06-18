@@ -10,7 +10,7 @@ import {
     FormSubLabel,
     FormDropDown,
 } from '../../components/FormElements'
-import { FormGraph } from '../../components/Table'
+import { FormGraph, FormTable } from '../../components/Table'
 import {
     updateResultStartDate,
     updateResultEndDate,
@@ -20,7 +20,7 @@ import {
     updateResultTable,
 } from '../../redux/actions/warehouse'
 import dayjs from 'dayjs'
-import { lineData, ResultTableTypes } from './constants'
+import { lineData, ResultTableTypes, resultTableHeaders } from './constants'
 
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 const theme = createTheme()
@@ -530,6 +530,16 @@ const Result = () => {
                                     />
                                 </Grid>
                             </Grid>
+                            {/* <Grid item>
+                                {outputData && (
+                                    <FormTable
+                                        id='result-data-table'
+                                        tableHeaders={resultTableHeaders}
+                                        tableData={outputData}
+                                        tableKeys={['date']}
+                                    />
+                                )}
+                            </Grid> */}
                         </Grid>
                     </Grid>
                 </Grid>

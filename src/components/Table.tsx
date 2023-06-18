@@ -46,14 +46,9 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 
 export const FormTable = (props: {
     id: string
-    tableName: string
     tableHeaders: any
     tableKeys: any
     tableData: any
-    // totalOrderQty: number,
-    // totalCost: number,
-    // downloadBtnId: string,
-    // onClickFunc: any
 }) => {
     return (
         <TableContainer component={Paper}>

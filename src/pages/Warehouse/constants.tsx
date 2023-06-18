@@ -68,3 +68,9 @@ export const ResultTableTypes: any = [
         name: 'Other Type',
     },
 ]
+export const resultTableHeaders = [
+    'Date',
+    'Category',
+    'Num Existing to Deploy',
+    'Num New to Deploy',
+]

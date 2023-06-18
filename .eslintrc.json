@@ -30,9 +30,10 @@
         // "@typescript-eslint/camelcase": ["warn"],
         "react/react-in-jsx-scope": "off",
         "camelcase": "off",
-        "spaced-comment": "warn",
+        "spaced-comment": "off",
         "quotes": ["error", "single"],
-        "no-duplicate-imports": "error"
+        "no-duplicate-imports": "error",
+        " @typescript-eslint/no-unused-vars": "off"
         // "@typescript-eslint/no-explicit-any": [
         //     "error",
         //     {
