@@ -60,7 +60,10 @@ export const FormUploadButton = (props: {
             color='primary'
             size='medium'
             id={props.id}
-            onClick={() => !props.loader && props.fileRef.current.click()}
+            onClick={() => {
+                props.fileRef.current.value = ''
+                !props.loader && props.fileRef.current.click()
+            }}
             disabled={props.disabled}
             sx={{ fontWeight: 'bold' }}
         >

@@ -1,7 +1,6 @@
 import authReducer from './auth'
-import inventoryOptimizerReducer from './inventoryOptimizer'
+import  optimizer from './inventory/optimizer'
 import algorithmDataReducer from './algorithm'
-// import warehouseReducer from './warehouse'
 import warehouseSelect from './warehouse/select'
 import warehouseProductivity from './warehouse/productivity'
 import warehouseDemand from './warehouse/demand'
@@ -11,7 +10,7 @@ import { combineReducers } from 'redux'
 
 export const rootReducer = combineReducers({
     authReducer: authReducer,
-    inventoryOptimizerReducer: inventoryOptimizerReducer,
+    optimizer: optimizer,
     algorithmDataReducer: algorithmDataReducer,
     warehouseSelect: warehouseSelect,
     warehouseProductivity: warehouseProductivity,

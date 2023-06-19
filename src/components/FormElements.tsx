@@ -20,6 +20,9 @@ import {
     DialogActions,
     Button,
     Tooltip,
+    RadioGroup,
+    FormControlLabel,
+    Radio,
 } from '@mui/material'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -85,12 +88,6 @@ export const FormAlertElement = (props: {
                         {obj.label}
                     </Button>
                 ))}
-                {/* <Button autoFocus onClick={handleClose}>
-            Disagree
-          </Button>
-          <Button onClick={handleClose} autoFocus>
-            Agree
-          </Button> */}
             </DialogActions>
         </Dialog>
     )
@@ -105,6 +102,8 @@ export const FormTextField = (props: {
     type: any
     error: any
     onErrorMessage: string
+    disabled: boolean
+    size: any
 }) => {
     return (
         <Tooltip title={props.onErrorMessage} disableInteractive>
@@ -113,10 +112,11 @@ export const FormTextField = (props: {
                 type={props.type}
                 value={props.value}
                 onChange={props.onChange}
-                size='medium'
+                size={props.size}
                 variant='outlined'
                 InputProps={props.inputProps}
                 error={props.error}
+                disabled={props.disabled}
             />
         </Tooltip>
     )
@@ -127,6 +127,15 @@ export const FormLabel = (props: { label: string }) => {
     return (
         <Typography variant='h6' fontWeight='bold'>
             {props.label}
+        </Typography>
+    )
+}
+
+// General function to export Form Sub Text
+export const FormSubText = (props: { subText: string }) => {
+    return (
+        <Typography variant='caption' fontStyle='italic'>
+            {props.subText}
         </Typography>
     )
 }
@@ -273,5 +282,98 @@ export const FormCardField = (props: { items: CardItems }) => {
                 </Grid>
             ))}
         </Grid>
+    )
+}
+
+// General function to export Form Radio Btn
+export const FormRadioButton = (props: {
+    id: string
+    identifier: boolean
+    options: { [x: string]: string }
+    onChange: (
+        event: React.ChangeEvent<HTMLInputElement>,
+        value: string,
+    ) => void
+}) => {
+    return (
+        <FormControl>
+            <RadioGroup
+                row
+                id={props.id}
+                value={
+                    props.identifier
+                        ? Object.keys(props.options)[0]
+                        : Object.keys(props.options)[1]
+                }
+                onChange={props.onChange}
+            >
+                {Object.keys(props.options).map((value, index) => (
+                    <FormControlLabel
+                        key={index}
+                        value={value}
+                        control={<Radio />}
+                        label={props.options[value]}
+                    />
+                ))}
+            </RadioGroup>
+        </FormControl>
+    )
+}
+
+// General function to export Form Custom Radio Btn
+export const CustomFormRadioButton = (props: {
+    id: string
+    identifier: boolean
+    options: { [x: string]: string }
+    textFieldsProps: any
+    onChange: (
+        event: React.ChangeEvent<HTMLInputElement>,
+        value: string,
+    ) => void
+}) => {
+
+    return (
+        <FormControl>
+            <RadioGroup
+                row
+                id={props.id}
+                value={
+                    props.identifier
+                        ? Object.keys(props.options)[0]
+                        : Object.keys(props.options)[1]
+                }
+                onChange={props.onChange}
+            >
+                {Object.keys(props.options).map((value, index) => (
+                    <Grid
+                        key={index}
+                        item
+                        container
+                        lg={6}
+                        justifyContent='flex-start'
+                        alignContent='center'
+                        alignItems='center'
+                    >
+                        <FormControlLabel
+                            key={index}
+                            value={value}
+                            control={<Radio />}
+                            label={props.options[value]}
+                        />
+                        <FormTextField
+                            id={props.textFieldsProps[index].id}
+                            value={props.textFieldsProps[index].value}
+                            type={props.textFieldsProps[index].type}
+                            onChange={props.textFieldsProps[index].onChange}
+                            inputProps={props.textFieldsProps[index].inputProps}
+                            error={props.textFieldsProps[index].error}
+                            onErrorMessage={props.textFieldsProps[index].onErrorMessage}
+                            disabled={props.textFieldsProps[index].disabled}
+                            size={'small'}
+                        />
+                    </Grid>
+                ))}
+            </RadioGroup>
+        </FormControl>
     )
 }
