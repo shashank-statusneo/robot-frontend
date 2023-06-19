@@ -87,7 +87,10 @@ const WareHouse = () => {
                 warehouseRequirementState?.num_current_employees &&
                 warehouseRequirementState?.total_hiring_budget &&
                 warehouseRequirementState?.cost_per_employee_per_month &&
-                warehouseRequirementState?.day_working_hours
+                warehouseRequirementState?.total_hiring_budget >=
+                    warehouseRequirementState?.cost_per_employee_per_month &&
+                warehouseRequirementState?.day_working_hours &&
+                warehouseRequirementState?.day_working_hours <= 24
                     ? true
                     : false,
             prompt: null,

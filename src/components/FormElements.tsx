@@ -19,6 +19,7 @@ import {
     DialogContentText,
     DialogActions,
     Button,
+    Tooltip,
 } from '@mui/material'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -102,17 +103,22 @@ export const FormTextField = (props: {
     inputProps: any
     onChange: any
     type: any
+    error: any
+    onErrorMessage: string
 }) => {
     return (
-        <TextField
-            id={props.id}
-            type={props.type}
-            value={props.value}
-            onChange={props.onChange}
-            size='medium'
-            variant='outlined'
-            InputProps={props.inputProps}
-        />
+        <Tooltip title={props.onErrorMessage} disableInteractive>
+            <TextField
+                id={props.id}
+                type={props.type}
+                value={props.value}
+                onChange={props.onChange}
+                size='medium'
+                variant='outlined'
+                InputProps={props.inputProps}
+                error={props.error}
+            />
+        </Tooltip>
     )
 }
 
@@ -186,6 +192,13 @@ export const FormMultiDropDown = (props: {
                 multiple
                 onChange={props.onChange}
                 renderValue={(selected) => selected.join(', ')}
+                MenuProps={{
+                    MenuListProps: {
+                        style: {
+                            maxHeight: 250,
+                        },
+                    },
+                }}
             >
                 {props.data.map((obj: any, key: any) => (
                     <MenuItem value={obj} key={key}>

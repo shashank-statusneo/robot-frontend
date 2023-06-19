@@ -75,6 +75,8 @@ const WarehouseRequirement = () => {
                                         </InputAdornment>
                                     ),
                                 }}
+                                error={false}
+                                onErrorMessage={''}
                             />
                         </Grid>
                     </Grid>
@@ -106,6 +108,8 @@ const WarehouseRequirement = () => {
                                     )
                                 }}
                                 inputProps={{}}
+                                error={false}
+                                onErrorMessage={''}
                             />
                         </Grid>
                     </Grid>
@@ -141,6 +145,11 @@ const WarehouseRequirement = () => {
                                         </InputAdornment>
                                     ),
                                 }}
+                                error={
+                                    warehouseRequirementState.total_hiring_budget < 
+                                    warehouseRequirementState.cost_per_employee_per_month
+                                }
+                                onErrorMessage={'Total Hiring Budget should be more than or equal to Monthly cost per Employee'}
                             />
                         </Grid>
                     </Grid>
@@ -178,6 +187,9 @@ const WarehouseRequirement = () => {
                                         </InputAdornment>
                                     ),
                                 }}
+                                error={false}
+                                onErrorMessage={''}
+                                
                             />
                         </Grid>
                     </Grid>
@@ -207,6 +219,12 @@ const WarehouseRequirement = () => {
                                     )
                                 }}
                                 inputProps={{}}
+                                error={
+                                    warehouseRequirementState.day_working_hours >
+                                    24
+                                }
+                                onErrorMessage={'Working hours should be less than or equal to 24'}
+                               
                             />
                         </Grid>
                     </Grid>

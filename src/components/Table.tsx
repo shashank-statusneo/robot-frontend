@@ -285,7 +285,7 @@ export const FormGraph = (props: {
                 <YAxis dataKey={props.yLabel} />
                 <Tooltip />
                 <Legend
-                    align='right'
+                    align='center'
                     iconType='square'
                     onClick={selectLine}
                     onMouseOver={handleLegendMouseEnter}

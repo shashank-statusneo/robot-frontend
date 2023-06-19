@@ -545,7 +545,6 @@ const Result = () => {
                                     id='select-category-dropdown'
                                     labelId='select-category-dropdown-input-label'
                                     label=''
-                                    // value={selectedCategory}
                                     value={
                                         warehouseResultState.result_category
                                             ? warehouseResultState.result_category
