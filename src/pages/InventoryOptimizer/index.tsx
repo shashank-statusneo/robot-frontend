@@ -1,18 +1,68 @@
-import React, { useState } from 'react'
-import { Typography, Tabs, Tab, Container, Grid } from '@mui/material'
+import { useEffect } from 'react'
+import { Tabs, Tab, Container, Grid } from '@mui/material'
+import { useNavigate, useParams } from 'react-router-dom'
+
 import { TabContext } from '@mui/lab'
 import Optimizer from './Optimizer'
 import OptimizerResultContainer from './OptimizerResult'
-import SimulatorContainer from './Simulator'
-import { createTheme, ThemeProvider } from '@mui/material/styles'
-
-import WarehouseRequirement from '../Warehouse/Requirement'
-
+// import SimulatorContainer from './Simulator'
 import { useAppSelector } from '../../hooks/redux-hooks'
 
 const InventoryOptimizer = () => {
-    const [currentTab, setCurrentTab] = useState('optimizer')
+    const navigate = useNavigate()
 
+    const inventoryOptimizerState = useAppSelector(
+        // @ts-ignore
+        (state) => state.inventoryOptimizer,
+    )
+
+    const inventoryResultState = useAppSelector(
+        // @ts-ignore
+        (state) => state.inventoryResult,
+    )
+
+    const InventoryMenuTabs: any = {
+        optimizer: {
+            label: 'Optimizer',
+            element: <Optimizer />,
+            active: true,
+        },
+        result: {
+            label: 'Optimizer Result',
+            element: <OptimizerResultContainer />,
+            // active:
+            //     inventoryOptimizerState?.demand_master_id &&
+            //     inventoryOptimizerState?.vendor_master_id &&
+            //     inventoryOptimizerState?.annual_cost &&
+            //     (inventoryOptimizerState.fill_rate ||
+            //         inventoryOptimizerState.cycle_service_level) &&
+            //     inventoryResultState?.result &&
+            //     inventoryResultState?.policy_detail &&
+            //     inventoryResultState?.simulation_output,
+            active: true
+        },
+        // simulator: {
+        //     label: 'Simulator',
+        //     element: <SimulatorContainer />,
+        //     active:
+        //         inventoryOptimizerState?.demand_master_id &&
+        //         inventoryOptimizerState?.vendor_master_id &&
+        //         inventoryOptimizerState?.annual_cost &&
+        //         (inventoryOptimizerState.fill_rate ||
+        //             inventoryOptimizerState.cycle_service_level) &&
+        //         inventoryResultState?.result &&
+        //         inventoryResultState?.policy_detail &&
+        //         inventoryResultState?.simulation_output,
+        // },
+    }
+
+    const ScreenNames = Object.keys(InventoryMenuTabs)
+
+    const { pageName = ScreenNames[0] } = useParams()
+
+    useEffect(() => {
+        navigate('/inventory/optimizer')
+    }, [])
 
     return (
         <Container maxWidth='xl'>
@@ -29,30 +79,37 @@ const InventoryOptimizer = () => {
                         padding: '5px',
                     }}
                 >
-                    <Container maxWidth='xl'>
-                        <TabContext value={currentTab}>
-                            <Tabs
-                                centered
-                                style={{ marginBottom: '10px' }}
-                                selectionFollowsFocus
-                                textColor='secondary'
-                                indicatorColor='secondary'
-                                aria-label='Optimizer Tabs'
-                                value={currentTab}
-                                onChange={(_, value) => {
-                                    setCurrentTab(value)
-                                }}
-                            >
-                                <Tab label='Optimizer' value='optimizer' />
-                                <Tab
-                                    label='Optimizer Result'
-                                    value='optimizerResult'
-                                />
-                                <Tab label='Simulator' value='simulator' />
-                            </Tabs>
-                        </TabContext>
-                    </Container>
-                    {currentTab === 'optimizer' && <Optimizer />}
+                    <TabContext value={pageName}>
+                        <Tabs
+                            variant='fullWidth'
+                            style={{ marginBottom: '20px' }}
+                            selectionFollowsFocus
+                            aria-label='Inventory Menu Tabs'
+                            value={pageName}
+                            onChange={(_, value) => {
+                                InventoryMenuTabs[value].active
+                                    ? navigate(`/inventory/${value}`)
+                                    : null
+                            }}
+                        >
+                            {Object.keys(InventoryMenuTabs).map(
+                                (value: any, index: any) => (
+                                    <Tab
+                                        key={index}
+                                        value={value}
+                                        label={InventoryMenuTabs[value].label}
+                                        sx={{
+                                            fontSize: '1.1rem',
+                                        }}
+                                        disabled={
+                                            !InventoryMenuTabs[value].active
+                                        }
+                                    />
+                                ),
+                            )}
+                        </Tabs>
+                    </TabContext>
+                    {InventoryMenuTabs[pageName].element}
                 </Grid>
             </Grid>
         </Container>

@@ -3,7 +3,6 @@ import { Container, Grid, Typography } from '@mui/material'
 
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 
-import { algorithmApi } from '../../redux/actions/algorithm'
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks'
 import {
     FormLabel,
@@ -25,6 +24,8 @@ import {
     updateCycleServiceLevel,
 } from '../../redux/actions/inventory/optimizer'
 
+import { algorithmApi } from '../../redux/actions/inventory/result'
+
 const theme = createTheme()
 
 const Optimizer = () => {
@@ -32,7 +33,12 @@ const Optimizer = () => {
 
     const inventoryOptimizerState = useAppSelector(
         // @ts-ignore
-        (state) => state.optimizer,
+        (state) => state.inventoryOptimizer,
+    )
+
+    const inventoryResultState = useAppSelector(
+        // @ts-ignore
+        (state) => state.inventoryResult,
     )
 
     const [snackbarState, setSnackbarState] = useState(false)
@@ -125,14 +131,23 @@ const Optimizer = () => {
         <ThemeProvider theme={theme}>
             <Container component='main' sx={{ flexGrow: 1 }} fixed>
                 <FormBackdropElement
-                    loader={inventoryOptimizerState.isLoading}
+                    loader={
+                        inventoryOptimizerState.isLoading ||
+                        inventoryResultState.isLoading
+                    }
                 />
-                {snackbarState && inventoryOptimizerState.message && (
-                    <FormSnackBarElement
-                        message={inventoryOptimizerState.message}
-                        onClose={() => setSnackbarState(false)}
-                    />
-                )}
+                {snackbarState &&
+                    (inventoryOptimizerState.message ||
+                        inventoryResultState.message) && (
+                        <FormSnackBarElement
+                            message={
+                                inventoryOptimizerState.message
+                                    ? inventoryOptimizerState.message
+                                    : inventoryResultState.message
+                            }
+                            onClose={() => setSnackbarState(false)}
+                        />
+                    )}
 
                 <Grid container direction='column' rowGap={4}>
                     <Grid
@@ -492,10 +507,16 @@ const Optimizer = () => {
                         <PrimaryButton
                             id='generate-order-policy-btn'
                             label='GENERATE ORDER POLICY'
-                            onClick={() =>
-                                handleSubmit()
+                            onClick={() => handleSubmit()}
+                            disabled={
+                                !(
+                                    inventoryOptimizerState?.demand_master_id &&
+                                    inventoryOptimizerState?.vendor_master_id &&
+                                    inventoryOptimizerState?.annual_cost &&
+                                    (inventoryOptimizerState.fill_rate ||
+                                        inventoryOptimizerState.cycle_service_level)
+                                )
                             }
-                            disabled={false}
                         />
                     </Grid>
                 </Grid>

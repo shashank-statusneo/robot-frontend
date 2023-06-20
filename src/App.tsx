@@ -83,6 +83,12 @@ const App = () => {
                     path='/inventory'
                     element={<InventoryOptimizer />}
                 ></Route>
+                <Route
+                    path='/inventory/:pageName'
+                    element={<InventoryOptimizer />}
+                ></Route>
+             
+               
                 <Route path='/signin' element={<SignIn />}></Route>
                 <Route path='/signup' element={<SignUp />}></Route>
                 <Route path='/profile' element={<Profile />}></Route>

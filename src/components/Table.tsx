@@ -53,7 +53,6 @@ export const FormTable = (props: {
     tableData: any
     total: any
 }) => {
-
     return (
         <TableContainer component={Paper} sx={{ maxHeight: '100%' }}>
             <Table aria-label={props.id} stickyHeader>
@@ -74,7 +73,9 @@ export const FormTable = (props: {
                                 rowData={props.tableData[date]}
                                 index={index}
                                 total={
-                                    props.total && props.total[date] ? props.total[date] : null
+                                    props.total && props.total[date]
+                                        ? props.total[date]
+                                        : null
                                 }
                                 tableType={props.tableType}
                                 key={index}
@@ -201,6 +202,64 @@ const DemandWiseOutputDataCells = (props: { rowData: any; rowKey: any }) => {
     )
 }
 
+
+type InventoryTableHeaders = string[]
+
+type InventoryTableData = {
+    vendor: string | undefined
+    cost: number | undefined
+    order_level: number | undefined
+    reorder_qty: number | undefined
+}[]
+
+export const FormInventoryTable = (props: {
+    id: string
+    tableHeaders: InventoryTableHeaders
+    tableData: InventoryTableData
+    totalOrderQty: number
+    totalCost: number
+}) => {
+    return (
+        <TableContainer component={Paper} sx={{ maxHeight: '100%' }}>
+            <Table aria-label={props.id} stickyHeader>
+                <TableHead>
+                    <TableRow>
+                        {props.tableHeaders.map((row: string, key: any) => (
+                            <StyledTableCell key={key}>{row}</StyledTableCell>
+                        ))}
+                    </TableRow>
+                </TableHead>
+
+                <TableBody>
+                    {props.tableData.map((obj: any, key: any) => (
+                        <TableRow
+                            key={key}
+                            sx={{
+                                '&:last-child td, &:last-child th': {
+                                    border: 0,
+                                },
+                            }}
+                        >
+                            <StyledTableCell>{obj.order_date}</StyledTableCell>
+                            <StyledTableCell>{obj.vendor}</StyledTableCell>
+                            <StyledTableCell>{obj.order_level}</StyledTableCell>
+                            <StyledTableCell>{obj.reorder_qty}</StyledTableCell>
+                            <StyledTableCell>{obj.cost}</StyledTableCell>
+                        </TableRow>
+                    ))}
+                    <TableRow>
+                        <StyledTableCell colSpan={3} align='left'>
+                            Total
+                        </StyledTableCell>
+                        <StyledTableCell>{props.totalOrderQty}</StyledTableCell>
+                        <StyledTableCell>{props.totalCost}</StyledTableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+        </TableContainer>
+    )
+}
+
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     '& .header': {
         backgroundColor: '#4471C2',
@@ -259,7 +318,6 @@ export const FormGraph = (props: {
     }
 
     const selectLine = (e: any) => {
-
         setGraphProps({
             ...graphProps,
             [e.dataKey]: !graphProps[e.dataKey],

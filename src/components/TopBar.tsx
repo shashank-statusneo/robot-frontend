@@ -55,7 +55,7 @@ const TopBar = () => {
                         {UserSession.isAuthenticated() && (
                             <Button
                                 key='dashboard'
-                                onClick={() => navigate('/inventory_optimizer')}
+                                onClick={() => navigate('/warehouse')}
                                 sx={{ my: 2, color: 'white', display: 'block' }}
                             >
                                 Optimization

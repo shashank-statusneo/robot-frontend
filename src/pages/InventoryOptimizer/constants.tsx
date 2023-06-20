@@ -1,29 +1,56 @@
 export const lineData = [
     {
-        dataKey: 'inventory_level',
+        key: 'inventory_level',
         stroke: '#8B7AFF',
     },
     {
-        dataKey: 'daily_demand',
+        key: 'daily_demand',
         stroke: '#45AC54',
     },
     {
-        dataKey: 'orders_fulfilled',
+        key: 'orders_fulfilled',
         stroke: '#008E19',
     },
     {
-        dataKey: 'stockout_on',
+        key: 'stockout_on',
         stroke: '#8B7AFF',
     },
     {
-        dataKey: 'po_raised_on',
+        key: 'po_raised_on',
         stroke: '#FF7073',
     },
     {
-        dataKey: 'po_received_on',
+        key: 'po_received_on',
         stroke: '#FF7078',
     },
 ]
+
+// export const lineData = [
+//     {
+//         key: 'Inventory Level',
+//         stroke: '#8B7AFF',
+//     },
+//     {
+//         key: 'Daily Demand',
+//         stroke: '#45AC54',
+//     },
+//     {
+//         key: 'Orders Fulfilled',
+//         stroke: '#008E19',
+//     },
+//     {
+//         key: 'Stockout On',
+//         stroke: '#8B7AFF',
+//     },
+//     {
+//         key: 'PO Raised On',
+//         stroke: '#FF7073',
+//     },
+//     {
+//         key: 'PO Received On',
+//         stroke: '#FF7078',
+//     },
+// ]
 
 export const policyTableHeaders = [
     'Order Date',

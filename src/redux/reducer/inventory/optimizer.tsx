@@ -16,8 +16,8 @@ const initialState = {
     cycle_service_level: ''
 }
 
-export const optimizer = createSlice({
-    name: 'optimizer',
+export const inventoryOptimizer = createSlice({
+    name: 'inventoryOptimizer',
     initialState,
     reducers: {
         resetInventoryOptimizerData(state, action) {
@@ -115,7 +115,7 @@ export const {
     updateFillRateValue,
     updateCycleServiceLevelValue,
     postInventoryFailed,
-} = optimizer.actions
+} = inventoryOptimizer.actions
 
-export default optimizer.reducer
+export default inventoryOptimizer.reducer
 
