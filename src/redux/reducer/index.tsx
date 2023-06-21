@@ -1,6 +1,7 @@
 import authReducer from './auth'
-import  inventoryOptimizer from './inventory/optimizer'
-import  inventoryResult  from './inventory/result'
+import inventoryOptimizer from './inventory/optimizer'
+import inventoryResult from './inventory/result'
+import inventorySimulator from './inventory/simulator'
 import algorithmDataReducer from './algorithm'
 import warehouseSelect from './warehouse/select'
 import warehouseProductivity from './warehouse/productivity'
@@ -13,6 +14,7 @@ export const rootReducer = combineReducers({
     authReducer: authReducer,
     inventoryOptimizer: inventoryOptimizer,
     inventoryResult: inventoryResult,
+    inventorySimulator: inventorySimulator,
     algorithmDataReducer: algorithmDataReducer,
     warehouseSelect: warehouseSelect,
     warehouseProductivity: warehouseProductivity,

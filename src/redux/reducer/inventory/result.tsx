@@ -8,7 +8,6 @@ const initialState = {
     result: {},
     policy_detail: [],
     simulation_output: [],
-    
     inventory_start_date: dayjs(null),
     inventory_end_date: dayjs(null),
 }

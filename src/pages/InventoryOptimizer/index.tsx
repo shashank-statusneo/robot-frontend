@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { TabContext } from '@mui/lab'
 import Optimizer from './Optimizer'
 import OptimizerResultContainer from './OptimizerResult'
-// import SimulatorContainer from './Simulator'
+import SimulatorContainer from './Simulator'
 import { useAppSelector } from '../../hooks/redux-hooks'
 
 const InventoryOptimizer = () => {
@@ -30,30 +30,30 @@ const InventoryOptimizer = () => {
         result: {
             label: 'Optimizer Result',
             element: <OptimizerResultContainer />,
-            // active:
-            //     inventoryOptimizerState?.demand_master_id &&
-            //     inventoryOptimizerState?.vendor_master_id &&
-            //     inventoryOptimizerState?.annual_cost &&
-            //     (inventoryOptimizerState.fill_rate ||
-            //         inventoryOptimizerState.cycle_service_level) &&
-            //     inventoryResultState?.result &&
-            //     inventoryResultState?.policy_detail &&
-            //     inventoryResultState?.simulation_output,
-            active: true
+            active:
+                inventoryOptimizerState?.demand_master_id &&
+                inventoryOptimizerState?.vendor_master_id &&
+                inventoryOptimizerState?.annual_cost &&
+                (inventoryOptimizerState.fill_rate ||
+                    inventoryOptimizerState.cycle_service_level) &&
+                inventoryResultState?.result &&
+                inventoryResultState?.policy_detail &&
+                inventoryResultState?.simulation_output,
+            // active: true
         },
-        // simulator: {
-        //     label: 'Simulator',
-        //     element: <SimulatorContainer />,
-        //     active:
-        //         inventoryOptimizerState?.demand_master_id &&
-        //         inventoryOptimizerState?.vendor_master_id &&
-        //         inventoryOptimizerState?.annual_cost &&
-        //         (inventoryOptimizerState.fill_rate ||
-        //             inventoryOptimizerState.cycle_service_level) &&
-        //         inventoryResultState?.result &&
-        //         inventoryResultState?.policy_detail &&
-        //         inventoryResultState?.simulation_output,
-        // },
+        simulator: {
+            label: 'Simulator',
+            element: <SimulatorContainer />,
+            active:
+                inventoryOptimizerState?.demand_master_id &&
+                inventoryOptimizerState?.vendor_master_id &&
+                inventoryOptimizerState?.annual_cost &&
+                (inventoryOptimizerState.fill_rate ||
+                    inventoryOptimizerState.cycle_service_level) &&
+                inventoryResultState?.result &&
+                inventoryResultState?.policy_detail &&
+                inventoryResultState?.simulation_output,
+        },
     }
 
     const ScreenNames = Object.keys(InventoryMenuTabs)

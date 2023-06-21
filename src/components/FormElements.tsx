@@ -240,7 +240,7 @@ export const FormDateSelector = (props: {
 }
 
 // General function to export Form Card
-const FormCard = (params: { value: string | number; label: string }) => {
+const FormCard = (props: { value: string | number; label: string }) => {
     return (
         <Paper elevation={2}>
             <Grid
@@ -251,14 +251,39 @@ const FormCard = (params: { value: string | number; label: string }) => {
             >
                 <Grid item>
                     <Typography variant='h4' fontWeight='bold'>
-                        {params.value}
+                        {props.value}
                     </Typography>
                 </Grid>
                 <Grid item>
-                    <Typography variant='body1'>{params.label} </Typography>
+                    <Typography variant='body1'>{props.label} </Typography>
                 </Grid>
             </Grid>
         </Paper>
+    )
+}
+
+export const InventoryFormCard = (props: {
+    value: string | number
+    label: string
+}) => {
+    return (
+        <Grid item lg={3}>
+            <Paper elevation={2}>
+                <Grid
+                    container
+                    direction='column'
+                    justifyContent='center'
+                    alignItems='center'
+                >
+                    <Typography variant='h4' fontWeight='bold'>
+                        {props.value}
+                    </Typography>{' '}
+                    <Typography variant='body1'>
+                        {props.label}
+                    </Typography>
+                </Grid>
+            </Paper>
+        </Grid>
     )
 }
 
@@ -331,7 +356,6 @@ export const CustomFormRadioButton = (props: {
         value: string,
     ) => void
 }) => {
-
     return (
         <FormControl>
             <RadioGroup
@@ -367,7 +391,9 @@ export const CustomFormRadioButton = (props: {
                             onChange={props.textFieldsProps[index].onChange}
                             inputProps={props.textFieldsProps[index].inputProps}
                             error={props.textFieldsProps[index].error}
-                            onErrorMessage={props.textFieldsProps[index].onErrorMessage}
+                            onErrorMessage={
+                                props.textFieldsProps[index].onErrorMessage
+                            }
                             disabled={props.textFieldsProps[index].disabled}
                             size={'small'}
                         />

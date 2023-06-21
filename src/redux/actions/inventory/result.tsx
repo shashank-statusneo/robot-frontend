@@ -6,7 +6,7 @@ import {
     postAlgorithmApiSuccess,
     postAlgorithmApiFailed,
     updateInventoryStartDateValue,
-    updateInventoryEndDateValue
+    updateInventoryEndDateValue,
 } from '../../reducer/inventory/result'
 
 // @ts-ignore
@@ -35,4 +35,3 @@ export const updateInventoryStartDate = (payload) => async (dispatch) => {
 export const updateInventoryEndDate = (payload) => async (dispatch) => {
     await dispatch(updateInventoryEndDateValue(payload))
 }
-

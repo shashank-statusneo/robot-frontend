@@ -1,18 +1,22 @@
-import { Grid, SelectChangeEvent, Container, Paper } from '@mui/material'
+import {
+    Grid,
+    SelectChangeEvent,
+    Container,
+    Paper,
+} from '@mui/material'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 
 import dayjs from 'dayjs'
 
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks'
 
-// import { FormTable, FormGraph } from './components/formFields'
 import { lineData, policyTableHeaders } from './constants'
 import { PrimaryButton } from '../../components/Buttons'
 import {
     FormDateSelector,
     FormLabel,
     FormDropDown,
-    FormCardField,
+    InventoryFormCard,
 } from '../../components/FormElements'
 import { FormGraph, FormInventoryTable } from '../../components/Table'
 
@@ -111,105 +115,96 @@ const OptimizerResultContainer = () => {
         writeFile(workbook, 'Optimization Result' + '.xlsx')
     }
 
-    const onDownloadClick = (event: any) => {
-        console.log(event)
-    }
-
-    // const ProjectionContainer = () => {
-    //     return (
-    //         <FormGraph
-    //             label='PROJECTION: DEMAND Vs INVENTORY LEVEL'
-    //             xLabel='date'
-    //             yLabel='inventory_level'
-    //             data={inventoryResultState.simulation_output}
-    //             lineData={lineData}
-    //         />
-    //     )
-    // }
-
-    // const PolicyContainer = () => {
-    //     const apiPolicyDetail = inventoryResultState.policy_detail
-
-    //     let totalOrderQty = 0
-    //     let totalCost = 0
-
-    //     apiPolicyDetail.map((obj: any, key: any) => {
-    //         totalOrderQty = totalOrderQty + obj.reorder_qty
-    //         totalCost = totalCost + obj.cost
-    //     })
-
-    //     const onDownloadClick = (event: any) => {
-    //         console.log(event)
-    //     }
-
-    //     return (
-    //         <FormTable
-    //             tableName='POLICY DETAILS TABLE'
-    //             tableHeaders={policyTableHeaders}
-    //             tableData={apiPolicyDetail}
-    //             totalOrderQty={totalOrderQty}
-    //             totalCost={totalCost}
-    //             downloadBtnId='policy-table-download-btn'
-    //             onClickFunc={onDownloadClick}
-    //         />
-    //     )
-    // }
-
     return (
         <ThemeProvider theme={theme}>
             <Container component='main' sx={{ flexGrow: 1 }} fixed>
-                <Grid container direction='column' spacing={6}>
-                    <Grid item>
-                        <Grid
-                            container
-                            justifyContent='center'
-                            alignItems='center'
-                            spacing={1}
-                        >
-                            <Grid item lg={3}>
-                                <FormDateSelector
-                                    label='Select From Date'
-                                    value={
-                                        inventoryResultState.inventory_start_date
-                                    }
-                                    onChange={handleInventoryStartDateChange}
-                                    minDate={dayjs()}
-                                />
-                            </Grid>
+                <Grid
+                    container
+                    direction='column'
+                    alignItems='center'
+                    rowGap={5}
+                >
+                    <Grid container item justifyContent='center' lg={10}>
+                        <Grid item lg={3}>
+                            <FormDateSelector
+                                label='Select From Date'
+                                value={
+                                    inventoryResultState.inventory_start_date
+                                }
+                                onChange={handleInventoryStartDateChange}
+                                minDate={dayjs()}
+                            />
+                        </Grid>
 
-                            <Grid item lg={3}>
-                                <FormDateSelector
-                                    label='Select To Date'
-                                    value={
-                                        inventoryResultState.inventory_end_date
-                                    }
-                                    onChange={handleInventoryEndDateChange}
-                                    minDate={
-                                        inventoryResultState.inventory_start_date >=
-                                        dayjs()
-                                            ? inventoryResultState.inventory_start_date
-                                            : dayjs()
-                                    }
-                                />
-                            </Grid>
+                        <Grid item lg={3}>
+                            <FormDateSelector
+                                label='Select To Date'
+                                value={inventoryResultState.inventory_end_date}
+                                onChange={handleInventoryEndDateChange}
+                                minDate={
+                                    inventoryResultState.inventory_start_date >=
+                                    dayjs()
+                                        ? inventoryResultState.inventory_start_date
+                                        : dayjs()
+                                }
+                            />
+                        </Grid>
 
-                            <Grid item lg={4}>
-                                <FormDropDown
-                                    id='select-vendor-dropdown'
-                                    labelId='select-table-dropdown-input-label'
-                                    label='Select Vendor'
-                                    value={null}
-                                    data={VendorList}
-                                    onChange={handleVendorChange}
-                                />
-                            </Grid>
+                        <Grid item lg={4}>
+                            <FormDropDown
+                                id='select-vendor-dropdown'
+                                labelId='select-table-dropdown-input-label'
+                                label='Select Vendor'
+                                value={null}
+                                data={VendorList}
+                                onChange={handleVendorChange}
+                            />
                         </Grid>
                     </Grid>
-                    <Grid container item>
-                        <FormCardField items={cardItems.slice(0, 3)} />
+                    <Grid
+                        container
+                        item
+                        justifyContent='center'
+                        lg={12}
+                        columnGap={6}
+                        rowGap={2}
+                    >
+                        {cardItems.map((card: any, index: any) => (
+                            <InventoryFormCard
+                                key={index}
+                                value={card.value}
+                                label={card.label}
+                            />
+                        ))}
                     </Grid>
-                    <Grid container item>
-                        <FormCardField items={cardItems.slice(3)} />
+                    <Grid
+                        container
+                        item
+                        justifyContent='center'
+                        alignContent='center'
+                        alignItems='center'
+                        rowGap={2}
+                    >
+                        <Grid item>
+                            <FormLabel label='PROJECTION: DEMAND Vs INVENTORY LEVEL' />
+                        </Grid>
+                        <Grid item lg={10}>
+                            <Paper
+                                sx={{
+                                    width: '100%',
+                                    height: 350,
+                                }}
+                            >
+                                <FormGraph
+                                    xLabel='date'
+                                    yLabel='inventory_level'
+                                    data={
+                                        inventoryResultState.simulation_output
+                                    }
+                                    lineData={lineData}
+                                />
+                            </Paper>
+                        </Grid>
                     </Grid>
 
                     <Grid
@@ -218,65 +213,24 @@ const OptimizerResultContainer = () => {
                         justifyContent='center'
                         alignContent='center'
                         alignItems='center'
-                        columnSpacing={1}
-                        rowSpacing={4}
+                        rowGap={2}
                     >
-                        <Grid
-                            container
-                            item
-                            lg={12}
-                            justifyContent='center'
-                            alignContent='center'
-                            alignItems='center'
-                        >
-                            <Grid item>
-                                <FormLabel label='PROJECTION: DEMAND Vs INVENTORY LEVEL' />
-                            </Grid>
-                            <Grid item lg={12}>
-                                <Paper
-                                    sx={{
-                                        width: '100%',
-                                        height: 350,
-                                    }}
-                                >
-                                    <FormGraph
-                                        xLabel='date'
-                                        yLabel='inventory_level'
-                                        data={
-                                            inventoryResultState.simulation_output
-                                        }
-                                        lineData={lineData}
-                                    />
-                                </Paper>
-                            </Grid>
+                        <Grid item lg={10}>
+                            <FormInventoryTable
+                                id='inventory-result-table'
+                                tableHeaders={policyTableHeaders}
+                                tableData={apiPolicyDetail}
+                                totalOrderQty={totalOrderQty}
+                                totalCost={totalCost}
+                            />
                         </Grid>
-
-                        <Grid
-                            container
-                            item
-                            lg={12}
-                            justifyContent='center'
-                            alignContent='center'
-                            alignItems='center'
-                            direction='column'
-                        >
-                            <Grid container item>
-                                <FormInventoryTable
-                                    id='inventory-result-table'
-                                    tableHeaders={policyTableHeaders}
-                                    tableData={apiPolicyDetail}
-                                    totalOrderQty={totalOrderQty}
-                                    totalCost={totalCost}
-                                />
-                            </Grid>
-                            <Grid item>
-                                <PrimaryButton
-                                    id='inventory-result-data-table-download-btn'
-                                    label='DOWNLOAD TABLE AS EXCEL'
-                                    onClick={() => DownloadResultData()}
-                                    disabled={false}
-                                />
-                            </Grid>
+                        <Grid item>
+                            <PrimaryButton
+                                id='inventory-result-data-table-download-btn'
+                                label='DOWNLOAD TABLE AS EXCEL'
+                                onClick={() => DownloadResultData()}
+                                disabled={false}
+                            />
                         </Grid>
                     </Grid>
                 </Grid>

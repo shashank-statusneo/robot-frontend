@@ -16,3 +16,4 @@ export const DEMAND_FORECAST_API = 'wmp/demands'
 export const RESULT_API = 'wmp/calculate'
 
 export const ALGORITHM_API = '/mock/algorithm'
+export const SIMULATION_API = '/mock/algorithm'

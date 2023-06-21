@@ -1,148 +1,467 @@
-// import React, { useState } from 'react'
-// import {
-//     Grid,
-//     Container,
-//     Typography
-// } from '@mui/material';
-// import { createTheme, ThemeProvider } from '@mui/material/styles'
-// import { useAppSelector } from '../../hooks/redux-hooks';
+import { Grid, Container, Paper } from '@mui/material'
+import { createTheme, ThemeProvider } from '@mui/material/styles'
 
-// import { FormCardField, FormTable, FormGraph, FormSimulation } from './components/formFields';
-// import { lineData, policyTableHeaders } from './constants';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks'
 
-// const theme = createTheme();
+import { lineData, policyTableHeaders } from './constants'
+import { PrimaryButton } from '../../components/Buttons'
+import {
+    FormLabel,
+    FormTextField,
+    InventoryFormCard,
+} from '../../components/FormElements'
+import { FormGraph, FormInventoryTable } from '../../components/Table'
 
-// const SimulatorContainer = () => {
+import {
+    simulationApi,
+    updateReorderPoint,
+    updateAvgLeadTime,
+    updateReorderQty,
+    updateSdOfLeadTime,
+} from '../../redux/actions/inventory/simulator'
+import object from 'lodash'
 
-//     // @ts-ignore
-//     const algorithmResultState = useAppSelector(state => state.algorithmDataReducer)
+import { utils, writeFile } from 'xlsx'
 
-//     const cardLabelMapping: any = {
-//         total_purchase_value: 'Total Purchase Value',
-//         total_purchase_qty: 'Total Purchase Qty',
-//         reorder_point: 'Reorder Point',
-//         reorder_qty: 'Reorder Qty',
-//         safety_stock: 'Safety Stock'
-//     }
+const theme = createTheme()
 
-//     const CardContainer = () => {
+const SimulatorContainer = () => {
+    const dispatch = useAppDispatch()
 
-//         const cardsData: any = []
-//         const apiResult = algorithmResultState.result
+    const inventoryResultState = useAppSelector(
+        // @ts-ignore
+        (state) => state.inventoryResult,
+    )
+    const inventorySimulatorState = useAppSelector(
+        // @ts-ignore
+        (state) => state.inventorySimulator,
+    )
 
-//         Object.keys(apiResult).forEach((key, index)=> {
-//             cardsData.push({
-//                 value: apiResult[key],
-//                 label: cardLabelMapping[key]
-//             })
-//         }) 
-//         return (
-//             <FormCardField items={cardsData} />
-//         )
-//     }
+    const cardItems = [
+        {
+            value: inventoryResultState?.result?.total_purchase_value
+                ? inventoryResultState?.result?.total_purchase_value
+                : 0,
+            label: 'Total Purchase Value',
+        },
+        {
+            value: inventoryResultState?.result?.total_purchase_qty
+                ? inventoryResultState?.result?.total_purchase_qty
+                : 0,
+            label: 'Total Purchase Qty',
+        },
+        {
+            value: inventoryResultState?.result?.reorder_point
+                ? inventoryResultState?.result?.reorder_point
+                : 0,
+            label: 'Reorder Point',
+        },
+        {
+            value: inventoryResultState?.result?.reorder_qty
+                ? inventoryResultState?.result?.reorder_qty
+                : 0,
+            label: 'Reorder Qty',
+        },
+        {
+            value: inventoryResultState?.result?.safety_stock
+                ? inventoryResultState?.result?.safety_stock
+                : 0,
+            label: 'Safety Stock',
+        },
+    ]
+    const simulationCardItems = [
+        {
+            value: inventorySimulatorState?.result?.total_purchase_value
+                ? inventorySimulatorState?.result?.total_purchase_value
+                : 0,
+            label: 'Total Purchase Value',
+        },
+        {
+            value: inventorySimulatorState?.result?.total_purchase_qty
+                ? inventorySimulatorState?.result?.total_purchase_qty
+                : 0,
+            label: 'Total Purchase Qty',
+        },
+        {
+            value: inventorySimulatorState?.result?.reorder_point
+                ? inventorySimulatorState?.result?.reorder_point
+                : 0,
+            label: 'Reorder Point',
+        },
+        {
+            value: inventorySimulatorState?.result?.reorder_qty
+                ? inventorySimulatorState?.result?.reorder_qty
+                : 0,
+            label: 'Reorder Qty',
+        },
+        {
+            value: inventorySimulatorState?.result?.safety_stock
+                ? inventorySimulatorState?.result?.safety_stock
+                : 0,
+            label: 'Safety Stock',
+        },
+    ]
 
-//     const ProjectionContainer = () => {
-//         return (
-//             <FormGraph
-//                 label=''
-//                 xLabel='date'
-//                 yLabel='inventory_level'
-//                 data={algorithmResultState.simulation_output}
-//                 lineData={lineData}
-//             />
-//         )
-//     }
+    const apiPolicyDetail = inventoryResultState.policy_detail
+    const simulationApiPolicyDetail = inventorySimulatorState.policy_detail
 
-//     const PolicyContainer = () => {
+    let totalOrderQty = 0
+    let totalCost = 0
+    let simulationTotalOrderQty = 0
+    let simulationTotalCost = 0
 
-//         const apiPolicyDetail = algorithmResultState.policy_detail
+    apiPolicyDetail.map((obj: any, key: any) => {
+        totalOrderQty = totalOrderQty + obj.reorder_qty
+        totalCost = totalCost + obj.cost
+    })
+    simulationApiPolicyDetail.map((obj: any, key: any) => {
+        simulationTotalOrderQty = simulationTotalOrderQty + obj.reorder_qty
+        simulationTotalCost = simulationTotalCost + obj.cost
+    })
 
-//         let totalOrderQty = 0;
-//         let totalCost = 0;
+    const DownloadResultData = () => {
+        const worksheetData: any = apiPolicyDetail
 
-//         apiPolicyDetail.map((obj: any, key: any) => {
-//             totalOrderQty = totalOrderQty + obj.reorder_qty
-//             totalCost = totalCost + obj.cost
-//         })
+        const worksheet = utils.json_to_sheet(worksheetData)
+        worksheet['!cols'] = [{ wch: 10 }, { wch: 9 }, { wch: 21 }]
+        const workbook = utils.book_new()
+        utils.book_append_sheet(workbook, worksheet, 'Sheet1')
 
-//         const onDownloadClick = (event: any) => {
-//             console.log(event)
-//         }
+        writeFile(workbook, 'Optimization Result' + '.xlsx')
+    }
 
-//         return (
-//             <FormTable 
-//                 tableName=''
-//                 tableHeaders={policyTableHeaders}
-//                 tableData={apiPolicyDetail}
-//                 totalOrderQty={totalOrderQty}
-//                 totalCost={totalCost}
-//                 downloadBtnId='policy-table-download-btn'
-//                 onClickFunc={onDownloadClick}
-//             />
-//         )
-//     }
+    const RunSimulation = () => {
+        // @ts-ignore
+        dispatch(simulationApi(inventorySimulatorState))
+    }
 
-//     const SimulationForm = () => {
-//         return (
-//             <FormSimulation 
-//                 btnId='run_simulation'
-//                 label='SIMULATION'
-//             />
-//         )
-//     }
+    return (
+        <ThemeProvider theme={theme}>
+            <Container component='main' sx={{ flexGrow: 1 }} fixed>
+                <Grid
+                    container
+                    direction='column'
+                    alignItems='center'
+                    rowGap={5}
+                >
+                    <Grid container item justifyContent='center' lg={10}>
+                        <FormLabel label={'BASIC SCENARIO RESULT'} />
+                    </Grid>
+                    <Grid
+                        container
+                        item
+                        justifyContent='center'
+                        lg={12}
+                        columnGap={6}
+                        rowGap={2}
+                    >
+                        {cardItems.map((card: any, index: any) => (
+                            <InventoryFormCard
+                                key={index}
+                                value={card.value}
+                                label={card.label}
+                            />
+                        ))}
+                    </Grid>
+                    <Grid
+                        container
+                        item
+                        justifyContent='center'
+                        alignContent='center'
+                        alignItems='center'
+                        rowGap={2}
+                    >
+                        <Grid item lg={10}>
+                            <Paper
+                                sx={{
+                                    width: '100%',
+                                    height: 350,
+                                }}
+                            >
+                                <FormGraph
+                                    xLabel='date'
+                                    yLabel='inventory_level'
+                                    data={
+                                        inventoryResultState.simulation_output
+                                    }
+                                    lineData={lineData}
+                                />
+                            </Paper>
+                        </Grid>
+                    </Grid>
 
-//     return (
-//         <ThemeProvider theme={theme}>
-//             <Container component='main' sx={{ flexGrow: 1 }} fixed >
-//                 <Grid container direction='column' spacing={2} style={{marginBottom: '20px'}}>
-//                     <Grid item >
-//                         <Typography variant="h5" component="h5" align="center">
-//                             BASIC SCENARIO RESULT
-//                         </Typography>
-//                     </Grid>
-//                     <Grid item >
-//                         <CardContainer />
-//                     </Grid>
-//                     <Grid container item direction='row' >
-//                     <Grid item lg={6} md={6} sm={12}>
-//                             <ProjectionContainer/>
-//                         </Grid>
-//                         <Grid item lg={6} md={6} sm={12}>
-//                             <PolicyContainer/>
-//                         </Grid>
-//                     </Grid>
-//                 </Grid>
-//                 <Grid container direction='column' spacing={2} style={{marginBottom: '20px'}}>
-//                     <Grid item >
-//                         <Typography variant="h5" component="h5" align="center">
-//                             SIMULATION
-//                         </Typography>
-//                     </Grid>
-//                     <Grid item >
-//                        <SimulationForm/>
-//                     </Grid>
-//                 </Grid>
-//                 <Grid container direction='column' spacing={2} style={{marginBottom: '20px'}}>
-//                     <Grid item >
-//                         <Typography variant="h5" component="h5" align="center">
-//                             SIMULATION RESULTS
-//                         </Typography>
-//                     </Grid>
-//                     <Grid item >
-//                         <CardContainer />
-//                     </Grid>
-//                     <Grid container item direction='row' >
-//                     <Grid item lg={6} md={6} sm={12}>
-//                             <ProjectionContainer/>
-//                         </Grid>
-//                         <Grid item lg={6} md={6} sm={12}>
-//                             <PolicyContainer/>
-//                         </Grid>
-//                     </Grid>
-//                 </Grid>
-//             </Container>
-//         </ThemeProvider>
-//     )
-// }
+                    <Grid
+                        container
+                        item
+                        justifyContent='center'
+                        alignContent='center'
+                        alignItems='center'
+                        rowGap={2}
+                    >
+                        <Grid item lg={10}>
+                            <FormInventoryTable
+                                id='inventory-result-table'
+                                tableHeaders={policyTableHeaders}
+                                tableData={apiPolicyDetail}
+                                totalOrderQty={totalOrderQty}
+                                totalCost={totalCost}
+                            />
+                        </Grid>
+                    </Grid>
 
-// export default SimulatorContainer
+                    <Grid container item justifyContent='center' lg={10}>
+                        <FormLabel label={'SIMULATION'} />
+                    </Grid>
+
+                    <Grid
+                        container
+                        item
+                        direction='column'
+                        alignContent='center'
+                        alignItems='center'
+                    >
+                        <Grid container item rowGap={3}>
+                            <Grid
+                                container
+                                item
+                                alignContent='center'
+                                alignItems='center'
+                            >
+                                <Grid
+                                    lg={6}
+                                    justifyContent='center'
+                                    alignItems='center'
+                                    item
+                                    container
+                                    columnGap={3}
+                                >
+                                    <FormLabel label='Reorder Point' />
+                                    <FormTextField
+                                        id='simulator-reorder-point-textfield'
+                                        value={
+                                            inventorySimulatorState.reorder_point
+                                        }
+                                        type='number'
+                                        onChange={(e: any) => {
+                                            dispatch(
+                                                // @ts-ignore
+                                                updateReorderPoint(
+                                                    e.target.value,
+                                                ),
+                                            )
+                                        }}
+                                        inputProps={{}}
+                                        error={false}
+                                        onErrorMessage={''}
+                                        disabled={false}
+                                        size={'small'}
+                                    />
+                                </Grid>
+                                <Grid
+                                    lg={6}
+                                    justifyContent='center'
+                                    alignItems='center'
+                                    item
+                                    container
+                                    columnGap={3}
+                                >
+                                    <FormLabel label='Avg Lead Time' />
+                                    <FormTextField
+                                        id='simulator-avg-lead-time-textfield'
+                                        value={
+                                            inventorySimulatorState.avg_lead_time
+                                        }
+                                        type='number'
+                                        onChange={(e: any) => {
+                                            dispatch(
+                                                // @ts-ignore
+                                                updateAvgLeadTime(
+                                                    e.target.value,
+                                                ),
+                                            )
+                                        }}
+                                        inputProps={{}}
+                                        error={false}
+                                        onErrorMessage={''}
+                                        disabled={false}
+                                        size={'small'}
+                                    />
+                                </Grid>
+                            </Grid>
+                            <Grid
+                                container
+                                item
+                                alignContent='center'
+                                alignItems='center'
+                            >
+                                <Grid
+                                    lg={6}
+                                    justifyContent='center'
+                                    alignItems='center'
+                                    item
+                                    container
+                                    columnGap={3}
+                                >
+                                    <FormLabel label='Reorder Qty' />
+                                    <FormTextField
+                                        id='simulator-reorder-qty-textfield'
+                                        value={
+                                            inventorySimulatorState.reorder_qty
+                                        }
+                                        type='number'
+                                        onChange={(e: any) => {
+                                            dispatch(
+                                                // @ts-ignore
+                                                updateReorderQty(
+                                                    e.target.value,
+                                                ),
+                                            )
+                                        }}
+                                        inputProps={{}}
+                                        error={false}
+                                        onErrorMessage={''}
+                                        disabled={false}
+                                        size={'small'}
+                                    />
+                                </Grid>
+                                <Grid
+                                    lg={6}
+                                    justifyContent='center'
+                                    alignItems='center'
+                                    item
+                                    container
+                                    columnGap={3}
+                                >
+                                    <FormLabel label='SD of Lead Time' />
+                                    <FormTextField
+                                        id='simulator-sd-lead-time-textfield'
+                                        value={
+                                            inventorySimulatorState.sd_of_lead_time
+                                        }
+                                        type='number'
+                                        onChange={(e: any) => {
+                                            dispatch(
+                                                // @ts-ignore
+                                                updateSdOfLeadTime(
+                                                    e.target.value,
+                                                ),
+                                            )
+                                        }}
+                                        inputProps={{}}
+                                        error={false}
+                                        onErrorMessage={''}
+                                        disabled={false}
+                                        size={'small'}
+                                    />
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid item marginY={3}>
+                        <PrimaryButton
+                            id='simulation-run-btn'
+                            label='RUN SIMULATION'
+                            onClick={() => RunSimulation()}
+                            disabled={
+                                !(
+                                    inventorySimulatorState?.reorder_point &&
+                                    inventorySimulatorState?.avg_lead_time &&
+                                    inventorySimulatorState?.reorder_qty &&
+                                    inventorySimulatorState.sd_of_lead_time
+                                )
+                            }
+                        />
+                    </Grid>
+
+                    {inventorySimulatorState?.result &&
+                        !object.isEmpty(inventorySimulatorState?.result) &&
+                        inventorySimulatorState?.policy_detail &&
+                        inventorySimulatorState?.policy_detail.length > 0 &&
+                        inventorySimulatorState?.simulation_output &&
+                        inventorySimulatorState?.simulation_output.length >
+                            0 && (
+                            <>
+                                <Grid
+                                    container
+                                    item
+                                    justifyContent='center'
+                                    lg={10}
+                                >
+                                    <FormLabel label={'SIMULATION RESULT'} />
+                                </Grid>
+                                <Grid
+                                    container
+                                    item
+                                    justifyContent='center'
+                                    lg={12}
+                                    columnGap={6}
+                                    rowGap={2}
+                                >
+                                    {simulationCardItems.map(
+                                        (card: any, index: any) => (
+                                            <InventoryFormCard
+                                                key={index}
+                                                value={card.value}
+                                                label={card.label}
+                                            />
+                                        ),
+                                    )}
+                                </Grid>
+                                <Grid
+                                    container
+                                    item
+                                    justifyContent='center'
+                                    alignContent='center'
+                                    alignItems='center'
+                                    rowGap={2}
+                                >
+                                    <Grid item lg={10}>
+                                        <Paper
+                                            sx={{
+                                                width: '100%',
+                                                height: 350,
+                                            }}
+                                        >
+                                            <FormGraph
+                                                xLabel='date'
+                                                yLabel='inventory_level'
+                                                data={
+                                                    inventorySimulatorState.simulation_output
+                                                }
+                                                lineData={lineData}
+                                            />
+                                        </Paper>
+                                    </Grid>
+                                </Grid>
+
+                                <Grid
+                                    container
+                                    item
+                                    justifyContent='center'
+                                    alignContent='center'
+                                    alignItems='center'
+                                    rowGap={2}
+                                >
+                                    <Grid item lg={10}>
+                                        <FormInventoryTable
+                                            id='inventory-simulation-result-table'
+                                            tableHeaders={policyTableHeaders}
+                                            tableData={
+                                                simulationApiPolicyDetail
+                                            }
+                                            totalOrderQty={
+                                                simulationTotalOrderQty
+                                            }
+                                            totalCost={simulationTotalCost}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </>
+                        )}
+                </Grid>
+            </Container>
+        </ThemeProvider>
+    )
+}
+
+export default SimulatorContainer
