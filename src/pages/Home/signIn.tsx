@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks'
 import UserSession from '../../services/auth'
@@ -10,12 +10,15 @@ import {
     Avatar,
     Typography,
     TextField,
-    CircularProgress,
     Button,
     Grid,
 } from '@mui/material'
 import { Link, useNavigate } from 'react-router-dom'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
+import {
+    FormBackdropElement,
+    FormSnackBarElement,
+} from '../../components/FormElements'
 
 const theme = createTheme()
 
@@ -23,7 +26,9 @@ const SignIn = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
     // @ts-ignore
-    const state = useAppSelector((state) => state.authReducer)
+    const authState = useAppSelector((state) => state.authReducer)
+
+    const [snackbarState, setSnackbarState] = useState(false)
 
     React.useEffect(() => {
         if (UserSession.isAuthenticated()) {
@@ -45,9 +50,20 @@ const SignIn = () => {
         dispatch(login(context))
     }
 
+    useEffect(() => {
+        setSnackbarState(true)
+    }, [authState.message])
+
     return (
         <ThemeProvider theme={theme}>
             <Container component='main' maxWidth='xs'>
+                <FormBackdropElement loader={authState.isLoading} />
+                {snackbarState && authState.message && (
+                    <FormSnackBarElement
+                        message={authState.message}
+                        onClose={() => setSnackbarState(false)}
+                    />
+                )}
                 <CssBaseline />
                 <Box
                     sx={{
@@ -90,11 +106,6 @@ const SignIn = () => {
                             autoComplete='current-password'
                         />
 
-                        {state.isLoading && (
-                            <div>
-                                <CircularProgress />
-                            </div>
-                        )}
                         <Button
                             data-type='SignIn'
                             type='submit'
@@ -107,19 +118,16 @@ const SignIn = () => {
 
                         <Grid container>
                             <Grid item xs>
-                                {/* <Link href='#' variant='body2'>
-                  Forgot password?
-                </Link> */}
+                                <Link to='#'>Forgot password?</Link>
                             </Grid>
                             <Grid item>
                                 <Link to='/signup'>
-                                    {'Dont have an account? Sign Up'}
+                                    {'Don\'t have an account? Sign Up'}
                                 </Link>
                             </Grid>
                         </Grid>
                     </Box>
                 </Box>
-                {/* <Copyright sx={{ mt: 8, mb: 4 }} /> */}
             </Container>
         </ThemeProvider>
     )
