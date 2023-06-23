@@ -114,11 +114,11 @@ const SimulatorContainer = () => {
     let simulationTotalOrderQty = 0
     let simulationTotalCost = 0
 
-    apiPolicyDetail.map((obj: any, key: any) => {
+    apiPolicyDetail.map((obj: any) => {
         totalOrderQty = totalOrderQty + obj.reorder_qty
         totalCost = totalCost + obj.cost
     })
-    simulationApiPolicyDetail.map((obj: any, key: any) => {
+    simulationApiPolicyDetail.map((obj: any) => {
         simulationTotalOrderQty = simulationTotalOrderQty + obj.reorder_qty
         simulationTotalCost = simulationTotalCost + obj.cost
     })

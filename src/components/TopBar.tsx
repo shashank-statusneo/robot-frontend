@@ -6,14 +6,12 @@ import {
     Box,
     Button,
     IconButton,
-    Badge,
     Tooltip,
     Menu,
     Avatar,
     MenuItem,
     Typography,
 } from '@mui/material'
-import NotificationsIcon from '@mui/icons-material/Notifications'
 import { useLocation, useNavigate } from 'react-router-dom'
 import UserSession from '../services/auth'
 
@@ -21,22 +19,22 @@ const TopBar = () => {
     const location = useLocation()
     const navigate = useNavigate()
 
-    const [anchorElNav, setAnchorElNav] = React.useState(null)
+    // const [anchorElNav, setAnchorElNav] = React.useState(null)
     const [anchorElUser, setAnchorElUser] = React.useState(null)
 
     // @ts-ignore
-    const handleOpenNavMenu = (event) => {
-        setAnchorElNav(event.currentTarget)
-    }
+    // const handleOpenNavMenu = (event) => {
+    //     setAnchorElNav(event.currentTarget)
+    // }
 
     // @ts-ignore
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget)
     }
 
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null)
-    }
+    // const handleCloseNavMenu = () => {
+    //     setAnchorElNav(null)
+    // }
 
     const handleCloseUserMenu = () => {
         setAnchorElUser(null)
