@@ -54,8 +54,6 @@ const Optimizer = () => {
     const purchaseOrderFile = useRef() as MutableRefObject<HTMLInputElement>
     const volumeDiscountFile = useRef() as MutableRefObject<HTMLInputElement>
 
-    const [val, setVal] = useState('')
-
     const handleFileUpload = (event: any, fileType: string) => {
         event.preventDefault()
         const fileObj = event.target.files && event.target.files[0]

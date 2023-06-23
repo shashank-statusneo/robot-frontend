@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { Grid, Container, Paper } from '@mui/material'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 
@@ -9,6 +10,8 @@ import {
     FormLabel,
     FormTextField,
     InventoryFormCard,
+    FormSnackBarElement,
+    FormBackdropElement,
 } from '../../components/FormElements'
 import { FormGraph, FormInventoryTable } from '../../components/Table'
 
@@ -20,7 +23,6 @@ import {
     updateSdOfLeadTime,
 } from '../../redux/actions/inventory/simulator'
 import object from 'lodash'
-
 import { utils, writeFile } from 'xlsx'
 
 const theme = createTheme()
@@ -36,6 +38,8 @@ const SimulatorContainer = () => {
         // @ts-ignore
         (state) => state.inventorySimulator,
     )
+
+    const [snackbarState, setSnackbarState] = useState(false)
 
     const cardItems = [
         {
@@ -120,14 +124,14 @@ const SimulatorContainer = () => {
     })
 
     const DownloadResultData = () => {
-        const worksheetData: any = apiPolicyDetail
+        const worksheetData: any = simulationApiPolicyDetail
 
         const worksheet = utils.json_to_sheet(worksheetData)
         worksheet['!cols'] = [{ wch: 10 }, { wch: 9 }, { wch: 21 }]
         const workbook = utils.book_new()
         utils.book_append_sheet(workbook, worksheet, 'Sheet1')
 
-        writeFile(workbook, 'Optimization Result' + '.xlsx')
+        writeFile(workbook, 'Simulation Result' + '.xlsx')
     }
 
     const RunSimulation = () => {
@@ -135,9 +139,27 @@ const SimulatorContainer = () => {
         dispatch(simulationApi(inventorySimulatorState))
     }
 
+    useEffect(() => {
+        setSnackbarState(true)
+    }, [inventorySimulatorState.message])
+
     return (
         <ThemeProvider theme={theme}>
             <Container component='main' sx={{ flexGrow: 1 }} fixed>
+                <FormBackdropElement
+                    loader={
+                        inventorySimulatorState.isLoading ||
+                        inventoryResultState.isLoading
+                    }
+                />
+                {snackbarState &&
+                    (inventorySimulatorState.message ||
+                        inventoryResultState.message) && (
+                        <FormSnackBarElement
+                            message={inventorySimulatorState.message}
+                            onClose={() => setSnackbarState(false)}
+                        />
+                    )}
                 <Grid
                     container
                     direction='column'
@@ -453,6 +475,14 @@ const SimulatorContainer = () => {
                                                 simulationTotalOrderQty
                                             }
                                             totalCost={simulationTotalCost}
+                                        />
+                                    </Grid>
+                                    <Grid item>
+                                        <PrimaryButton
+                                            id='inventory-result-data-table-download-btn'
+                                            label='DOWNLOAD TABLE AS EXCEL'
+                                            onClick={() => DownloadResultData()}
+                                            disabled={false}
                                         />
                                     </Grid>
                                 </Grid>
