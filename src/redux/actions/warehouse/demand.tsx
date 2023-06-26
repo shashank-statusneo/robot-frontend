@@ -93,35 +93,59 @@ const modifyDemandTableData = (data) => async (dispatch) => {
     ]
 
     if (data && !object.isEmpty(data)) {
+
         const columnList = Object.keys(data[Object.keys(data)[0]])
 
         for (const col in columnList) {
-            demandForecastTableColumns.push({
-                field: columnList[col],
-                headerName: columnList[col],
-                editable: true,
-                flex: 1,
-                type: 'number',
-                headerAlign: 'center',
-                align: 'center',
-                headerClassName: 'header',
-                minWidth: 200,
-            })
+            if (columnList[col] !== 'total') {
+                demandForecastTableColumns.push({
+                    field: columnList[col],
+                    headerName: columnList[col],
+                    editable: true,
+                    flex: 1,
+                    type: 'number',
+                    headerAlign: 'center',
+                    align: 'center',
+                    headerClassName: 'header',
+                    minWidth: 200,
+                })
+            } else {
+                demandForecastTableColumns.push({
+                    field: columnList[col],
+                    headerName: 'Total',
+                    editable: false,
+                    flex: 1,
+                    type: 'number',
+                    headerAlign: 'center',
+                    align: 'center',
+                    headerClassName: 'header',
+                    minWidth: 200,
+                })
+            }
         }
 
         Object.keys(data).forEach((key, index) => {
-            const record: any = {
-                id: index + 1,
-                date: key,
+            if (key !== 'total') {
+                const record: any = {
+                    id: index + 1,
+                    date: key,
+                }
+
+                Object.keys(data[key]).forEach((key_x: any) => {
+                    if (key_x !== 'total') {
+                        record[key_x] = data[key][key_x]['demand']
+                    } else {
+                        record['total'] = data[key]['total']
+                    }
+                })
+
+                records.push(record)
             }
-            Object.keys(data[key]).forEach((key_x: any, index_x: any) => {
-                record[key_x] = data[key][key_x]['demand']
-            })
-            records.push(record)
         })
 
         await dispatch(updateDemandTableDataCol(demandForecastTableColumns))
     }
+
     await dispatch(updateModifiedDemandTableDataValue(records))
 }
 
