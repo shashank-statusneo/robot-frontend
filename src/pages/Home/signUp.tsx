@@ -24,14 +24,13 @@ const SignUp = () => {
         event.preventDefault()
         const data = new FormData(event.currentTarget)
         const context = {
-            first_name: data.get('firstName'),
-            last_name: data.get('lastName'),
+            // first_name: data.get('firstName'),
+            // last_name: data.get('lastName'),
             username: data.get('username'),
             email: data.get('email'),
             password: data.get('password'),
             role: 'admin',
         }
-        console.log(context)
         //@ts-ignore
         dispatch(register(context))
     }
