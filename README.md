@@ -25,9 +25,16 @@ npm &gt;= 9.5.1</p><h5>Steps</h5><ul>
 
 # APPLICATION SETUP
 
-## Server Setup
+## Backend Setup
 
 -   Install Python 3.10
+
+-   Clone Front end Git Repository
+
+    ```commandline
+    git clone https://github.com/shashank-statusneo/robot-backend.git
+    ```
+
 -   Create and activate Virtual Environment
 
     ```commandline
