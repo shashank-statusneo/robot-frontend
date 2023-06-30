@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks'
-import UserSession from '../../services/auth'
+import UserSession from './services/auth'
 import { login } from '../../redux/actions/auth'
 import {
     Container,
@@ -10,6 +10,7 @@ import {
     Avatar,
     Typography,
     TextField,
+    CircularProgress,
     Button,
     Grid,
 } from '@mui/material'
@@ -122,7 +123,7 @@ const SignIn = () => {
                             </Grid>
                             <Grid item>
                                 <Link to='/signup'>
-                                    {'Don\'t have an account? Sign Up'}
+                                    {"Don't have an account? Sign Up"}
                                 </Link>
                             </Grid>
                         </Grid>

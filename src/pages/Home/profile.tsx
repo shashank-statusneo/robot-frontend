@@ -1,16 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import UserSession from '../../services/auth'
+import { useEffect, useState } from 'react'
+import UserSession from './services/auth'
 import { password_reset } from '../../redux/actions/auth'
 import { useAppDispatch } from '../../hooks/redux-hooks'
-import {
-    Box,
-    Typography,
-    TextField,
-    Button,
-    Card,
-    CardContent,
-    CardMedia,
-} from '@mui/material'
+import { Box, Typography, TextField, Button, Container } from '@mui/material'
+import { createTheme, ThemeProvider } from '@mui/material/styles'
+
+const theme = createTheme()
 
 const Profile = () => {
     const dispatch = useAppDispatch()
@@ -40,76 +35,57 @@ const Profile = () => {
     }
 
     return (
-        <>
-            <Card
-                sx={{ maxWidth: 300 }}
-                style={{
-                    alignContent: 'center',
-                    alignItems: 'center',
-                }}
-            >
-                <CardContent>
-                    <CardMedia
-                        sx={{ height: 140 }}
-                        image='./profilepic.svg'
-                        title='profile pic'
-                    />
-                    <Typography variant='h5' component='div'>
-                        {user.first_name} {user.last_name}
-                    </Typography>
-                    <Typography sx={{ mb: 1.5 }} color='text.secondary'>
-                        {user.email}
-                    </Typography>
-                </CardContent>
-            </Card>
-
-            <Card
-                sx={{ maxWidth: 500 }}
-                style={{
-                    alignContent: 'center',
-                    alignItems: 'center',
-                }}
-            >
-                <Typography component='h1' variant='h5'>
-                    Change Password
-                </Typography>
+        <ThemeProvider theme={theme}>
+            <Container component='main' maxWidth='xs'>
                 <Box
-                    component='form'
-                    onSubmit={handleSubmit}
-                    noValidate
-                    sx={{ mt: 1 }}
+                    sx={{
+                        marginTop: 8,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                    }}
                 >
-                    <TextField
-                        margin='normal'
-                        required
-                        fullWidth
-                        id='old_password'
-                        label='Old Password'
-                        name='old_password'
-                        autoFocus
-                    />
-                    <TextField
-                        margin='normal'
-                        required
-                        fullWidth
-                        name='new_password'
-                        label='New Password'
-                        type='password'
-                        id='new_password'
-                        autoComplete='current-password'
-                    />
-                    <Button
-                        data-type='Update'
-                        type='submit'
-                        fullWidth
-                        variant='contained'
-                        sx={{ mt: 3, mb: 2 }}
+                    <Typography component='h1' variant='h5'>
+                        Change Password
+                    </Typography>
+                    <Box
+                        component='form'
+                        onSubmit={handleSubmit}
+                        noValidate
+                        sx={{ mt: 1 }}
                     >
-                        Update
-                    </Button>
+                        <TextField
+                            margin='normal'
+                            required
+                            fullWidth
+                            id='old_password'
+                            label='Old Password'
+                            name='old_password'
+                            autoFocus
+                        />
+                        <TextField
+                            margin='normal'
+                            required
+                            fullWidth
+                            name='new_password'
+                            label='New Password'
+                            type='password'
+                            id='new_password'
+                            autoComplete='current-password'
+                        />
+                        <Button
+                            data-type='Update'
+                            type='submit'
+                            fullWidth
+                            variant='contained'
+                            sx={{ mt: 3, mb: 2 }}
+                        >
+                            Update
+                        </Button>
+                    </Box>
                 </Box>
-            </Card>
-        </>
+            </Container>
+        </ThemeProvider>
     )
 }
 

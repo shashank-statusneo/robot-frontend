@@ -1,7 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit'
-import UserSession from '../../services/auth'
+import UserSession from '../../pages/Home/services/auth'
 
 const initialState = {
+    isLoading: false,
+    message: '',
     access_token: null,
     user: null,
 }
@@ -12,27 +14,28 @@ export const authReducer = createSlice({
         fetchLogin(state, action) {
             return {
                 ...state,
+                message: '',
                 isLoading: true,
             }
         },
         fetchLoginSuccess(state, action) {
-            // Update auth details into localStorage
             UserSession.setUser(action.payload.data)
             return {
                 ...state,
-                message: 'Login Successfull',
                 isLoading: false,
             }
         },
         fetchLoginFailed(state, action) {
             return {
                 ...state,
+                message: 'User Login Failed',
                 isLoading: false,
             }
         },
         fetchRegister(state, action) {
             return {
                 ...state,
+                message: '',
                 isLoading: true,
             }
         },
@@ -46,6 +49,7 @@ export const authReducer = createSlice({
         fetchRegisterFailed(state, action) {
             return {
                 ...state,
+                message: 'User Registration Failed',
                 isLoading: false,
             }
         },
